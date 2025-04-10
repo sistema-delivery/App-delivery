@@ -221,10 +221,10 @@ footer {
   }
 }
 
-/* CAROUSEL - Banner adaptado para imagens 3780px x 1890px sem borda branca */
+/* CAROUSEL - Banner ajustado para proporção 2:1, sem cortes e sem bordas brancas */
 .carousel {
   width: 100%;
-  height: 300px;    /* Ajuste a altura conforme a necessidade (ex: 300px para desktop) */
+  aspect-ratio: 2 / 1;  /* Define o container para ter a mesma proporção da imagem */
   margin: 20px auto;
   overflow: hidden;
   position: relative;
@@ -245,11 +245,11 @@ footer {
 .carousel-item img {
   width: 100%;
   height: 100%;
-  object-fit: cover;          /* Preenche o container sem deixar bordas brancas */
-  object-position: left;      /* Se deseja que a parte esquerda da imagem fique visível */
+  object-fit: contain;          /* Mostra a imagem inteira sem cortes */
+  object-position: left;        /* Alinha a imagem à esquerda, se desejar */
 }
 
-/* Animação do carrossel para centralizar cada slide */
+/* Animação do carrossel para transições suaves */
 @keyframes slide {
   0% {
     transform: translateX(0%);
@@ -274,6 +274,6 @@ footer {
 /* Responsividade para dispositivos menores */
 @media (max-width: 768px) {
   .carousel {
-    height: 150px;  /* reduzindo a altura para dispositivos menores */
+    aspect-ratio: 2 / 1;  /* Mantém a proporção mesmo em telas menores */
   }
 }
