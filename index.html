@@ -159,28 +159,32 @@
 <div id="order-modal" class="modal">
   <div class="modal-content">
     <span class="close">&times;</span>
-    <h2 style="text-align: center;">Monte seu Pedido</h2>
-    <p id="modal-pizza-name" style="text-align: center; font-weight: bold; font-size: 1.2rem;"></p>
-    
-    <form id="modal-order-form">
-      <div class="pizza-sizes">
-        <p><strong>Escolha o Tamanho:</strong></p>
-        <label><input type="radio" name="pizza-size" value="Pequena" checked> Pequena</label>
-        <label><input type="radio" name="pizza-size" value="Média"> Média</label>
+    <h2 id="modal-pizza-name" style="text-align: center; color: #d35400;"></h2>
+
+    <form id="modal-order-form" class="modal-order-form">
+
+      <label for="modal-pizza-size">Tamanho:</label>
+      <div>
+        <label><input type="radio" name="pizza-size" value="Pequena" required> Pequena</label><br>
+        <label><input type="radio" name="pizza-size" value="Média"> Média</label><br>
         <label><input type="radio" name="pizza-size" value="Grande"> Grande</label>
       </div>
 
-      <label for="modal-pizza-quantity"><strong>Quantidade:</strong></label>
-      <input type="number" id="modal-pizza-quantity" min="1" value="1" required>
+      <label for="modal-pizza-quantity">Quantidade:</label>
+      <input type="number" id="modal-pizza-quantity" name="pizza-quantity" min="1" value="1" required>
 
-      <div class="payment-method">
-        <p><strong>Forma de Pagamento:</strong></p>
-        <label><input type="radio" name="payment-method" value="Pix" checked> Pix</label>
-        <label><input type="radio" name="payment-method" value="Cartão"> Cartão</label>
+      <label for="payment-method">Forma de Pagamento:</label>
+      <div>
+        <label><input type="radio" name="payment-method" value="Pix" required> Pix</label><br>
+        <label><input type="radio" name="payment-method" value="Cartão"> Cartão</label><br>
         <label><input type="radio" name="payment-method" value="Dinheiro"> Dinheiro</label>
       </div>
 
-      <button type="submit" class="btn">Finalizar Pedido</button>
+      <label for="modal-observations">Observações (opcional):</label>
+      <textarea id="modal-observations" name="observations" rows="3" placeholder="Ex: sem cebola, borda recheada..."></textarea>
+
+      <br>
+      <button type="submit" class="btn" style="width: 100%; margin-top: 20px;">Enviar Pedido via WhatsApp</button>
     </form>
   </div>
 </div>
