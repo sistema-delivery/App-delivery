@@ -16,7 +16,9 @@
       </div>
       <ul class="nav-menu">
         <li><a href="#home">Início</a></li>
-        <li><a href="#menu">Cardápio</a></li>
+        <li><a href="#vendas">Mais Vendidas</a></li>
+        <li><a href="#tradicionais">Tradicionais</a></li>
+        <li><a href="#premium">Premium</a></li>
         <li><a href="#contact">Contato</a></li>
       </ul>
       <div class="mobile-menu-toggle">
@@ -32,97 +34,70 @@
     <div class="hero-content">
       <h1>A Melhor Pizza da Cidade</h1>
       <p>Sabores irresistíveis, ingredientes selecionados e entrega rápida!</p>
-      <a href="#menu" class="btn">Peça Agora</a>
+      <a href="#vendas" class="btn">Peça Agora</a>
     </div>
   </section>
 
-  <!-- Carousel Section -->
-  <section id="carousel" class="carousel">
-    <div class="carousel-inner">
-      <div class="carousel-item">
-        <a href="https://link-para-promocao-1.com" target="_blank">
-          <img src="assets/images/carousel1.jpg" alt="Promoção Especial 1">
-        </a>
-      </div>
-      <div class="carousel-item">
-        <a href="https://link-para-promocao-2.com" target="_blank">
-          <img src="assets/images/carousel2.jpg" alt="Promoção Especial 2">
-        </a>
-      </div>
-      <div class="carousel-item">
-        <a href="https://link-para-promocao-3.com" target="_blank">
-          <img src="assets/images/carousel3.jpg" alt="Promoção Especial 3">
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Cardápio / Menu -->
-  <section id="menu" class="section menu">
+  <!-- Seção: As Mais Vendidas -->
+  <section id="vendas" class="horizontal-section">
     <div class="container">
-      <h2>Nosso Cardápio de Pizzas</h2>
-      <div class="menu-grid">
-        <div class="menu-item">
+      <h2>AS MAIS VENDIDAS</h2>
+      <div class="horizontal-scroll">
+        <!-- Exemplo de item; repita ou ajuste conforme as necessidades -->
+        <div class="item">
           <img src="assets/images/pizza1.jpg" alt="Pizza Margherita">
-          <h3>Pizza Margherita</h3>
-          <p>Mozzarella fresca, tomate e manjericão.</p>
+          <p>Pizza Margherita</p>
         </div>
-        <div class="menu-item">
+        <div class="item">
           <img src="assets/images/pizza2.jpg" alt="Pizza Calabresa">
-          <h3>Pizza Calabresa</h3>
-          <p>Calabresa, cebola e orégano para um sabor marcante.</p>
+          <p>Pizza Calabresa</p>
         </div>
-        <div class="menu-item">
+        <div class="item">
           <img src="assets/images/pizza3.jpg" alt="Pizza Quatro Queijos">
-          <h3>Pizza Quatro Queijos</h3>
-          <p>Blend de queijos especiais para os verdadeiros amantes.</p>
+          <p>Pizza Quatro Queijos</p>
         </div>
+        <!-- Adicione mais itens conforme necessário -->
       </div>
     </div>
   </section>
 
-  <!-- Pedido Personalizado -->
-<section id="order" class="order">
-  <div class="container">
-    <h2>Monte o Seu Pedido</h2>
-    <form id="order-form">
-      <div class="form-group">
-        <label for="pizza-type">Escolha sua pizza:</label>
-        <select id="pizza-type" name="pizza-type">
-          <option value="Pizza Margherita">Pizza Margherita</option>
-          <option value="Pizza Calabresa">Pizza Calabresa</option>
-          <option value="Pizza Quatro Queijos">Pizza Quatro Queijos</option>
-        </select>
+  <!-- Seção: Pizzas Tradicionais -->
+  <section id="tradicionais" class="horizontal-section">
+    <div class="container">
+      <h2>PIZZAS TRADICIONAIS</h2>
+      <div class="horizontal-scroll">
+        <div class="item">
+          <img src="assets/images/pizza4.jpg" alt="Pizza Portuguesa">
+          <p>Pizza Portuguesa</p>
+        </div>
+        <div class="item">
+          <img src="assets/images/pizza5.jpg" alt="Pizza Marguerita Clássica">
+          <p>Marguerita Clássica</p>
+        </div>
+        <!-- Adicione mais itens conforme necessário -->
       </div>
-      <div class="form-group">
-        <p>Selecione o tamanho:</p>
-        <label>
-          <input type="radio" name="pizza-size" value="Pequeno" checked>
-          Pequeno
-        </label>
-        <label>
-          <input type="radio" name="pizza-size" value="Médio">
-          Médio
-        </label>
-        <label>
-          <input type="radio" name="pizza-size" value="Grande">
-          Grande
-        </label>
-      </div>
-      <div class="form-group">
-        <label for="pizza-quantity">Quantidade:</label>
-        <input type="number" id="pizza-quantity" name="pizza-quantity" min="1" value="1">
-      </div>
-      <button type="submit" class="btn">Adicionar ao Pedido</button>
-    </form>
-    <div id="order-summary" class="order-summary">
-      <h3>Resumo do Pedido</h3>
-      <p id="order-details">Nenhum pedido realizado.</p>
     </div>
-  </div>
-</section>
+  </section>
 
-  <!-- Contato -->
+  <!-- Seção: Pizzas Premium -->
+  <section id="premium" class="horizontal-section">
+    <div class="container">
+      <h2>PIZZAS PREMIUM</h2>
+      <div class="horizontal-scroll">
+        <div class="item">
+          <img src="assets/images/pizza6.jpg" alt="Pizza Trufada">
+          <p>Pizza Trufada</p>
+        </div>
+        <div class="item">
+          <img src="assets/images/pizza7.jpg" alt="Pizza Especial Gourmet">
+          <p>Especial Gourmet</p>
+        </div>
+        <!-- Adicione mais itens conforme necessário -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Seção de Contato -->
   <section id="contact" class="section contact">
     <div class="container">
       <h2>Entre em Contato</h2>
