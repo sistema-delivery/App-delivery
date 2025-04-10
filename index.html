@@ -1,44 +1,14 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pizza Express - Delivery de Pizzas</title>
-  <link rel="stylesheet" href="assets/css/style.css">
-  <link rel="shortcut icon" href="assets/images/favicon.ico" type="image/x-icon">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pizzaria</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Header / Navigation -->
-  <header>
-    <nav class="navbar">
-      <div class="logo">
-        <h1>Pizza Express</h1>
-      </div>
-      <ul class="nav-menu">
-        <li><a href="#home">Início</a></li>
-        <li><a href="#vendas">Mais Vendidas</a></li>
-        <li><a href="#tradicionais">Tradicionais</a></li>
-        <li><a href="#premium">Premium</a></li>
-        <li><a href="#contact">Contato</a></li>
-      </ul>
-      <div class="mobile-menu-toggle">
-        <span class="bar"></span>
-        <span class="bar"></span>
-        <span class="bar"></span>
-      </div>
-    </nav>
-  </header>
 
-  <!-- Hero Section -->
-  <section id="home" class="hero">
-    <div class="hero-content">
-      <h1>A Melhor Pizza da Cidade</h1>
-      <p>Sabores irresistíveis, ingredientes selecionados e entrega rápida!</p>
-      <a href="#vendas" class="btn">Peça Agora</a>
-    </div>
-  </section>
-
-  <!-- Carousel Section (Banner) -->
+  <!-- Carrossel de Banners com URL -->
   <section id="carousel" class="carousel">
     <div class="carousel-inner">
       <div class="carousel-item">
@@ -59,95 +29,104 @@
     </div>
   </section>
 
-  <!-- Horizontal Section: AS MAIS VENDIDAS -->
-  <section id="vendas" class="horizontal-section">
+  <!-- Seção AS MAIS VENDIDAS -->
+  <section id="mais-vendidas" class="horizontal-section">
     <div class="container">
       <h2>AS MAIS VENDIDAS</h2>
       <div class="horizontal-scroll">
         <div class="item">
-          <a href="https://example.com/pizza-margherita" target="_blank">
-            <img src="assets/images/pizza1.jpg" alt="Pizza Margherita">
-            <p>Pizza Margherita</p>
-          </a>
+          <img src="assets/images/pizza1.jpg" alt="Pizza Margherita">
+          <p>Pizza Margherita</p>
+          <p class="price">
+            <del>R$55,90</del>
+            <span>R$37,90</span>
+          </p>
         </div>
         <div class="item">
-          <a href="https://example.com/pizza-calabresa" target="_blank">
-            <img src="assets/images/pizza2.jpg" alt="Pizza Calabresa">
-            <p>Pizza Calabresa</p>
-          </a>
+          <img src="assets/images/pizza2.jpg" alt="Pizza Calabresa">
+          <p>Pizza Calabresa</p>
+          <p class="price">
+            <del>R$55,90</del>
+            <span>R$37,90</span>
+          </p>
         </div>
         <div class="item">
-          <a href="https://example.com/pizza-quatro-queijos" target="_blank">
-            <img src="assets/images/pizza3.jpg" alt="Pizza Quatro Queijos">
-            <p>Pizza Quatro Queijos</p>
-          </a>
+          <img src="assets/images/pizza3.jpg" alt="Pizza Quatro Queijos">
+          <p>Pizza Quatro Queijos</p>
+          <p class="price">
+            <del>R$55,90</del>
+            <span>R$37,90</span>
+          </p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Horizontal Section: PIZZAS TRADICIONAIS -->
+  <!-- Seção PIZZAS TRADICIONAIS -->
   <section id="tradicionais" class="horizontal-section">
     <div class="container">
       <h2>PIZZAS TRADICIONAIS</h2>
       <div class="horizontal-scroll">
         <div class="item">
-          <a href="https://example.com/pizza-portuguesa" target="_blank">
-            <img src="assets/images/pizza4.jpg" alt="Pizza Portuguesa">
-            <p>Pizza Portuguesa</p>
-          </a>
+          <img src="assets/images/pizza4.jpg" alt="Pizza Portuguesa">
+          <p>Pizza Portuguesa</p>
+          <p class="price">
+            <del>R$55,90</del>
+            <span>R$39,90</span>
+          </p>
         </div>
         <div class="item">
-          <a href="https://example.com/marguerita-classica" target="_blank">
-            <img src="assets/images/pizza5.jpg" alt="Pizza Marguerita Clássica">
-            <p>Marguerita Clássica</p>
-          </a>
+          <img src="assets/images/pizza5.jpg" alt="Pizza Mussarela">
+          <p>Pizza Mussarela</p>
+          <p class="price">
+            <del>R$52,90</del>
+            <span>R$36,90</span>
+          </p>
+        </div>
+        <div class="item">
+          <img src="assets/images/pizza6.jpg" alt="Pizza Frango c/ Catupiry">
+          <p>Frango com Catupiry</p>
+          <p class="price">
+            <del>R$57,90</del>
+            <span>R$41,90</span>
+          </p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Horizontal Section: PIZZAS PREMIUM -->
+  <!-- Seção PIZZAS PREMIUM -->
   <section id="premium" class="horizontal-section">
     <div class="container">
       <h2>PIZZAS PREMIUM</h2>
       <div class="horizontal-scroll">
         <div class="item">
-          <a href="https://example.com/pizza-trufada" target="_blank">
-            <img src="assets/images/pizza6.jpg" alt="Pizza Trufada">
-            <p>Pizza Trufada</p>
-          </a>
+          <img src="assets/images/pizza7.jpg" alt="Pizza Parma & Rúcula">
+          <p>Parma & Rúcula</p>
+          <p class="price">
+            <del>R$68,90</del>
+            <span>R$49,90</span>
+          </p>
         </div>
         <div class="item">
-          <a href="https://example.com/especial-gourmet" target="_blank">
-            <img src="assets/images/pizza7.jpg" alt="Pizza Especial Gourmet">
-            <p>Especial Gourmet</p>
-          </a>
+          <img src="assets/images/pizza8.jpg" alt="Pizza Camarão">
+          <p>Pizza de Camarão</p>
+          <p class="price">
+            <del>R$75,90</del>
+            <span>R$54,90</span>
+          </p>
+        </div>
+        <div class="item">
+          <img src="assets/images/pizza9.jpg" alt="Pizza Trufada">
+          <p>Pizza Trufada</p>
+          <p class="price">
+            <del>R$79,90</del>
+            <span>R$56,90</span>
+          </p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Seção de Contato -->
-  <section id="contact" class="section contact">
-    <div class="container">
-      <h2>Entre em Contato</h2>
-      <form id="contact-form">
-        <input type="text" name="name" placeholder="Seu nome" required>
-        <input type="email" name="email" placeholder="Seu e-mail" required>
-        <textarea name="message" rows="4" placeholder="Sua mensagem" required></textarea>
-        <button type="submit" class="btn">Enviar Mensagem</button>
-      </form>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer>
-    <div class="container">
-      <p>&copy; 2025 Pizza Express. Todos os direitos reservados.</p>
-    </div>
-  </footer>
-
-  <script src="assets/js/script.js"></script>
 </body>
 </html>
