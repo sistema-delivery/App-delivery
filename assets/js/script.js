@@ -46,30 +46,33 @@ pizzaItems.forEach(item => {
   });
 });
 
-// Envio do pedido para o WhatsApp com mensagem formatada
+// Captura o envio do formulário de pedido no modal e redireciona para o WhatsApp
 document.getElementById('modal-order-form').addEventListener('submit', function(e) {
   e.preventDefault();
 
   const pizzaName = document.getElementById('modal-pizza-name').textContent;
   const pizzaSize = document.querySelector('input[name="pizza-size"]:checked').value;
   const pizzaQuantity = document.getElementById('modal-pizza-quantity').value;
+  const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
 
-  const orderMessage = 
-`*Novo Pedido - Pizza Express*
+  // Mensagem formatada
+  const orderMessage = `
+*Novo Pedido - Pizza Express*
 
 *Pizza:* ${pizzaName}
 *Tamanho:* ${pizzaSize}
 *Quantidade:* ${pizzaQuantity}
+*Pagamento:* ${paymentMethod}
+*Status:* Aguardando comprovante
 
-*Status do pagamento:* Pendente
+Por favor, envie o comprovante ou informe a forma de pagamento para confirmarmos o pedido.
+  `.trim();
 
-Por favor, confirme o pedido e envie os detalhes do pagamento.
-Obrigado!`;
-
-  // Substitua pelo seu número no formato internacional
-  const whatsappNumber = '55SEUNUMERO';
+  // Número do WhatsApp (formato internacional, ex: 55 + DDD + número)
+  const whatsappNumber = '5581997333714';
   const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(orderMessage)}`;
 
+  // Fecha o modal e abre o WhatsApp
   closeOrderModal();
   window.open(whatsappURL, '_blank');
 });
