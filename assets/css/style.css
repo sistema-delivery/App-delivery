@@ -355,3 +355,48 @@ footer {
   display: block;
   margin: 10px 0 5px;
 }
+
+/* Ajustes visuais adicionais para o modal de pedido */
+.modal-content {
+  padding: 30px;
+  border-radius: 16px;
+  text-align: center;
+}
+
+.modal-content p#modal-pizza-name {
+  font-size: 1.5rem;
+  color: #d35400;
+  margin-bottom: 20px;
+}
+
+.pizza-sizes,
+.payment-method {
+  margin: 20px 0;
+  text-align: left;
+}
+
+.pizza-sizes label,
+.payment-method label {
+  display: block;
+  margin: 8px 0;
+  font-size: 1rem;
+}
+
+#modal-pizza-quantity {
+  width: 100%;
+  max-width: 100px;
+  margin: 0 auto 20px auto;
+  display: block;
+  font-size: 1rem;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  text-align: center;
+}
+
+/* Botão dentro do modal */
+#modal-order-form .btn {
+  width: 100%;
+  margin-top: 20px;
+  font-size: 1.1rem;
+}
