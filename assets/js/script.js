@@ -1,5 +1,3 @@
-// Script para ativação do menu mobile e submissão simples do formulário de contato
-
 // Toggle do menu mobile
 const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
 const navMenu = document.querySelector('.nav-menu');
@@ -46,7 +44,7 @@ pizzaItems.forEach(item => {
   });
 });
 
-// Captura o envio do formulário de pedido no modal e redireciona para o WhatsApp
+// Captura o envio do formulário de pedido no modal e redireciona para o WhatsApp com nota formatada
 document.getElementById('modal-order-form').addEventListener('submit', function(e) {
   e.preventDefault();
 
@@ -54,25 +52,39 @@ document.getElementById('modal-order-form').addEventListener('submit', function(
   const pizzaSize = document.querySelector('input[name="pizza-size"]:checked').value;
   const pizzaQuantity = document.getElementById('modal-pizza-quantity').value;
   const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
+  const observations = document.getElementById('modal-observations').value.trim() || '(nenhuma)';
 
-  // Mensagem formatada
+  const now = new Date();
+  const date = now.toLocaleDateString('pt-BR');
+  const time = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+  const paymentStatus = paymentMethod === 'Pix' ? 'Pago via Pix' : 'Aguardando pagamento';
+  const paymentInfo = paymentMethod === 'Pix' ? 'Pix (Chave: 708.276.084-11)' : paymentMethod;
+
   const orderMessage = `
-*Novo Pedido - Pizza Express*
+Pedido de Pizza - Pizza Express
+------------------------------------
+Pizza: ${pizzaName}
+Tamanho: ${pizzaSize}
+Quantidade: ${pizzaQuantity} ${pizzaQuantity > 1 ? 'unidades' : 'unidade'}
 
-*Pizza:* ${pizzaName}
-*Tamanho:* ${pizzaSize}
-*Quantidade:* ${pizzaQuantity}
-*Pagamento:* ${paymentMethod}
-*Status:* Aguardando comprovante
+Status do Pagamento: ${paymentStatus}
+Forma de Pagamento: ${paymentInfo}
 
-Por favor, envie o comprovante ou informe a forma de pagamento para confirmarmos o pedido.
+Observações adicionais:
+${observations}
+
+------------------------------------
+Data do Pedido: ${date}
+Hora: ${time}
+
+Agradecemos o seu pedido! Em breve ele será preparado e enviado para você.
+Pizza Express - Sabor que chega rápido!
   `.trim();
 
-  // Número do WhatsApp (formato internacional, ex: 55 + DDD + número)
   const whatsappNumber = '5581997333714';
   const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(orderMessage)}`;
 
-  // Fecha o modal e abre o WhatsApp
   closeOrderModal();
   window.open(whatsappURL, '_blank');
 });
