@@ -81,6 +81,47 @@
     </div>
   </section>
 
+  <!-- Pedido Personalizado -->
+<section id="order" class="order">
+  <div class="container">
+    <h2>Monte o Seu Pedido</h2>
+    <form id="order-form">
+      <div class="form-group">
+        <label for="pizza-type">Escolha sua pizza:</label>
+        <select id="pizza-type" name="pizza-type">
+          <option value="Pizza Margherita">Pizza Margherita</option>
+          <option value="Pizza Calabresa">Pizza Calabresa</option>
+          <option value="Pizza Quatro Queijos">Pizza Quatro Queijos</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <p>Selecione o tamanho:</p>
+        <label>
+          <input type="radio" name="pizza-size" value="Pequeno" checked>
+          Pequeno
+        </label>
+        <label>
+          <input type="radio" name="pizza-size" value="Médio">
+          Médio
+        </label>
+        <label>
+          <input type="radio" name="pizza-size" value="Grande">
+          Grande
+        </label>
+      </div>
+      <div class="form-group">
+        <label for="pizza-quantity">Quantidade:</label>
+        <input type="number" id="pizza-quantity" name="pizza-quantity" min="1" value="1">
+      </div>
+      <button type="submit" class="btn">Adicionar ao Pedido</button>
+    </form>
+    <div id="order-summary" class="order-summary">
+      <h3>Resumo do Pedido</h3>
+      <p id="order-details">Nenhum pedido realizado.</p>
+    </div>
+  </div>
+</section>
+
   <!-- Contato -->
   <section id="contact" class="section contact">
     <div class="container">
