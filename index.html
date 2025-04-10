@@ -156,24 +156,34 @@
   </section>
 
   <!-- Modal de Pedido -->
-  <div id="order-modal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h2>Monte seu Pedido</h2>
-      <p id="modal-pizza-name"></p>
-      <form id="modal-order-form">
-        <div class="pizza-sizes">
-          <p>Escolha o Tamanho:</p>
-          <label><input type="radio" name="pizza-size" value="Pequena" checked> Pequena</label>
-          <label><input type="radio" name="pizza-size" value="Média"> Média</label>
-          <label><input type="radio" name="pizza-size" value="Grande"> Grande</label>
-        </div>
-        <label for="modal-pizza-quantity">Quantidade:</label>
-        <input type="number" id="modal-pizza-quantity" min="1" value="1" required>
-        <button type="submit" class="btn">Finalizar Pedido</button>
-      </form>
-    </div>
+<div id="order-modal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2 style="text-align: center;">Monte seu Pedido</h2>
+    <p id="modal-pizza-name" style="text-align: center; font-weight: bold; font-size: 1.2rem;"></p>
+    
+    <form id="modal-order-form">
+      <div class="pizza-sizes">
+        <p><strong>Escolha o Tamanho:</strong></p>
+        <label><input type="radio" name="pizza-size" value="Pequena" checked> Pequena</label>
+        <label><input type="radio" name="pizza-size" value="Média"> Média</label>
+        <label><input type="radio" name="pizza-size" value="Grande"> Grande</label>
+      </div>
+
+      <label for="modal-pizza-quantity"><strong>Quantidade:</strong></label>
+      <input type="number" id="modal-pizza-quantity" min="1" value="1" required>
+
+      <div class="payment-method">
+        <p><strong>Forma de Pagamento:</strong></p>
+        <label><input type="radio" name="payment-method" value="Pix" checked> Pix</label>
+        <label><input type="radio" name="payment-method" value="Cartão"> Cartão</label>
+        <label><input type="radio" name="payment-method" value="Dinheiro"> Dinheiro</label>
+      </div>
+
+      <button type="submit" class="btn">Finalizar Pedido</button>
+    </form>
   </div>
+</div>
 
   <!-- Footer -->
   <footer>
