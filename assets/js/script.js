@@ -62,7 +62,7 @@ document.getElementById('modal-order-form').addEventListener('submit', function(
   const orderMessage = `Olá, gostaria de pedir ${pizzaQuantity} unidade(s) de ${pizzaSize} ${pizzaName}.`;
 
   // Substitua '55SEUNUMERO' pelo seu número no formato internacional, ex: '5511999998888'
-  const whatsappNumber = '5581997333714';
+  const whatsappNumber = '55SEUNUMERO';
   const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(orderMessage)}`;
 
   // Fecha o modal e redireciona para o WhatsApp em uma nova aba
