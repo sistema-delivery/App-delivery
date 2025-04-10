@@ -221,22 +221,35 @@ footer {
   }
 }
 
+/* CAROUSEL - Banner com dimensões aproximadas 1000px x 500px */
 .carousel {
   width: 100%;
+  max-width: 1000px; /* largura máxima de 1000px */
+  height: 500px;     /* altura fixa de 500px */
+  margin: 40px auto; /* centralizado e com margem superior/inferior */
   overflow: hidden;
   position: relative;
 }
 
 .carousel-inner {
   display: flex;
-  width: 300%; /* Se houver 3 imagens */
+  width: 300%;  /* considerando 3 itens no carrossel */
+  height: 100%;
   animation: slide 9s infinite;
 }
 
 .carousel-item {
   flex: 0 0 100%;
+  height: 100%;
 }
 
+.carousel-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* garante que a imagem cubra o espaço sem distorção */
+}
+
+/* Animação do carrossel */
 @keyframes slide {
   0% { transform: translateX(0%); }
   33.33% { transform: translateX(0%); }
@@ -244,4 +257,12 @@ footer {
   77.77% { transform: translateX(-100%); }
   88.88% { transform: translateX(-200%); }
   100% { transform: translateX(-200%); }
+}
+
+/* Responsividade para dispositivos menores: manter a proporção */
+@media (max-width: 768px) {
+  .carousel {
+    height: 250px;  /* reduzindo a altura para celulares, por exemplo */
+    max-width: 100%;
+  }
 }
