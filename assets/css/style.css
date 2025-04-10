@@ -221,11 +221,11 @@ footer {
   }
 }
 
-/* CAROUSEL - Banner com dimensões fixas de 100% (width) x 500px (height) */
+/* CAROUSEL - Banner com dimensões reduzidas */
 .carousel {
   width: 100%;
-  height: 500px;   /* altura fixa de 500px */
-  margin: 40px auto;
+  height: 300px;   /* altura reduzida de 300px (antes era 500px) */
+  margin: 20px auto; /* margem reduzida */
   overflow: hidden;
   position: relative;
 }
@@ -274,6 +274,6 @@ footer {
 /* Responsividade para dispositivos menores */
 @media (max-width: 768px) {
   .carousel {
-    height: 250px;  /* altura reduzida para dispositivos menores */
+    height: 150px;  /* altura reduzida para dispositivos menores */
   }
 }
