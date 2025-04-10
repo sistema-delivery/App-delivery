@@ -18,20 +18,17 @@ contactForm.addEventListener('submit', function(e) {
 
 // Função para abrir o modal e preencher o nome da pizza
 function openOrderModal(pizzaName) {
-  // Preenche o nome da pizza no modal
   document.getElementById('modal-pizza-name').textContent = pizzaName;
-  // Exibe o modal
   document.getElementById('order-modal').style.display = 'block';
 }
 
 // Função para fechar o modal
 function closeOrderModal() {
   document.getElementById('order-modal').style.display = 'none';
-  // Reseta o formulário de pedido do modal
   document.getElementById('modal-order-form').reset();
 }
 
-// Eventos para fechar o modal: ao clicar no "X" ou fora do conteúdo do modal
+// Fechar modal ao clicar fora ou no botão de fechar
 document.querySelector('.modal .close').addEventListener('click', closeOrderModal);
 window.addEventListener('click', function(event) {
   const modal = document.getElementById('order-modal');
@@ -40,8 +37,7 @@ window.addEventListener('click', function(event) {
   }
 });
 
-// Adiciona o evento de clique para cada item de pizza do cardápio
-// Ao clicar, o modal será aberto com o nome da pizza extraído do cartão
+// Evento de clique nas pizzas do cardápio
 const pizzaItems = document.querySelectorAll('.horizontal-scroll .item');
 pizzaItems.forEach(item => {
   item.addEventListener('click', function() {
@@ -50,7 +46,7 @@ pizzaItems.forEach(item => {
   });
 });
 
-// Captura o envio do formulário de pedido no modal e redireciona para o WhatsApp
+// Envio do pedido para o WhatsApp com mensagem formatada
 document.getElementById('modal-order-form').addEventListener('submit', function(e) {
   e.preventDefault();
 
@@ -58,14 +54,22 @@ document.getElementById('modal-order-form').addEventListener('submit', function(
   const pizzaSize = document.querySelector('input[name="pizza-size"]:checked').value;
   const pizzaQuantity = document.getElementById('modal-pizza-quantity').value;
 
-  // Monta a mensagem do pedido
-  const orderMessage = `Olá, gostaria de pedir ${pizzaQuantity} unidade(s) de ${pizzaSize} ${pizzaName}.`;
+  const orderMessage = 
+`*Novo Pedido - Pizza Express*
 
-  // Substitua '55SEUNUMERO' pelo seu número no formato internacional, ex: '5511999998888'
+*Pizza:* ${pizzaName}
+*Tamanho:* ${pizzaSize}
+*Quantidade:* ${pizzaQuantity}
+
+*Status do pagamento:* Pendente
+
+Por favor, confirme o pedido e envie os detalhes do pagamento.
+Obrigado!`;
+
+  // Substitua pelo seu número no formato internacional
   const whatsappNumber = '55SEUNUMERO';
   const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(orderMessage)}`;
 
-  // Fecha o modal e redireciona para o WhatsApp em uma nova aba
   closeOrderModal();
   window.open(whatsappURL, '_blank');
 });
