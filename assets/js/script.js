@@ -8,24 +8,12 @@ mobileMenuToggle.addEventListener('click', () => {
   navMenu.classList.toggle('active');
 });
 
-// Submissão do formulário
+// Submissão do formulário de contato
 const contactForm = document.getElementById('contact-form');
 contactForm.addEventListener('submit', function(e) {
   e.preventDefault();
   alert("Obrigado por entrar em contato! Em breve responderemos.");
   contactForm.reset();
-});
-
-// Captura o envio do formulário de pedido
-document.getElementById('order-form').addEventListener('submit', function(e) {
-  e.preventDefault();
-
-  const pizzaType = document.getElementById('pizza-type').value;
-  const pizzaSize = document.querySelector('input[name="pizza-size"]:checked').value;
-  const pizzaQuantity = document.getElementById('pizza-quantity').value;
-
-  const orderDetails = `Você pediu ${pizzaQuantity} unidade(s) de ${pizzaSize} ${pizzaType}.`;
-  document.getElementById('order-details').textContent = orderDetails;
 });
 
 // Função para abrir o modal e preencher o nome da pizza
@@ -43,7 +31,7 @@ function closeOrderModal() {
   document.getElementById('modal-order-form').reset();
 }
 
-// Adiciona os eventos de clique para fechar o modal
+// Eventos para fechar o modal: ao clicar no "X" ou fora do conteúdo do modal
 document.querySelector('.modal .close').addEventListener('click', closeOrderModal);
 window.addEventListener('click', function(event) {
   const modal = document.getElementById('order-modal');
@@ -53,11 +41,10 @@ window.addEventListener('click', function(event) {
 });
 
 // Adiciona o evento de clique para cada item de pizza do cardápio
+// Ao clicar, o modal será aberto com o nome da pizza extraído do cartão
 const pizzaItems = document.querySelectorAll('.horizontal-scroll .item');
 pizzaItems.forEach(item => {
   item.addEventListener('click', function() {
-    // Aqui você pode capturar o nome da pizza 
-    // Exemplo: assumindo que o <p> com o nome da pizza é o primeiro <p> do item
     const pizzaName = item.querySelector('p').textContent;
     openOrderModal(pizzaName);
   });
@@ -71,17 +58,14 @@ document.getElementById('modal-order-form').addEventListener('submit', function(
   const pizzaSize = document.querySelector('input[name="pizza-size"]:checked').value;
   const pizzaQuantity = document.getElementById('modal-pizza-quantity').value;
 
-  // Monta a mensagem para o WhatsApp
+  // Monta a mensagem do pedido
   const orderMessage = `Olá, gostaria de pedir ${pizzaQuantity} unidade(s) de ${pizzaSize} ${pizzaName}.`;
-  
-  // Substitua pelo seu número de telefone no formato internacional (ex: '5511999998888')
-  const whatsappNumber = '55SEUNUMERO';
 
+  // Substitua '55SEUNUMERO' pelo seu número no formato internacional, ex: '5511999998888'
+  const whatsappNumber = '55SEUNUMERO';
   const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(orderMessage)}`;
 
-  // Fecha o modal
+  // Fecha o modal e redireciona para o WhatsApp em uma nova aba
   closeOrderModal();
-
-  // Abre a URL do WhatsApp em uma nova aba/janela
   window.open(whatsappURL, '_blank');
 });
