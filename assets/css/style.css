@@ -286,3 +286,19 @@ footer {
     height: 150px;
   }
 }
+
+/* Estilo para os preços das pizzas */
+.price {
+  font-size: 1rem;
+  margin: 10px 0 0;
+}
+
+.price del {
+  margin-right: 5px;
+  color: #999;
+}
+
+.price span {
+  font-weight: bold;
+  color: #d35400;
+}
