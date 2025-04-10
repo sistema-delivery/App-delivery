@@ -220,3 +220,28 @@ footer {
     font-size: 14px;
   }
 }
+
+.carousel {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.carousel-inner {
+  display: flex;
+  width: 300%; /* Se houver 3 imagens */
+  animation: slide 9s infinite;
+}
+
+.carousel-item {
+  flex: 0 0 100%;
+}
+
+@keyframes slide {
+  0% { transform: translateX(0%); }
+  33.33% { transform: translateX(0%); }
+  44.44% { transform: translateX(-100%); }
+  77.77% { transform: translateX(-100%); }
+  88.88% { transform: translateX(-200%); }
+  100% { transform: translateX(-200%); }
+}
