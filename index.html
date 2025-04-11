@@ -38,8 +38,8 @@
     </div>
   </section>
 
-  <!-- Carousel Section (Banner) -->
-  <section id="carousel" class="carousel">
+  <!-- Carousel Section (Banner) - Sem margens laterais para ficar colado com o HERO -->
+  <section id="carousel" class="carousel no-margin">
     <div class="carousel-inner">
       <div class="carousel-item">
         <a href="https://example.com/promocao1" target="_blank">
@@ -60,65 +60,64 @@
   </section>
 
   <!-- Horizontal Section: AS MAIS VENDIDAS -->
-  <!-- Horizontal Section: AS MAIS VENDIDAS -->
-<section id="vendas" class="horizontal-section">
-  <div class="container">
-    <h2>AS MAIS VENDIDAS</h2>
-    <div class="horizontal-scroll vendidas">
-      <div class="horizontal-scroll-track">
-        <div class="item card-fire" onclick="openOrderModal('Pizza Margherita')">
-          <img src="assets/images/pizza1.jpg" alt="Pizza Margherita">
-          <p>Pizza Margherita</p>
-          <p class="price">
-            <del>R$55,90</del>
-            <span>R$37,90</span>
-          </p>
-        </div>
-        <div class="item card-fire" onclick="openOrderModal('Pizza Calabresa')">
-          <img src="assets/images/pizza2.jpg" alt="Pizza Calabresa">
-          <p>Pizza Calabresa</p>
-          <p class="price">
-            <del>R$55,90</del>
-            <span>R$37,90</span>
-          </p>
-        </div>
-        <div class="item card-fire" onclick="openOrderModal('Pizza Quatro Queijos')">
-          <img src="assets/images/pizza3.jpg" alt="Pizza Quatro Queijos">
-          <p>Pizza Quatro Queijos</p>
-          <p class="price">
-            <del>R$55,90</del>
-            <span>R$37,90</span>
-          </p>
-        </div>
-        <!-- Duplicação dos cards para possibilitar o looping infinito -->
-        <div class="item card-fire" onclick="openOrderModal('Pizza Margherita')">
-          <img src="assets/images/pizza1.jpg" alt="Pizza Margherita">
-          <p>Pizza Margherita</p>
-          <p class="price">
-            <del>R$55,90</del>
-            <span>R$37,90</span>
-          </p>
-        </div>
-        <div class="item card-fire" onclick="openOrderModal('Pizza Calabresa')">
-          <img src="assets/images/pizza2.jpg" alt="Pizza Calabresa">
-          <p>Pizza Calabresa</p>
-          <p class="price">
-            <del>R$55,90</del>
-            <span>R$37,90</span>
-          </p>
-        </div>
-        <div class="item card-fire" onclick="openOrderModal('Pizza Quatro Queijos')">
-          <img src="assets/images/pizza3.jpg" alt="Pizza Quatro Queijos">
-          <p>Pizza Quatro Queijos</p>
-          <p class="price">
-            <del>R$55,90</del>
-            <span>R$37,90</span>
-          </p>
+  <section id="vendas" class="horizontal-section">
+    <div class="container">
+      <h2>AS MAIS VENDIDAS</h2>
+      <div class="horizontal-scroll vendidas">
+        <div class="horizontal-scroll-track">
+          <div class="item card-fire" onclick="openOrderModal('Pizza Margherita')">
+            <img src="assets/images/pizza1.jpg" alt="Pizza Margherita">
+            <p>Pizza Margherita</p>
+            <p class="price">
+              <del>R$55,90</del>
+              <span>R$37,90</span>
+            </p>
+          </div>
+          <div class="item card-fire" onclick="openOrderModal('Pizza Calabresa')">
+            <img src="assets/images/pizza2.jpg" alt="Pizza Calabresa">
+            <p>Pizza Calabresa</p>
+            <p class="price">
+              <del>R$55,90</del>
+              <span>R$37,90</span>
+            </p>
+          </div>
+          <div class="item card-fire" onclick="openOrderModal('Pizza Quatro Queijos')">
+            <img src="assets/images/pizza3.jpg" alt="Pizza Quatro Queijos">
+            <p>Pizza Quatro Queijos</p>
+            <p class="price">
+              <del>R$55,90</del>
+              <span>R$37,90</span>
+            </p>
+          </div>
+          <!-- Duplicação dos cards para possibilitar o looping infinito -->
+          <div class="item card-fire" onclick="openOrderModal('Pizza Margherita')">
+            <img src="assets/images/pizza1.jpg" alt="Pizza Margherita">
+            <p>Pizza Margherita</p>
+            <p class="price">
+              <del>R$55,90</del>
+              <span>R$37,90</span>
+            </p>
+          </div>
+          <div class="item card-fire" onclick="openOrderModal('Pizza Calabresa')">
+            <img src="assets/images/pizza2.jpg" alt="Pizza Calabresa">
+            <p>Pizza Calabresa</p>
+            <p class="price">
+              <del>R$55,90</del>
+              <span>R$37,90</span>
+            </p>
+          </div>
+          <div class="item card-fire" onclick="openOrderModal('Pizza Quatro Queijos')">
+            <img src="assets/images/pizza3.jpg" alt="Pizza Quatro Queijos">
+            <p>Pizza Quatro Queijos</p>
+            <p class="price">
+              <del>R$55,90</del>
+              <span>R$37,90</span>
+            </p>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
   <!-- Horizontal Section: PIZZAS TRADICIONAIS -->
   <section id="tradicionais" class="horizontal-section">
@@ -184,66 +183,66 @@
   </section>
 
   <!-- Modal de Pedido -->
-<div id="order-modal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeOrderModal()">&times;</span>
-    <h2>Monte seu Pedido</h2>
+  <div id="order-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeOrderModal()">&times;</span>
+      <h2>Monte seu Pedido</h2>
 
-    <form id="modal-order-form">
-      <p><strong>Pizza:</strong> <span id="modal-pizza-name"></span></p>
+      <form id="modal-order-form">
+        <p><strong>Pizza:</strong> <span id="modal-pizza-name"></span></p>
 
-      <div class="pizza-sizes">
-        <p class="tamanho-title">Tamanho:</p>
-        <div class="pizza-size-section">
-          <label>
-            <input type="radio" name="pizza-size" value="Pequena" required>
-            <img src="assets/images/tamanho-pequena.png" alt="Pizza Pequena">
-            <div>Pequena</div>
-          </label>
-          <label>
-            <input type="radio" name="pizza-size" value="Média">
-            <img src="assets/images/tamanho-media.png" alt="Pizza Média">
-            <div>Média</div>
-          </label>
-          <label>
-            <input type="radio" name="pizza-size" value="Grande">
-            <img src="assets/images/tamanho-grande.png" alt="Pizza Grande">
-            <div>Grande</div>
-          </label>
+        <div class="pizza-sizes">
+          <p class="tamanho-title">Tamanho:</p>
+          <div class="pizza-size-section">
+            <label>
+              <input type="radio" name="pizza-size" value="Pequena" required>
+              <img src="assets/images/tamanho-pequena.png" alt="Pizza Pequena">
+              <div>Pequena</div>
+            </label>
+            <label>
+              <input type="radio" name="pizza-size" value="Média">
+              <img src="assets/images/tamanho-media.png" alt="Pizza Média">
+              <div>Média</div>
+            </label>
+            <label>
+              <input type="radio" name="pizza-size" value="Grande">
+              <img src="assets/images/tamanho-grande.png" alt="Pizza Grande">
+              <div>Grande</div>
+            </label>
+          </div>
         </div>
-      </div>
 
-      <label for="modal-pizza-quantity">Quantidade:</label>
-      <input type="number" id="modal-pizza-quantity" value="1" min="1" required>
+        <label for="modal-pizza-quantity">Quantidade:</label>
+        <input type="number" id="modal-pizza-quantity" value="1" min="1" required>
 
-      <label for="modal-additional">Adicionais:</label>
-      <input type="text" id="modal-additional" placeholder="Ex: Guaraná, borda recheada...">
+        <label for="modal-additional">Adicionais:</label>
+        <input type="text" id="modal-additional" placeholder="Ex: Guaraná, borda recheada...">
 
-      <button type="submit" class="btn">Confirmar Pedido</button>
-    </form>
+        <button type="submit" class="btn">Confirmar Pedido</button>
+      </form>
+    </div>
   </div>
-</div>
 
-<!-- Modal de Pagamento -->
-<div id="payment-modal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closePaymentModal()">&times;</span>
-    <h2>Escolha a forma de pagamento</h2>
+  <!-- Modal de Pagamento -->
+  <div id="payment-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closePaymentModal()">&times;</span>
+      <h2>Escolha a forma de pagamento</h2>
 
-    <form id="modal-payment-form">
-      <label><input type="radio" name="payment-method" value="Pix" required> Pix</label>
-      <label><input type="radio" name="payment-method" value="Cartão"> Cartão</label>
-      <label><input type="radio" name="payment-method" value="Dinheiro"> Dinheiro</label>
+      <form id="modal-payment-form">
+        <label><input type="radio" name="payment-method" value="Pix" required> Pix</label>
+        <label><input type="radio" name="payment-method" value="Cartão"> Cartão</label>
+        <label><input type="radio" name="payment-method" value="Dinheiro"> Dinheiro</label>
 
-      <div id="pix-info" style="display: none; margin-top: 10px;">
-        <p><strong>Chave Pix:</strong> 708.276.084-11</p>
-        <img src="images/qrcode-pix.png" alt="QR Code Pix" style="max-width: 200px; margin-top: 10px;">
-      </div>
+        <div id="pix-info" style="display: none; margin-top: 10px;">
+          <p><strong>Chave Pix:</strong> 708.276.084-11</p>
+          <img src="images/qrcode-pix.png" alt="QR Code Pix" style="max-width: 200px; margin-top: 10px;">
+        </div>
 
-      <button type="submit" class="btn">Finalizar Pedido</button>
-    </form>
+        <button type="submit" class="btn">Finalizar Pedido</button>
+      </form>
+    </div>
   </div>
-</div>
 
   <!-- Footer -->
   <footer>
