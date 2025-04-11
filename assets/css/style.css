@@ -490,3 +490,41 @@ footer {
     height: 150px;
   }
 }
+
+/* Layout personalizado para seleção de tamanho */
+.pizza-size-section {
+  display: flex;
+  align-items: flex-start;
+  margin: 20px 0;
+  gap: 15px;
+}
+
+.pizza-size-section label {
+  text-align: center;
+  cursor: pointer;
+}
+
+.pizza-size-section input[type="radio"] {
+  display: none;
+}
+
+.pizza-size-section label img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  margin-bottom: 8px;
+  transition: transform 0.2s ease;
+}
+
+.pizza-size-section input[type="radio"]:checked + img {
+  transform: scale(1.1);
+  border: 2px solid #d35400;
+  border-radius: 8px;
+}
+
+.tamanho-title {
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-align: left;
+  font-size: 1.1rem;
+}
