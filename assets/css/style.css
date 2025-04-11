@@ -523,16 +523,38 @@ footer {
   transition: transform 0.2s ease;
 }
 
+/* Contêiner que une o rótulo "Tamanho:" e as opções */
 .pizza-sizes {
   display: flex;
   align-items: center;
   gap: 15px; /* Espaço entre o título e as opções */
+  margin-top: -10px; /* Reposiciona a linha para mais cima */
 }
 
 .tamanho-title {
   margin: 0; /* Remove a margem inferior */
   font-weight: bold;
   font-size: 1.1rem;
+}
+
+/* Adiciona animação bounce ao selecionar um tamanho */
+@keyframes bounce {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.pizza-size-section input[type="radio"]:checked + img {
+  animation: bounce 0.3s ease;
+  transform: scale(1.1);
+  border: 2px solid #d35400;
+  border-radius: 8px;
 }
 
 /* Efeito de fogo nos cards da seção "As Mais Vendidas" */
