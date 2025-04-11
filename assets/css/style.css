@@ -127,8 +127,9 @@ header {
 /* CAROUSEL - Banner */
 .carousel {
   width: 100%;
-  aspect-ratio: 2 / 1;  /* Define a proporção do container de acordo com as imagens */
-  margin: 20px auto;
+  aspect-ratio: 3780 / 1890; /* Equivalente a 2:1 */
+  margin: 0;
+  padding: 0;
   overflow: hidden;
   position: relative;
 }
