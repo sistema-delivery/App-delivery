@@ -113,21 +113,23 @@ Pizza Express - Sabor que chega rápido!
   window.open(whatsappURL, '_blank');
 });
 
-<script>
-  const scrollContainer = document.querySelector('.horizontal-scroll.vendidas');
-  const scrollTrack = scrollContainer.querySelector('.horizontal-scroll-track');
+// Código para pausar a animação enquanto o usuário interage e retomá-la depois de 2 segundos
+const scrollContainer = document.querySelector('.horizontal-scroll.vendidas');
+const scrollTrack = scrollContainer.querySelector('.horizontal-scroll-track');
 
-  let timeout;
+let animationTimeout;
 
-  function pauseAnimation() {
-    scrollTrack.style.animationPlayState = 'paused';
-    clearTimeout(timeout);
-    timeout = setTimeout(() => {
-      scrollTrack.style.animationPlayState = 'running';
-    }, 2000);
-  }
+function pauseAnimation() {
+  // Pausa a animação
+  scrollTrack.style.animationPlayState = 'paused';
+  // Limpa timeout anterior, se houver
+  clearTimeout(animationTimeout);
+  // Retoma a animação após 2 segundos de inatividade
+  animationTimeout = setTimeout(() => {
+    scrollTrack.style.animationPlayState = 'running';
+  }, 2000);
+}
 
-  scrollContainer.addEventListener('scroll', pauseAnimation);
-  scrollContainer.addEventListener('mouseenter', pauseAnimation);
-  scrollContainer.addEventListener('touchstart', pauseAnimation);
-</script>
+scrollContainer.addEventListener('scroll', pauseAnimation);
+scrollContainer.addEventListener('mouseenter', pauseAnimation);
+scrollContainer.addEventListener('touchstart', pauseAnimation);
