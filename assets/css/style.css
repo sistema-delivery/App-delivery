@@ -259,9 +259,11 @@ footer {
 
 /* RESPONSIVIDADE */
 @media (max-width: 768px) {
-  .hero h1 {
-    font-size: 32px;
+  .horizontal-section h2 {
+    font-size: 1.4rem; /* ou ajuste para o tamanho que quiser */
+    text-align: center;
   }
+}
   .hero p {
     font-size: 16px;
   }
