@@ -189,45 +189,109 @@
   </section>
 
   <!-- Modal de Pedido -->
-  <div id="order-modal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeOrderModal()">&times;</span>
-      <h2>Monte seu Pedido</h2>
+<div id="order-modal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeOrderModal()">&times;</span>
+    <h2>Monte seu Pedido</h2>
 
-      <form id="modal-order-form">
-        <p><strong>Pizza:</strong> <span id="modal-pizza-name"></span></p>
+    <form id="modal-order-form">
+      <p><strong>Pizza:</strong> <span id="modal-pizza-name"></span></p>
 
-        <div class="pizza-sizes">
-          <p class="tamanho-title">Tamanho:</p>
-          <div class="pizza-size-section">
-            <label>
-              <input type="radio" name="pizza-size" value="Pequena" required>
-              <img src="assets/images/tamanho-pequena.png" alt="Pizza Pequena">
-              <div>Pequena</div>
-            </label>
-            <label>
-              <input type="radio" name="pizza-size" value="Média">
-              <img src="assets/images/tamanho-media.png" alt="Pizza Média">
-              <div>Média</div>
-            </label>
-            <label>
-              <input type="radio" name="pizza-size" value="Grande">
-              <img src="assets/images/tamanho-grande.png" alt="Pizza Grande">
-              <div>Grande</div>
-            </label>
-          </div>
+      <!-- Seleção de Tamanho -->
+      <div class="pizza-sizes">
+        <p class="tamanho-title">Tamanho:</p>
+        <div class="pizza-size-section">
+          <label>
+            <input type="radio" name="pizza-size" value="Pequena" required>
+            <img src="assets/images/tamanho-pequena.png" alt="Pizza Pequena">
+            <div>Pequena</div>
+          </label>
+          <label>
+            <input type="radio" name="pizza-size" value="Média">
+            <img src="assets/images/tamanho-media.png" alt="Pizza Média">
+            <div>Média</div>
+          </label>
+          <label>
+            <input type="radio" name="pizza-size" value="Grande">
+            <img src="assets/images/tamanho-grande.png" alt="Pizza Grande">
+            <div>Grande</div>
+          </label>
         </div>
+      </div>
 
-        <label for="modal-pizza-quantity">Quantidade:</label>
-        <input type="number" id="modal-pizza-quantity" value="1" min="1" required>
+      <!-- Nova Opção: Tipo de Massa/Borda (originais + especial com valores) -->
+      <div class="pizza-crust">
+        <p class="crust-title">Massa/Borda:</p>
+        <div class="crust-options">
+          <label>
+            <input type="radio" name="pizza-crust" value="Massa Fina" required>
+            <span>Massa Fina</span>
+          </label>
+          <label>
+            <input type="radio" name="pizza-crust" value="Massa Tradicional">
+            <span>Massa Tradicional</span>
+          </label>
+          <label>
+            <input type="radio" name="pizza-crust" value="Borda Recheada">
+            <span>Borda Recheada</span>
+          </label>
+          <label>
+            <input type="radio" name="pizza-crust" value="Cheddar (+R$2,00)">
+            <span>Cheddar (+R$2,00)</span>
+          </label>
+          <label>
+            <input type="radio" name="pizza-crust" value="Catupiry (+R$3,00)">
+            <span>Catupiry (+R$3,00)</span>
+          </label>
+          <label>
+            <input type="radio" name="pizza-crust" value="Cream Cheese (+R$2,50)">
+            <span>Cream Cheese (+R$2,50)</span>
+          </label>
+        </div>
+      </div>
 
-        <label for="modal-additional">Adicionais:</label>
-        <input type="text" id="modal-additional" placeholder="Ex: Guaraná, borda recheada...">
+      <!-- Nova Opção: Ingredientes Extras/Toppings -->
+      <div class="pizza-toppings">
+        <p class="toppings-title">Ingredientes Extras:</p>
+        <div class="toppings-options">
+          <label>
+            <input type="checkbox" name="toppings" value="Azeitonas">
+            <span>Azeitonas</span>
+          </label>
+          <label>
+            <input type="checkbox" name="toppings" value="Calabresa">
+            <span>Calabresa</span>
+          </label>
+          <label>
+            <input type="checkbox" name="toppings" value="Pimenta">
+            <span>Pimenta</span>
+          </label>
+          <label>
+            <input type="checkbox" name="toppings" value="Cebola">
+            <span>Cebola</span>
+          </label>
+        </div>
+      </div>
 
-        <button type="submit" class="btn">Confirmar Pedido</button>
-      </form>
-    </div>
+      <label for="modal-pizza-quantity">Quantidade:</label>
+      <input type="number" id="modal-pizza-quantity" value="1" min="1" required>
+
+      <label for="modal-additional">Observações:</label>
+      <input type="text" id="modal-additional" placeholder="Ex: sem cebola, extra queijo...">
+
+      <!-- Nova Opção: Resumo do Pedido em Tempo Real -->
+      <div id="order-summary">
+        <h4>Resumo do Pedido:</h4>
+        <p id="summary-size"></p>
+        <p id="summary-crust"></p>
+        <p id="summary-toppings"></p>
+        <p id="summary-quantity"></p>
+      </div>
+
+      <button type="submit" class="btn">Confirmar Pedido</button>
+    </form>
   </div>
+</div>
 
   <!-- Modal de Pagamento -->
   <div id="payment-modal" class="modal">
