@@ -568,3 +568,54 @@ footer {
   text-align: left;
   font-size: 1.1rem;
 }
+
+/* Efeito de fogo nos cards da seção "As Mais Vendidas" */
+.card-fire {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 10px 4px orange;
+  animation: pulseFire 1.5s infinite alternate ease-in-out;
+  transition: transform 0.3s ease;
+}
+
+.card-fire:hover {
+  transform: scale(1.03);
+}
+
+@keyframes pulseFire {
+  0% {
+    box-shadow:
+      0 0 10px 4px orange,
+      0 0 20px 6px red,
+      0 0 30px 8px yellow;
+  }
+  100% {
+    box-shadow:
+      0 0 14px 6px orangered,
+      0 0 26px 10px orange,
+      0 0 36px 12px gold;
+  }
+}
+
+/* Scroll horizontal infinito e suave para a seção "As Mais Vendidas" */
+.horizontal-scroll.vendidas {
+  overflow: hidden;
+  position: relative;
+}
+
+.horizontal-scroll-track {
+  display: flex;
+  width: max-content;
+  animation: slide-horizontal 30s linear infinite;
+  gap: 20px;
+}
+
+@keyframes slide-horizontal {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
