@@ -523,16 +523,15 @@ footer {
   transition: transform 0.2s ease;
 }
 
-.pizza-size-section input[type="radio"]:checked + img {
-  transform: scale(1.1);
-  border: 2px solid #d35400;
-  border-radius: 8px;
+.pizza-sizes {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Espaço entre o título e as opções */
 }
 
 .tamanho-title {
+  margin: 0; /* Remove a margem inferior */
   font-weight: bold;
-  margin-bottom: 10px;
-  text-align: left;
   font-size: 1.1rem;
 }
 
