@@ -133,3 +133,27 @@ function pauseAnimation() {
 scrollContainer.addEventListener('scroll', pauseAnimation);
 scrollContainer.addEventListener('mouseenter', pauseAnimation);
 scrollContainer.addEventListener('touchstart', pauseAnimation);
+
+// Código para atualização dos pontos do carrossel
+
+// Seletor dos pontos
+const dots = document.querySelectorAll('.carousel-dots .dot');
+
+// Atualização automática: considerando 12s de animação dividido por 3 imagens (4s cada)
+let currentIndex = 0;
+setInterval(() => {
+  dots[currentIndex].classList.remove('active');
+  currentIndex = (currentIndex + 1) % dots.length;
+  dots[currentIndex].classList.add('active');
+}, 4000);
+
+// Atualização com interação manual (se o usuário rolar o carrossel)
+// Se o carrossel for rolado manualmente, assumiremos que cada slide ocupa a largura do container.
+const carouselInner = document.querySelector('.carousel-inner');
+carouselInner.addEventListener('scroll', () => {
+  const index = Math.round(carouselInner.scrollLeft / carouselInner.offsetWidth);
+  dots.forEach(dot => dot.classList.remove('active'));
+  if (dots[index]) {
+    dots[index].classList.add('active');
+  }
+});
