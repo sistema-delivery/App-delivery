@@ -625,12 +625,6 @@ footer {
   flex-shrink: 0;
 }
 
-/* Pausar animação enquanto o usuário interage */
-.horizontal-scroll.vendidas:active .horizontal-scroll-track,
-.horizontal-scroll.vendidas:hover .horizontal-scroll-track {
-  animation-play-state: paused;
-}
-
 @keyframes slide-horizontal {
   0% {
     transform: translateX(0%);
