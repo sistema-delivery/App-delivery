@@ -214,3 +214,10 @@ carouselInner.addEventListener('mouseup', (e) => {
     updateCarousel(currentIndex);
   }
 });
+
+const carouselViewport = document.querySelector('.carousel-viewport');
+carouselViewport.addEventListener('scroll', () => {
+  const index = Math.round(carouselViewport.scrollLeft / carouselViewport.offsetWidth);
+  dots.forEach(dot => dot.classList.remove('active'));
+  if (dots[index]) dots[index].classList.add('active');
+});
