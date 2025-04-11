@@ -600,3 +600,56 @@ footer {
     transform: translateX(-50%);
   }
 }
+
+/* Ajuste para o carrossel ocupar toda a largura e ficar colado com o HERO */
+#carousel {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Indicadores (pontos) do carrossel */
+.carousel-dots {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+.carousel-dots .dot {
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  opacity: 0.5;
+  border-radius: 50%;
+  transition: opacity 0.3s, background 0.3s;
+  cursor: pointer;
+}
+
+.carousel-dots .dot.active {
+  opacity: 1;
+  background: #ff3c00; /* ou a cor que preferir */
+}
+
+/* Configuração do carrossel de imagens */
+/* (suas regras já existentes do carrossel permanecem) */
+.carousel {
+  width: 100%;
+  aspect-ratio: 3780 / 1890; /* Proporção 2:1, conforme solicitado */
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.carousel-inner {
+  display: flex;
+  width: 300%;  /* Considerando 3 itens no carrossel */
+  height: 100%;
+  animation: slide 12s infinite;
+}
+
+/* ... demais regras do carrossel permanecem ... */
