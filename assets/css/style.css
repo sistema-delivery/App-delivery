@@ -600,15 +600,35 @@ footer {
 
 /* Scroll horizontal infinito e suave para a seção "As Mais Vendidas" */
 .horizontal-scroll.vendidas {
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
   position: relative;
+}
+
+.horizontal-scroll.vendidas::-webkit-scrollbar {
+  display: none;
 }
 
 .horizontal-scroll-track {
   display: flex;
   width: max-content;
-  animation: slide-horizontal 30s linear infinite;
   gap: 20px;
+  animation: slide-horizontal 30s linear infinite;
+  will-change: transform;
+}
+
+.horizontal-scroll-track > * {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+
+/* Pausar animação enquanto o usuário interage */
+.horizontal-scroll.vendidas:active .horizontal-scroll-track,
+.horizontal-scroll.vendidas:hover .horizontal-scroll-track {
+  animation-play-state: paused;
 }
 
 @keyframes slide-horizontal {
