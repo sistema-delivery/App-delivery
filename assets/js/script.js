@@ -112,3 +112,22 @@ Pizza Express - Sabor que chega rápido!
   closePaymentModal();
   window.open(whatsappURL, '_blank');
 });
+
+<script>
+  const scrollContainer = document.querySelector('.horizontal-scroll.vendidas');
+  const scrollTrack = scrollContainer.querySelector('.horizontal-scroll-track');
+
+  let timeout;
+
+  function pauseAnimation() {
+    scrollTrack.style.animationPlayState = 'paused';
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      scrollTrack.style.animationPlayState = 'running';
+    }, 2000);
+  }
+
+  scrollContainer.addEventListener('scroll', pauseAnimation);
+  scrollContainer.addEventListener('mouseenter', pauseAnimation);
+  scrollContainer.addEventListener('touchstart', pauseAnimation);
+</script>
