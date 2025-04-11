@@ -15,6 +15,7 @@ function openOrderModal(pizzaName) {
 function closeOrderModal() {
   document.getElementById('order-modal').style.display = 'none';
   document.getElementById('modal-order-form').reset();
+  updateOrderSummary(); // Atualiza o resumo para o estado inicial
 }
 
 // Modal de Pagamento
@@ -49,7 +50,28 @@ document.querySelectorAll('.horizontal-scroll .item').forEach(item => {
   });
 });
 
-// Variáveis para manter os dados do pedido entre os modais
+// Função para atualizar o resumo do pedido em tempo real
+function updateOrderSummary() {
+  const size = document.querySelector('input[name="pizza-size"]:checked')?.value || 'Não selecionado';
+  const crust = document.querySelector('input[name="pizza-crust"]:checked')?.value || 'Não selecionado';
+  const quantity = document.getElementById('modal-pizza-quantity').value;
+  const toppingsCheckboxes = document.querySelectorAll('input[name="toppings"]:checked');
+  let toppings = Array.from(toppingsCheckboxes).map(chk => chk.value).join(', ');
+  if (!toppings) toppings = 'Nenhum';
+
+  document.getElementById('summary-size').textContent = `Tamanho: ${size}`;
+  document.getElementById('summary-crust').textContent = `Massa/Borda: ${crust}`;
+  document.getElementById('summary-toppings').textContent = `Ingredientes Extras: ${toppings}`;
+  document.getElementById('summary-quantity').textContent = `Quantidade: ${quantity}`;
+}
+
+// Adiciona listeners para atualizar o resumo quando houver alterações
+document.querySelectorAll('input[name="pizza-size"]').forEach(el => el.addEventListener('change', updateOrderSummary));
+document.querySelectorAll('input[name="pizza-crust"]').forEach(el => el.addEventListener('change', updateOrderSummary));
+document.querySelectorAll('input[name="toppings"]').forEach(el => el.addEventListener('change', updateOrderSummary));
+document.getElementById('modal-pizza-quantity').addEventListener('input', updateOrderSummary);
+
+// Variável para manter os dados do pedido entre os modais
 let pedidoInfo = {};
 
 // Primeiro formulário (pedido)
@@ -58,7 +80,13 @@ document.getElementById('modal-order-form').addEventListener('submit', function 
 
   pedidoInfo.nome = document.getElementById('modal-pizza-name').textContent;
   pedidoInfo.tamanho = document.querySelector('input[name="pizza-size"]:checked').value;
+  pedidoInfo.crust = document.querySelector('input[name="pizza-crust"]:checked').value;
   pedidoInfo.quantidade = document.getElementById('modal-pizza-quantity').value;
+  
+  // Captura os ingredientes extras selecionados (toppings)
+  const selectedToppings = document.querySelectorAll('input[name="toppings"]:checked');
+  pedidoInfo.toppings = Array.from(selectedToppings).map(chk => chk.value).join(', ') || 'Nenhum';
+
   pedidoInfo.adicionais = document.getElementById('modal-additional').value || 'Nenhum';
 
   closeOrderModal();
@@ -90,9 +118,11 @@ document.getElementById('modal-payment-form').addEventListener('submit', functio
 ------------------------------------
 *Pizza:* ${pedidoInfo.nome}
 *Tamanho:* ${pedidoInfo.tamanho}
+*Massa/Borda:* ${pedidoInfo.crust}
 *Quantidade:* ${pedidoInfo.quantidade} unidade(s)
+*Ingredientes Extras:* ${pedidoInfo.toppings}
 
-*Adicionais:* ${pedidoInfo.adicionais}
+*Observações:* ${pedidoInfo.adicionais}
 
 *Status do Pagamento:* ${status}
 *Forma de Pagamento:* ${metodo}${metodo === 'Pix' ? ` (Chave: ${chavePix})` : ''}
