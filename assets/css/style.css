@@ -636,20 +636,23 @@ footer {
 
 /* Configuração do carrossel de imagens */
 /* (suas regras já existentes do carrossel permanecem) */
-.carousel {
-  width: 100%;
-  aspect-ratio: 3780 / 1890; /* Proporção 2:1, conforme solicitado */
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  position: relative;
+.carousel-viewport {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
 }
 
 .carousel-inner {
   display: flex;
-  width: 300%;  /* Considerando 3 itens no carrossel */
-  height: 100%;
-  animation: slide 12s infinite;
+  width: 300%;
 }
 
-/* ... demais regras do carrossel permanecem ... */
+.carousel-item {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+}
+
+.carousel-item img {
+  width: 100%;
+  display: block;
+}
