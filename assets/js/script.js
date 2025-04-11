@@ -120,11 +120,8 @@ const scrollTrack = scrollContainer.querySelector('.horizontal-scroll-track');
 let animationTimeout;
 
 function pauseAnimation() {
-  // Pausa a animação
   scrollTrack.style.animationPlayState = 'paused';
-  // Limpa timeout anterior, se houver
   clearTimeout(animationTimeout);
-  // Retoma a animação após 2 segundos de inatividade
   animationTimeout = setTimeout(() => {
     scrollTrack.style.animationPlayState = 'running';
   }, 2000);
@@ -135,25 +132,85 @@ scrollContainer.addEventListener('mouseenter', pauseAnimation);
 scrollContainer.addEventListener('touchstart', pauseAnimation);
 
 // Código para atualização dos pontos do carrossel
-
-// Seletor dos pontos
 const dots = document.querySelectorAll('.carousel-dots .dot');
-
-// Atualização automática: considerando 12s de animação dividido por 3 imagens (4s cada)
+const carouselInner = document.querySelector('.carousel-inner');
 let currentIndex = 0;
+
+function updateCarousel(index) {
+  carouselInner.style.transition = 'transform 0.5s ease-in-out';
+  carouselInner.style.transform = `translateX(-${index * 100}%)`;
+  dots.forEach(dot => dot.classList.remove('active'));
+  dots[index].classList.add('active');
+  currentIndex = index;
+}
+
+// Atualização automática
 setInterval(() => {
-  dots[currentIndex].classList.remove('active');
-  currentIndex = (currentIndex + 1) % dots.length;
-  dots[currentIndex].classList.add('active');
+  updateCarousel((currentIndex + 1) % dots.length);
 }, 4000);
 
-// Atualização com interação manual (se o usuário rolar o carrossel)
-// Se o carrossel for rolado manualmente, assumiremos que cada slide ocupa a largura do container.
-const carouselInner = document.querySelector('.carousel-inner');
-carouselInner.addEventListener('scroll', () => {
-  const index = Math.round(carouselInner.scrollLeft / carouselInner.offsetWidth);
-  dots.forEach(dot => dot.classList.remove('active'));
-  if (dots[index]) {
-    dots[index].classList.add('active');
+// Atualização manual por clique nas bolinhas
+dots.forEach((dot, index) => {
+  dot.addEventListener('click', () => {
+    updateCarousel(index);
+  });
+});
+
+// Deslize manual para celular e arraste no desktop
+let startX = 0;
+let isDragging = false;
+let currentTranslate = 0;
+
+carouselInner.addEventListener('touchstart', (e) => {
+  startX = e.touches[0].clientX;
+  isDragging = true;
+});
+
+carouselInner.addEventListener('touchmove', (e) => {
+  if (!isDragging) return;
+  const diff = e.touches[0].clientX - startX;
+  currentTranslate = -currentIndex * 100 + (diff / window.innerWidth) * 100;
+  carouselInner.style.transition = 'none';
+  carouselInner.style.transform = `translateX(${currentTranslate}%)`;
+});
+
+carouselInner.addEventListener('touchend', (e) => {
+  isDragging = false;
+  const endX = e.changedTouches[0].clientX;
+  const diff = endX - startX;
+  if (diff > 50 && currentIndex > 0) {
+    updateCarousel(currentIndex - 1);
+  } else if (diff < -50 && currentIndex < dots.length - 1) {
+    updateCarousel(currentIndex + 1);
+  } else {
+    updateCarousel(currentIndex);
+  }
+});
+
+// Clique e arraste no desktop
+let mouseStartX = 0;
+
+carouselInner.addEventListener('mousedown', (e) => {
+  mouseStartX = e.clientX;
+  isDragging = true;
+});
+
+carouselInner.addEventListener('mousemove', (e) => {
+  if (!isDragging) return;
+  const diff = e.clientX - mouseStartX;
+  currentTranslate = -currentIndex * 100 + (diff / window.innerWidth) * 100;
+  carouselInner.style.transition = 'none';
+  carouselInner.style.transform = `translateX(${currentTranslate}%)`;
+});
+
+carouselInner.addEventListener('mouseup', (e) => {
+  isDragging = false;
+  const diff = e.clientX - mouseStartX;
+  if (diff > 50 && currentIndex > 0) {
+    updateCarousel(currentIndex - 1);
+  } else if (diff < -50 && currentIndex < dots.length - 1) {
+    updateCarousel(currentIndex + 1);
+  } else {
+    updateCarousel(currentIndex);
   }
 });
