@@ -124,7 +124,7 @@ header {
   background: #e23300;
 }
 
-/* CAROUSEL - Banner (mantido conforme enviado anteriormente) */
+/* CAROUSEL - Banner */
 .carousel {
   width: 100%;
   aspect-ratio: 2 / 1;  /* Define a proporção do container de acordo com as imagens */
@@ -186,6 +186,13 @@ header {
   text-align: left;
   margin-bottom: 20px;
   margin-left: 20px;
+}
+
+/* Atualização para a seção "AS MAIS VENDIDAS": completa a largura da tela */
+#vendas .container {
+  width: 100%;
+  padding: 0;
+  margin: 0;
 }
 
 .horizontal-scroll {
@@ -260,10 +267,9 @@ footer {
 /* RESPONSIVIDADE */
 @media (max-width: 768px) {
   .horizontal-section h2 {
-    font-size: 1.4rem; /* ou ajuste para o tamanho que quiser */
+    font-size: 1.4rem;
     text-align: center;
   }
-}
   .hero p {
     font-size: 16px;
   }
@@ -305,9 +311,9 @@ footer {
   color: #d35400;
 }
 
-/* Estilo do Modal */
+/* ESTILO DO MODAL */
 .modal {
-  display: none; /* Oculto por padrão */
+  display: none;
   position: fixed;
   z-index: 2000;
   left: 0;
@@ -387,7 +393,7 @@ footer {
 #modal-pizza-quantity {
   width: 100%;
   max-width: 100px;
-  margin: 0 auto 20px auto;
+  margin: 0 auto 20px;
   display: block;
   font-size: 1rem;
   padding: 10px;
@@ -482,53 +488,13 @@ footer {
   .modal-content {
     padding: 20px;
   }
-
   .modal-content h2 {
     font-size: 1.3rem;
   }
-
   #pix-qr-code {
     width: 150px;
     height: 150px;
   }
-}
-
-/* Layout personalizado para seleção de tamanho */
-.pizza-size-section {
-  display: flex;
-  align-items: flex-start;
-  margin: 20px 0;
-  gap: 15px;
-}
-
-.pizza-size-section label {
-  text-align: center;
-  cursor: pointer;
-}
-
-.pizza-size-section input[type="radio"] {
-  display: none;
-}
-
-.pizza-size-section label img {
-  width: 60px;
-  height: 60px;
-  object-fit: contain;
-  margin-bottom: 8px;
-  transition: transform 0.2s ease;
-}
-
-.pizza-size-section input[type="radio"]:checked + img {
-  transform: scale(1.1);
-  border: 2px solid #d35400;
-  border-radius: 8px;
-}
-
-.tamanho-title {
-  font-weight: bold;
-  margin-bottom: 10px;
-  text-align: left;
-  font-size: 1.1rem;
 }
 
 /* Layout personalizado para seleção de tamanho */
