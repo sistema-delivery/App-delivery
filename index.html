@@ -197,7 +197,7 @@
       <form id="modal-order-form">
         <p><strong>Pizza:</strong> <span id="modal-pizza-name"></span></p>
 
-        <!-- Bloco de Seleção: Tamanho, Tipos de Massa e Borda -->
+        <!-- Bloco de Seleção: Tamanho, Tipos de Massa, Borda e Quantidade -->
         <div class="pizza-options" style="display: flex; flex-direction: column; align-items: flex-start;">
           <!-- Seleção de Tamanho -->
           <div class="pizza-sizes">
@@ -236,15 +236,19 @@
             <p class="border-title"><strong>Borda:</strong></p>
             <select name="pizza-border" required>
               <option value="">Selecione</option>
+              <option value="Nenhuma">Nenhuma</option>
               <option value="Catupiry R$ 6,00">Catupiry R$ 6,00</option>
               <option value="Cheddar R$ 5,00">Cheddar R$ 5,00</option>
               <option value="Cream cheese R$ 3,50">Cream cheese R$ 3,50</option>
             </select>
           </div>
-        </div>
 
-        <label for="modal-pizza-quantity">Quantidade:</label>
-        <input type="number" id="modal-pizza-quantity" value="1" min="1" required>
+          <!-- Nova Seção: Quantidade -->
+          <div class="pizza-quantity" style="margin-top: 20px; text-align: left;">
+            <label for="modal-pizza-quantity"><strong>Quantidade:</strong></label>
+            <input type="number" id="modal-pizza-quantity" value="1" min="1" required>
+          </div>
+        </div>
 
         <label for="modal-additional">Observações:</label>
         <input type="text" id="modal-additional" placeholder="Ex: sem cebola, extra queijo...">
