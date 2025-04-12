@@ -846,3 +846,31 @@ footer {
   margin: 5px 0;
   color: #333;
 }
+
+.back, .close {
+      position: absolute;
+      top: 15px;
+      background-color: #ff3c00;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 12px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      z-index: 2;
+    }
+    .back:hover, .close:hover {
+      background-color: #e23300;
+    }
+    /* Ajustando o botão de fechar (X) para que fique à direita */
+    .close {
+      right: 10px;
+      font-size: 28px;
+      font-weight: bold;
+      background-color: transparent;
+      color: #333;
+      padding: 0;
+    }
+    .close:hover {
+      color: #ff3c00;
+    }
