@@ -31,6 +31,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Funções de Modais
   // -----------------------------
   function openOrderModal(pizzaName) {
+    // Se o modal de pagamento já estiver aberto, não reagir ao clique
+    if (document.getElementById('payment-modal').style.display === 'block') {
+      return;
+    }
     const modalPizzaName = document.getElementById('modal-pizza-name');
     if (modalPizzaName) {
       modalPizzaName.textContent = pizzaName;
@@ -81,6 +85,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // -----------------------------
   document.querySelectorAll('.horizontal-scroll .item').forEach(item => {
     item.addEventListener('click', function () {
+      // Se o modal de pagamento estiver aberto, ignora o clique
+      if (document.getElementById('payment-modal').style.display === 'block') {
+        return;
+      }
       const pizzaName = item.querySelector('p').textContent;
       openOrderModal(pizzaName);
     });
@@ -127,8 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
       pedidoInfo.quantidade = document.getElementById('modal-pizza-quantity').value;
       pedidoInfo.adicionais = document.getElementById('modal-additional')?.value || 'Nenhum';
   
-      // Em vez de usar closeOrderModal (que reseta o formulário e pode causar fluxo inesperado),
-      // ocultamos o modal de pedido e abrimos imediatamente o modal de pagamento.
+      // Ao confirmar o pedido, ocultamos o modal de pedido e abrimos imediatamente o modal de pagamento.
       document.getElementById('order-modal').style.display = 'none';
       openPaymentModal();
     });
