@@ -196,6 +196,8 @@
 
       <form id="modal-order-form">
         <p><strong>Pizza:</strong> <span id="modal-pizza-name"></span></p>
+        <!-- Nova linha de descrição -->
+        <p id="modal-pizza-description">Descrição: Adicione os ingredientes que essa pizza tem.</p>
 
         <!-- Bloco de Seleção: Tamanho, Tipos de Massa, Borda e Quantidade -->
         <div class="pizza-options" style="display: flex; flex-direction: column; align-items: flex-start;">
@@ -237,7 +239,7 @@
             </select>
           </div>
 
-          <!-- Nova Seção: Borda -->
+          <!-- Seção: Borda -->
           <div class="pizza-border" style="margin-top: 20px; text-align: left;">
             <p class="border-title"><strong>Borda:</strong></p>
             <select name="pizza-border" required>
@@ -249,9 +251,9 @@
             </select>
           </div>
 
-          <!-- Nova Seção: Quantidade -->
+          <!-- Seção: Quantidade -->
           <div class="pizza-quantity" style="margin-top: 20px; text-align: left;">
-            <label for="modal-pizza-quantity"><strong>QUANTIDADE DE PIZZA:</strong></label>
+            <label for="modal-pizza-quantity"><strong>Quantidade:</strong></label>
             <input type="number" id="modal-pizza-quantity" value="1" min="1" required>
           </div>
         </div>
