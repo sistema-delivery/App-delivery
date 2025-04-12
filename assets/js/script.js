@@ -9,18 +9,18 @@ mobileMenuToggle.addEventListener('click', () => {
 // Localização fixa da pizzaria (CEP: 53409-760)
 const storeLocation = { lat: -7.950346, lon: -34.902970 };
 const bairrosComTaxas = {
-  "Janga": 5,00,
-  "Maranguape I": 6,00,
-  "Maranguape II": 6,00,
-  "Arthur Lundgren I": 7,00,
-  "Arthur Lundgren II": 7,00,
-  "Paratibe": 8,00,
-  "Centro": 4,00,
+  "Janga": 5.00,
+  "Maranguape I": 6.00,
+  "Maranguape II": 6.00,
+  "Arthur Lundgren I": 7.00,
+  "Arthur Lundgren II": 7.00,
+  "Paratibe": 8.00,
+  "Centro": 4.00,
   "Nossa Senhora da Conceição": 5.50,
-  "Engenho Maranguape": 6,50,
-  "Jardim Paulista": 6,50,
-  "Jardim Paulista Alto": 6,50
-  "Mirueira": 4,00
+  "Engenho Maranguape": 6.50,
+  "Jardim Paulista": 6.50,
+  "Jardim Paulista Alto": 6.50
+  "Mirueira": 4.00
 };
 
 function openOrderModal(pizzaName) {
