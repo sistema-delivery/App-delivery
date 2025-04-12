@@ -20,7 +20,6 @@ const bairrosComTaxas = {
   "Engenho Maranguape": 6.50,
   "Jardim Paulista": 6.50,
   "Jardim Paulista Alto": 6.50
-  "Mirueira": 4.00
 };
 
 function openOrderModal(pizzaName) {
