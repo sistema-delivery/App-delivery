@@ -8,7 +8,19 @@ mobileMenuToggle.addEventListener('click', () => {
 
 // Localização fixa da pizzaria (CEP: 53409-760)
 const storeLocation = { lat: -7.950346, lon: -34.902970 };
-const deliveryRatePerKm = 1.0; // Taxa por km
+const bairrosComTaxas = {
+  "Janga": 5.00,
+  "Maranguape I": 6.00,
+  "Maranguape II": 6.00,
+  "Arthur Lundgren I": 7.00,
+  "Arthur Lundgren II": 7.00,
+  "Paratibe": 8.00,
+  "Centro": 4.00,
+  "Nossa Senhora da Conceição": 5.50,
+  "Engenho Maranguape": 6.50,
+  "Jardim Paulista Baixo": 6.50,
+  "Jardim Paulista Alto": 6.50
+};
 
 function openOrderModal(pizzaName) {
   document.getElementById('modal-pizza-name').textContent = pizzaName;
@@ -113,27 +125,14 @@ function lookupAddressByCEP(cep) {
       document.getElementById('cidade').value = data.localidade || '';
       document.getElementById('estado').value = data.uf || '';
 
-      const addressQuery = `${data.logradouro}, ${data.bairro}, ${data.localidade}, ${data.uf}, Brasil`;
-
-      return fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addressQuery)}`);
-    })
-    .then(response => {
-      if (!response) return;
-      return response.json();
-    })
-    .then(results => {
-      if (results && results.length > 0) {
-        const result = results[0];
-        const customerLocation = {
-          lat: parseFloat(result.lat),
-          lon: parseFloat(result.lon)
-        };
-        const distance = calculateDistance(storeLocation, customerLocation);
-        const fee = (distance * deliveryRatePerKm).toFixed(2);
+      const bairro = data.bairro;
+      if (bairro && bairrosComTaxas.hasOwnProperty(bairro)) {
+        const fee = bairrosComTaxas[bairro].toFixed(2);
         document.getElementById('delivery-fee').textContent = `Taxa de Entrega: R$ ${fee}`;
         pedidoInfo.deliveryFee = fee;
       } else {
-        document.getElementById('delivery-fee').textContent = "Não foi possível obter a localização a partir do CEP informado.";
+        document.getElementById('delivery-fee').textContent = "Bairro fora da área de entrega.";
+        pedidoInfo.deliveryFee = null;
       }
     })
     .catch(err => {
