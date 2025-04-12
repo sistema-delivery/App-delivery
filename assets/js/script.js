@@ -7,12 +7,9 @@ mobileMenuToggle.addEventListener('click', () => {
 });
 
 // Localização fixa da pizzaria (CEP: 53409-760)
-// As coordenadas abaixo foram definidas com base no CEP informado.
 const storeLocation = { lat: -7.950346, lon: -34.902970 };
-// Taxa de entrega por km (em reais)
-const deliveryRatePerKm = 1.0; // ajuste conforme necessário
+const deliveryRatePerKm = 1.0; // Taxa por km
 
-// Modal de Pedido
 function openOrderModal(pizzaName) {
   document.getElementById('modal-pizza-name').textContent = pizzaName;
   document.getElementById('order-modal').style.display = 'block';
@@ -21,10 +18,9 @@ function openOrderModal(pizzaName) {
 function closeOrderModal() {
   document.getElementById('order-modal').style.display = 'none';
   document.getElementById('modal-order-form').reset();
-  updateOrderSummary(); // Atualiza o resumo para o estado inicial
+  updateOrderSummary();
 }
 
-// Modal de Pagamento
 function openPaymentModal() {
   document.getElementById('payment-modal').style.display = 'block';
 }
@@ -35,7 +31,6 @@ function closePaymentModal() {
   document.getElementById('pix-info').style.display = 'none';
 }
 
-// Clique fora para fechar os modais
 window.addEventListener('click', function(event) {
   if (event.target === document.getElementById('order-modal')) closeOrderModal();
   if (event.target === document.getElementById('payment-modal')) closePaymentModal();
@@ -48,7 +43,6 @@ document.querySelectorAll('.modal .close').forEach(closeBtn => {
   });
 });
 
-// Abrir modal ao clicar na pizza
 document.querySelectorAll('.horizontal-scroll .item').forEach(item => {
   item.addEventListener('click', function () {
     const pizzaName = item.querySelector('p').textContent;
@@ -56,7 +50,6 @@ document.querySelectorAll('.horizontal-scroll .item').forEach(item => {
   });
 });
 
-// Função para atualizar o resumo do pedido em tempo real
 function updateOrderSummary() {
   const size = document.querySelector('input[name="pizza-size"]:checked')?.value || 'Não selecionado';
   const crust = document.querySelector('select[name="pizza-crust"]').value || 'Não selecionado';
@@ -69,16 +62,13 @@ function updateOrderSummary() {
   document.getElementById('summary-quantity').textContent = `Quantidade: ${quantity}`;
 }
 
-// Adiciona listeners para atualizar o resumo quando houver alterações
 document.querySelectorAll('input[name="pizza-size"]').forEach(el => el.addEventListener('change', updateOrderSummary));
 document.querySelector('select[name="pizza-crust"]').addEventListener('change', updateOrderSummary);
 document.querySelector('select[name="pizza-border"]').addEventListener('change', updateOrderSummary);
 document.getElementById('modal-pizza-quantity').addEventListener('input', updateOrderSummary);
 
-// Variável para manter os dados do pedido entre os modais
 let pedidoInfo = {};
 
-// Primeiro formulário (pedido)
 document.getElementById('modal-order-form').addEventListener('submit', function (e) {
   e.preventDefault();
 
@@ -87,14 +77,12 @@ document.getElementById('modal-order-form').addEventListener('submit', function 
   pedidoInfo.crust = document.querySelector('select[name="pizza-crust"]').value;
   pedidoInfo.border = document.querySelector('select[name="pizza-border"]').value;
   pedidoInfo.quantidade = document.getElementById('modal-pizza-quantity').value;
-  
   pedidoInfo.adicionais = document.getElementById('modal-additional').value || 'Nenhum';
 
   closeOrderModal();
   openPaymentModal();
 });
 
-// Exibe ou oculta info Pix
 document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
   radio.addEventListener('change', function () {
     const pixInfo = document.getElementById('pix-info');
@@ -102,7 +90,6 @@ document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
   });
 });
 
-// CEP - Busca de localização e cálculo da taxa de entrega
 document.getElementById('cep').addEventListener('blur', function() {
   const cep = this.value.replace(/\D/g, '');
   if (cep.length !== 8) {
@@ -113,7 +100,6 @@ document.getElementById('cep').addEventListener('blur', function() {
 });
 
 function lookupAddressByCEP(cep) {
-  // Consulta à API do ViaCEP
   fetch(`https://viacep.com.br/ws/${cep}/json/`)
     .then(response => response.json())
     .then(data => {
@@ -121,12 +107,18 @@ function lookupAddressByCEP(cep) {
         document.getElementById('delivery-fee').textContent = "CEP não encontrado. Verifique o CEP informado.";
         return;
       }
+
+      document.getElementById('rua').value = data.logradouro || '';
+      document.getElementById('bairro').value = data.bairro || '';
+      document.getElementById('cidade').value = data.localidade || '';
+      document.getElementById('estado').value = data.uf || '';
+
       const addressQuery = `${data.logradouro}, ${data.bairro}, ${data.localidade}, ${data.uf}, Brasil`;
-      // Consulta ao Nominatim para geocodificação
+
       return fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addressQuery)}`);
     })
     .then(response => {
-      if (!response) return; // Interrompe se houve erro anteriormente
+      if (!response) return;
       return response.json();
     })
     .then(results => {
@@ -136,11 +128,9 @@ function lookupAddressByCEP(cep) {
           lat: parseFloat(result.lat),
           lon: parseFloat(result.lon)
         };
-        // Calcula a distância em km
         const distance = calculateDistance(storeLocation, customerLocation);
         const fee = (distance * deliveryRatePerKm).toFixed(2);
         document.getElementById('delivery-fee').textContent = `Taxa de Entrega: R$ ${fee}`;
-        // Armazena a taxa no objeto do pedido
         pedidoInfo.deliveryFee = fee;
       } else {
         document.getElementById('delivery-fee').textContent = "Não foi possível obter a localização a partir do CEP informado.";
@@ -153,13 +143,12 @@ function lookupAddressByCEP(cep) {
 }
 
 function calculateDistance(loc1, loc2) {
-  const R = 6371; // Raio da Terra em km
+  const R = 6371;
   const dLat = toRad(loc2.lat - loc1.lat);
   const dLon = toRad(loc2.lon - loc1.lon);
   const lat1 = toRad(loc1.lat);
   const lat2 = toRad(loc2.lat);
-  const a = Math.sin(dLat / 2) ** 2 +
-            Math.sin(dLon / 2) ** 2 * Math.cos(lat1) * Math.cos(lat2);
+  const a = Math.sin(dLat / 2) ** 2 + Math.sin(dLon / 2) ** 2 * Math.cos(lat1) * Math.cos(lat2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
@@ -168,19 +157,15 @@ function toRad(degrees) {
   return degrees * Math.PI / 180;
 }
 
-// Segundo formulário (pagamento)
 document.getElementById('modal-payment-form').addEventListener('submit', function (e) {
   e.preventDefault();
 
   const metodo = document.querySelector('input[name="payment-method"]:checked').value;
   const status = metodo === 'Pix' ? 'Pago via Pix' : 'Pagamento na entrega';
   const chavePix = '708.276.084-11';
-
   const dataAtual = new Date();
   const data = dataAtual.toLocaleDateString();
   const hora = dataAtual.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-  // Inclui a taxa de entrega, se disponível
   const taxaEntrega = pedidoInfo.deliveryFee ? `*Taxa de Entrega:* R$ ${pedidoInfo.deliveryFee}` : '*Taxa de Entrega:* R$ 0,00';
 
   const mensagem = `
@@ -202,10 +187,8 @@ ${taxaEntrega}
 *Hora:* ${hora}
 
 Agradecemos o seu pedido!
-Pizza Express - Sabor que chega rápido!
-  `.trim();
+Pizza Express - Sabor que chega rápido!`.trim();
 
-  // Envio via WhatsApp
   const whatsappNumber = '5581997333714';
   const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(mensagem)}`;
 
@@ -213,7 +196,6 @@ Pizza Express - Sabor que chega rápido!
   window.open(whatsappURL, '_blank');
 });
 
-// Código para pausar a animação enquanto o usuário interage e retomá-la depois de 2 segundos
 const scrollContainer = document.querySelector('.horizontal-scroll.vendidas');
 const scrollTrack = scrollContainer.querySelector('.horizontal-scroll-track');
 
@@ -231,7 +213,6 @@ scrollContainer.addEventListener('scroll', pauseAnimation);
 scrollContainer.addEventListener('mouseenter', pauseAnimation);
 scrollContainer.addEventListener('touchstart', pauseAnimation);
 
-// Código para atualização dos pontos do carrossel
 const dots = document.querySelectorAll('.carousel-dots .dot');
 const carouselInner = document.querySelector('.carousel-inner');
 let currentIndex = 0;
@@ -244,19 +225,16 @@ function updateCarousel(index) {
   currentIndex = index;
 }
 
-// Atualização automática
 setInterval(() => {
   updateCarousel((currentIndex + 1) % dots.length);
 }, 4000);
 
-// Atualização manual por clique nas bolinhas
 dots.forEach((dot, index) => {
   dot.addEventListener('click', () => {
     updateCarousel(index);
   });
 });
 
-// Deslize manual para celular e arraste no desktop
 let startX = 0;
 let isDragging = false;
 let currentTranslate = 0;
@@ -287,7 +265,6 @@ carouselInner.addEventListener('touchend', (e) => {
   }
 });
 
-// Clique e arraste no desktop
 let mouseStartX = 0;
 
 carouselInner.addEventListener('mousedown', (e) => {
