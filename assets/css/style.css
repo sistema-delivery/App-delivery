@@ -752,3 +752,56 @@ footer {
   width: 100%;
   margin-top: 5px;
 }
+
+/* Seção Bebidas no modal */
+.bebidas-section {
+  margin-top: 20px;
+}
+
+.bebidas-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  margin-left: 5px;
+}
+
+/* Container horizontal com scroll para bebidas */
+.horizontal-scroll.bebidas-scroll {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scroll-behavior: smooth;
+}
+
+/* Estilo dos itens de bebida */
+.bebida-item {
+  flex: 0 0 auto;
+  width: 100px;
+  background: #fff;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  padding: 10px;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.bebida-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+
+.bebida-item img {
+  width: 80%;
+  margin: 0 auto;
+  display: block;
+  object-fit: contain;
+}
+
+/* Destaque para a bebida selecionada */
+.bebida-item.selected-bebida {
+  border: 2px solid #ff3c00;
+  border-radius: 8px;
+  padding: 8px;
+}
