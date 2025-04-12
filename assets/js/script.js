@@ -7,8 +7,7 @@ mobileMenuToggle.addEventListener('click', () => {
 });
 
 // Localização fixa da pizzaria (CEP: 53409-760)
-// As coordenadas abaixo foram definidas como exemplo para esse CEP.
-// Caso precise de coordenadas mais precisas, ajuste conforme o endereço real.
+// As coordenadas abaixo foram definidas com base no CEP informado.
 const storeLocation = { lat: -8.0476, lon: -34.8770 };
 // Taxa de entrega por km (em reais)
 const deliveryRatePerKm = 1.0; // ajuste conforme necessário
@@ -106,11 +105,11 @@ document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
 // CEP - Busca de localização e cálculo da taxa de entrega
 document.getElementById('cep').addEventListener('blur', function() {
   const cep = this.value.replace(/\D/g, '');
-  if (cep.length === 8) {
-    lookupAddressByCEP(cep);
-  } else {
-    alert("Por favor, insira um CEP válido com 8 dígitos.");
+  if (cep.length !== 8) {
+    document.getElementById('delivery-fee').textContent = "CEP inválido. Insira 8 dígitos.";
+    return;
   }
+  lookupAddressByCEP(cep);
 });
 
 function lookupAddressByCEP(cep) {
@@ -119,14 +118,17 @@ function lookupAddressByCEP(cep) {
     .then(response => response.json())
     .then(data => {
       if (data.erro) {
-        alert("CEP inválido!");
+        document.getElementById('delivery-fee').textContent = "CEP não encontrado. Verifique o CEP informado.";
         return;
       }
       const addressQuery = `${data.logradouro}, ${data.bairro}, ${data.localidade}, ${data.uf}, Brasil`;
       // Consulta ao Nominatim para geocodificação
       return fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addressQuery)}`);
     })
-    .then(response => response && response.json())
+    .then(response => {
+      if (!response) return; // Interrompe se houve erro anteriormente
+      return response.json();
+    })
     .then(results => {
       if (results && results.length > 0) {
         const result = results[0];
@@ -141,12 +143,12 @@ function lookupAddressByCEP(cep) {
         // Armazena a taxa no objeto do pedido
         pedidoInfo.deliveryFee = fee;
       } else {
-        alert("Não foi possível obter a localização a partir do CEP informado.");
+        document.getElementById('delivery-fee').textContent = "Não foi possível obter a localização a partir do CEP informado.";
       }
     })
     .catch(err => {
       console.error(err);
-      alert("Erro ao buscar a localização.");
+      document.getElementById('delivery-fee').textContent = "Erro ao buscar a localização.";
     });
 }
 
