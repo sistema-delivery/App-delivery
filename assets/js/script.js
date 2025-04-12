@@ -6,6 +6,11 @@ mobileMenuToggle.addEventListener('click', () => {
   navMenu.classList.toggle('active');
 });
 
+// Localização fixa da pizzaria (exemplo: São Paulo)
+const storeLocation = { lat: -23.550520, lon: -46.633308 };
+// Taxa de entrega por km (em reais)
+const deliveryRatePerKm = 1.0; // ajuste conforme necessário
+
 // Modal de Pedido
 function openOrderModal(pizzaName) {
   document.getElementById('modal-pizza-name').textContent = pizzaName;
@@ -96,6 +101,69 @@ document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
   });
 });
 
+// CEP - Busca de localização e cálculo da taxa de entrega
+document.getElementById('cep').addEventListener('blur', function() {
+  const cep = this.value.replace(/\D/g, '');
+  if (cep.length === 8) {
+    lookupAddressByCEP(cep);
+  } else {
+    alert("Por favor, insira um CEP válido com 8 dígitos.");
+  }
+});
+
+function lookupAddressByCEP(cep) {
+  // Consulta à API do ViaCEP
+  fetch(`https://viacep.com.br/ws/${cep}/json/`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.erro) {
+        alert("CEP inválido!");
+        return;
+      }
+      const addressQuery = `${data.logradouro}, ${data.bairro}, ${data.localidade}, ${data.uf}, Brasil`;
+      // Consulta ao Nominatim para geocodificação
+      return fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addressQuery)}`);
+    })
+    .then(response => response && response.json())
+    .then(results => {
+      if (results && results.length > 0) {
+        const result = results[0];
+        const customerLocation = {
+          lat: parseFloat(result.lat),
+          lon: parseFloat(result.lon)
+        };
+        // Calcula a distância em km
+        const distance = calculateDistance(storeLocation, customerLocation);
+        const fee = (distance * deliveryRatePerKm).toFixed(2);
+        document.getElementById('delivery-fee').textContent = `Taxa de Entrega: R$ ${fee}`;
+        // Armazena a taxa no objeto do pedido
+        pedidoInfo.deliveryFee = fee;
+      } else {
+        alert("Não foi possível obter a localização a partir do CEP informado.");
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Erro ao buscar a localização.");
+    });
+}
+
+function calculateDistance(loc1, loc2) {
+  const R = 6371; // Raio da Terra em km
+  const dLat = toRad(loc2.lat - loc1.lat);
+  const dLon = toRad(loc2.lon - loc1.lon);
+  const lat1 = toRad(loc1.lat);
+  const lat2 = toRad(loc2.lat);
+  const a = Math.sin(dLat / 2) ** 2 +
+            Math.sin(dLon / 2) ** 2 * Math.cos(lat1) * Math.cos(lat2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+function toRad(degrees) {
+  return degrees * Math.PI / 180;
+}
+
 // Segundo formulário (pagamento)
 document.getElementById('modal-payment-form').addEventListener('submit', function (e) {
   e.preventDefault();
@@ -107,6 +175,9 @@ document.getElementById('modal-payment-form').addEventListener('submit', functio
   const dataAtual = new Date();
   const data = dataAtual.toLocaleDateString();
   const hora = dataAtual.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  // Inclui a taxa de entrega, se disponível
+  const taxaEntrega = pedidoInfo.deliveryFee ? `*Taxa de Entrega:* R$ ${pedidoInfo.deliveryFee}` : '*Taxa de Entrega:* R$ 0,00';
 
   const mensagem = `
 *Pedido de Pizza - Pizza Express*
@@ -121,14 +192,14 @@ document.getElementById('modal-payment-form').addEventListener('submit', functio
 
 *Status do Pagamento:* ${status}
 *Forma de Pagamento:* ${metodo}${metodo === 'Pix' ? ` (Chave: ${chavePix})` : ''}
-
+${taxaEntrega}
 ------------------------------------
 *Data do Pedido:* ${data}
 *Hora:* ${hora}
 
 Agradecemos o seu pedido!
 Pizza Express - Sabor que chega rápido!
-`.trim();
+  `.trim();
 
   // Envio via WhatsApp
   const whatsappNumber = '5581997333714';
