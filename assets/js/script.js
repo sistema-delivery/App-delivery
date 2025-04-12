@@ -297,3 +297,14 @@ carouselViewport.addEventListener('scroll', () => {
   dots.forEach(dot => dot.classList.remove('active'));
   if (dots[index]) dots[index].classList.add('active');
 });
+
+document.getElementById('copy-button').addEventListener('click', function () {
+  const pixKey = document.getElementById('pix-key-text').textContent;
+  navigator.clipboard.writeText(pixKey)
+    .then(() => {
+      alert('Chave Pix copiada!');
+    })
+    .catch(err => {
+      console.error('Erro ao copiar a chave Pix:', err);
+    });
+});
