@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (borderSelect) borderSelect.addEventListener('change', updateOrderSummary);
   const quantityInput = document.getElementById('modal-pizza-quantity');
   if (quantityInput) quantityInput.addEventListener('input', updateOrderSummary);
-  // Adiciona o listener para checkboxes de bebidas
+  // Listener para checkboxes de bebidas
   document.querySelectorAll('input[name="drink"]').forEach(el => el.addEventListener('change', updateOrderSummary));
   
   // -----------------------------
@@ -136,14 +136,15 @@ document.addEventListener('DOMContentLoaded', () => {
       pedidoInfo.border = document.querySelector('select[name="pizza-border"]').value;
       pedidoInfo.quantidade = document.getElementById('modal-pizza-quantity').value;
       pedidoInfo.adicionais = document.getElementById('modal-additional')?.value || 'Nenhum';
-      
-      // Opcional: você pode coletar também as bebidas selecionadas para enviar com o pedido
+  
+      // Coleta as bebidas selecionadas
       const selectedDrinks = [];
       document.querySelectorAll('input[name="drink"]:checked').forEach(checkbox => {
         selectedDrinks.push(checkbox.value);
       });
       pedidoInfo.bebidas = selectedDrinks;
   
+      // Fecha o modal de pedido e abre o de pagamento diretamente
       closeOrderModal();
       openPaymentModal();
     });
