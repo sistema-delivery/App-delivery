@@ -247,55 +247,28 @@
               <option value="Nenhuma">Nenhuma</option>
               <option value="Catupiry R$ 6,00">Catupiry R$ 6,00</option>
               <option value="Cheddar R$ 5,00">Cheddar R$ 5,00</option>
-              
-          <!-- Seção: Quantidade -->
-<div class="pizza-quantity" style="margin-top: 20px; text-align: left;">
-  <label for="modal-pizza-quantity"><strong>Quantidade:</strong></label>
-  <input type="number" id="modal-pizza-quantity" value="1" min="1" required>
-</div>
+              <option value="Cream cheese R$ 3,50">Cream cheese R$ 3,50</option>
+            </select>
+          </div>
 
-<!-- Nova Seção: Bebidas -->
-<div class="drinks-section">
-  <p class="section-title"><strong>Bebidas:</strong></p>
-  <div class="drinks-container">
-    <!-- Bebida 1 -->
-    <label class="drink-item">
-      <input type="checkbox" name="drink" value="Coca-Cola">
-      <img src="assets/images/coca-cola.jpg" alt="Coca-Cola">
-      <span class="drink-name">Coca-Cola</span>
-      <span class="drink-price">R$ 8,00</span>
-    </label>
-    <!-- Bebida 2 -->
-    <label class="drink-item">
-      <input type="checkbox" name="drink" value="Fanta">
-      <img src="assets/images/fanta.jpg" alt="Fanta">
-      <span class="drink-name">Fanta</span>
-      <span class="drink-price">R$ 7,00</span>
-    </label>
-    <!-- Bebida 3 -->
-    <label class="drink-item">
-      <input type="checkbox" name="drink" value="Guaraná">
-      <img src="assets/images/guarana.jpg" alt="Guaraná">
-      <span class="drink-name">Guaraná</span>
-      <span class="drink-price">R$ 7,50</span>
-    </label>
-    <!-- Adicione outros itens conforme necessário -->
-  </div>
-</div>
+          <!-- Seção: Quantidade -->
+          <div class="pizza-quantity" style="margin-top: 20px; text-align: left;">
+            <label for="modal-pizza-quantity"><strong>Quantidade:</strong></label>
+            <input type="number" id="modal-pizza-quantity" value="1" min="1" required>
+          </div>
+        </div>
 
         <label for="modal-additional">Observações:</label>
         <input type="text" id="modal-additional" placeholder="Ex: sem cebola, extra queijo...">
 
-        <!-- Resumo do Pedido (inclui um novo parágrafo para bebidas) -->
-<div id="order-summary">
-  <h4>Resumo do Pedido:</h4>
-  <p id="summary-size"></p>
-  <p id="summary-crust"></p>
-  <p id="summary-border"></p>
-  <p id="summary-quantity"></p>
-  <!-- Novo elemento para exibir as bebidas selecionadas -->
-  <p id="summary-drinks"></p>
-</div>
+        <!-- Resumo do Pedido -->
+        <div id="order-summary">
+          <h4>Resumo do Pedido:</h4>
+          <p id="summary-size"></p>
+          <p id="summary-crust"></p>
+          <p id="summary-border"></p>
+          <p id="summary-quantity"></p>
+        </div>
 
         <button type="submit" class="btn">Confirmar Pedido</button>
       </form>
