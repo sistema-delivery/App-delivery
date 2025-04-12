@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // -----------------------------
   const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
   const navMenu = document.querySelector('.nav-menu');
-  
+
   mobileMenuToggle.addEventListener('click', () => {
     navMenu.classList.toggle('active');
   });
@@ -60,12 +60,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('pix-info').style.display = 'none';
   }
   
-  // Fechar modais se clicar fora do conteúdo
+  // Fechar modais se clicar fora do conteúdo (apenas se o clique for no fundo, e não em seus filhos)
   window.addEventListener('click', function(event) {
-    const orderModal = document.getElementById('order-modal');
-    const paymentModal = document.getElementById('payment-modal');
-    if (event.target === orderModal) closeOrderModal();
-    if (event.target === paymentModal) closePaymentModal();
+    if (event.target.classList && event.target.classList.contains('modal')) {
+      if (event.target.id === 'order-modal') closeOrderModal();
+      if (event.target.id === 'payment-modal') closePaymentModal();
+    }
   });
   
   // Botões de fechar (X)
@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const border = document.querySelector('select[name="pizza-border"]').value || 'Não selecionado';
     const quantity = document.getElementById('modal-pizza-quantity')?.value || 1;
   
-    // Coleta as bebidas selecionadas
+    // Coleta as bebidas selecionadas, caso exista a nova opção
     const selectedDrinks = [];
     document.querySelectorAll('input[name="drink"]:checked').forEach(checkbox => {
       selectedDrinks.push(checkbox.value);
@@ -106,7 +106,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('summary-crust').textContent = `Tipos de Massa: ${crust}`;
     document.getElementById('summary-border').textContent = `Borda: ${border}`;
     document.getElementById('summary-quantity').textContent = `Quantidade: ${quantity}`;
-    document.getElementById('summary-drinks').textContent = `Bebidas: ${drinksSummary}`;
+    if (document.getElementById('summary-drinks')) {
+      document.getElementById('summary-drinks').textContent = `Bebidas: ${drinksSummary}`;
+    }
   }
   
   // Eventos para atualizar o resumo
@@ -129,7 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (orderForm) {
     orderForm.addEventListener('submit', function (e) {
       e.preventDefault();
-  
+      e.stopPropagation(); // Impede que o clique se propague e seja capturado pelo listener global
+      
       pedidoInfo.nome = document.getElementById('modal-pizza-name').textContent;
       pedidoInfo.tamanho = document.querySelector('input[name="pizza-size"]:checked').value;
       pedidoInfo.crust = document.querySelector('select[name="pizza-crust"]').value;
@@ -137,14 +140,13 @@ document.addEventListener('DOMContentLoaded', () => {
       pedidoInfo.quantidade = document.getElementById('modal-pizza-quantity').value;
       pedidoInfo.adicionais = document.getElementById('modal-additional')?.value || 'Nenhum';
   
-      // Coleta as bebidas selecionadas
+      // Se existir a seleção de bebidas, coletemos também
       const selectedDrinks = [];
       document.querySelectorAll('input[name="drink"]:checked').forEach(checkbox => {
         selectedDrinks.push(checkbox.value);
       });
       pedidoInfo.bebidas = selectedDrinks;
   
-      // Fecha o modal de pedido e abre o de pagamento diretamente
       closeOrderModal();
       openPaymentModal();
     });
@@ -229,7 +231,6 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
 
       const metodo = document.querySelector('input[name="payment-method"]:checked').value;
-      // Se for Pix, o status fica "Aguardando Comprovante"
       const status = metodo === 'Pix' ? 'Aguardando Comprovante' : 'Pagamento na entrega';
       const chavePix = '708.276.084-11';
       const dataAtual = new Date();
@@ -253,7 +254,6 @@ document.addEventListener('DOMContentLoaded', () => {
 *Quantidade:* ${pedidoInfo.quantidade} unidade(s)
 
 *Observações:* ${pedidoInfo.adicionais}
-*Bebidas:* ${pedidoInfo.bebidas && pedidoInfo.bebidas.length ? pedidoInfo.bebidas.join(', ') : 'Nenhuma'}
 
 *Status do Pagamento:* ${status}
 *Forma de Pagamento:* ${metodo}${metodo === 'Pix' ? ` (Chave: ${chavePix})` : ''}
@@ -271,11 +271,8 @@ ${taxaEntrega}
 Agradecemos o seu pedido!
 Pizza Express - Sabor que chega rápido!`.trim();
 
-      const whatsappNumber = '5581997333714';
-      const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(mensagem)}`;
-
       closePaymentModal();
-      window.open(whatsappURL, '_blank');
+      window.open(`https://wa.me/5581997333714?text=${encodeURIComponent(mensagem)}`, '_blank');
     });
   }
   
