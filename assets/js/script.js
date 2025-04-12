@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   
   // -----------------------------
-  // Atualização do Resumo do Pedido
+  // Atualização do Resumo do Pedido (incluindo bebidas)
   // -----------------------------
   function updateOrderSummary() {
     const size = document.querySelector('input[name="pizza-size"]:checked')?.value || 'Não selecionado';
@@ -95,10 +95,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const border = document.querySelector('select[name="pizza-border"]').value || 'Não selecionado';
     const quantity = document.getElementById('modal-pizza-quantity')?.value || 1;
   
+    // Coleta as bebidas selecionadas
+    const selectedDrinks = [];
+    document.querySelectorAll('input[name="drink"]:checked').forEach(checkbox => {
+      selectedDrinks.push(checkbox.value);
+    });
+    const drinksSummary = selectedDrinks.length ? selectedDrinks.join(', ') : 'Nenhuma';
+  
     document.getElementById('summary-size').textContent = `Tamanho: ${size}`;
     document.getElementById('summary-crust').textContent = `Tipos de Massa: ${crust}`;
     document.getElementById('summary-border').textContent = `Borda: ${border}`;
     document.getElementById('summary-quantity').textContent = `Quantidade: ${quantity}`;
+    document.getElementById('summary-drinks').textContent = `Bebidas: ${drinksSummary}`;
   }
   
   // Eventos para atualizar o resumo
@@ -109,6 +117,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (borderSelect) borderSelect.addEventListener('change', updateOrderSummary);
   const quantityInput = document.getElementById('modal-pizza-quantity');
   if (quantityInput) quantityInput.addEventListener('input', updateOrderSummary);
+  // Adiciona o listener para checkboxes de bebidas
+  document.querySelectorAll('input[name="drink"]').forEach(el => el.addEventListener('change', updateOrderSummary));
   
   // -----------------------------
   // Envio do Formulário de Pedido (Modal de Pedido)
@@ -126,6 +136,13 @@ document.addEventListener('DOMContentLoaded', () => {
       pedidoInfo.border = document.querySelector('select[name="pizza-border"]').value;
       pedidoInfo.quantidade = document.getElementById('modal-pizza-quantity').value;
       pedidoInfo.adicionais = document.getElementById('modal-additional')?.value || 'Nenhum';
+      
+      // Opcional: você pode coletar também as bebidas selecionadas para enviar com o pedido
+      const selectedDrinks = [];
+      document.querySelectorAll('input[name="drink"]:checked').forEach(checkbox => {
+        selectedDrinks.push(checkbox.value);
+      });
+      pedidoInfo.bebidas = selectedDrinks;
   
       closeOrderModal();
       openPaymentModal();
@@ -204,28 +221,28 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // -----------------------------
   // Envio do Formulário de Pagamento (Atualizado)
-// -----------------------------
-const paymentForm = document.getElementById('modal-payment-form');
-if (paymentForm) {
-  paymentForm.addEventListener('submit', function (e) {
-    e.preventDefault();
+  // -----------------------------
+  const paymentForm = document.getElementById('modal-payment-form');
+  if (paymentForm) {
+    paymentForm.addEventListener('submit', function (e) {
+      e.preventDefault();
 
-    const metodo = document.querySelector('input[name="payment-method"]:checked').value;
-    // Se for Pix, o status fica "Aguardando Comprovante"
-    const status = metodo === 'Pix' ? 'Aguardando Comprovante' : 'Pagamento na entrega';
-    const chavePix = '708.276.084-11';
-    const dataAtual = new Date();
-    const data = dataAtual.toLocaleDateString();
-    const hora = dataAtual.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const taxaEntrega = pedidoInfo.deliveryFee ? `*Taxa de Entrega:* R$ ${pedidoInfo.deliveryFee}` : '*Taxa de Entrega:* R$ 0,00';
+      const metodo = document.querySelector('input[name="payment-method"]:checked').value;
+      // Se for Pix, o status fica "Aguardando Comprovante"
+      const status = metodo === 'Pix' ? 'Aguardando Comprovante' : 'Pagamento na entrega';
+      const chavePix = '708.276.084-11';
+      const dataAtual = new Date();
+      const data = dataAtual.toLocaleDateString();
+      const hora = dataAtual.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const taxaEntrega = pedidoInfo.deliveryFee ? `*Taxa de Entrega:* R$ ${pedidoInfo.deliveryFee}` : '*Taxa de Entrega:* R$ 0,00';
 
-    // Obter os dados de endereço
-    const rua = document.getElementById('rua').value;
-    const bairro = document.getElementById('bairro').value;
-    const cidade = document.getElementById('cidade').value;
-    const numero = document.getElementById('numero').value;
+      // Obter os dados de endereço
+      const rua = document.getElementById('rua').value;
+      const bairro = document.getElementById('bairro').value;
+      const cidade = document.getElementById('cidade').value;
+      const numero = document.getElementById('numero').value;
 
-    const mensagem = `
+      const mensagem = `
 *Pedido de Pizza - Pizza Express*
 ------------------------------------
 *Pizza:* ${pedidoInfo.nome}
@@ -235,6 +252,7 @@ if (paymentForm) {
 *Quantidade:* ${pedidoInfo.quantidade} unidade(s)
 
 *Observações:* ${pedidoInfo.adicionais}
+*Bebidas:* ${pedidoInfo.bebidas && pedidoInfo.bebidas.length ? pedidoInfo.bebidas.join(', ') : 'Nenhuma'}
 
 *Status do Pagamento:* ${status}
 *Forma de Pagamento:* ${metodo}${metodo === 'Pix' ? ` (Chave: ${chavePix})` : ''}
@@ -252,13 +270,13 @@ ${taxaEntrega}
 Agradecemos o seu pedido!
 Pizza Express - Sabor que chega rápido!`.trim();
 
-    const whatsappNumber = '5581997333714';
-    const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(mensagem)}`;
+      const whatsappNumber = '5581997333714';
+      const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(mensagem)}`;
 
-    closePaymentModal();
-    window.open(whatsappURL, '_blank');
-  });
-}
+      closePaymentModal();
+      window.open(whatsappURL, '_blank');
+    });
+  }
   
   // -----------------------------
   // Botão Copiar Chave Pix
