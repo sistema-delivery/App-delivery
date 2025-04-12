@@ -8,7 +8,7 @@ mobileMenuToggle.addEventListener('click', () => {
 
 // Localização fixa da pizzaria (CEP: 53409-760)
 // As coordenadas abaixo foram definidas com base no CEP informado.
-const storeLocation = { lat: -8.0476, lon: -34.8770 };
+const storeLocation = { lat: -7.950346, lon: -34.902970 };
 // Taxa de entrega por km (em reais)
 const deliveryRatePerKm = 1.0; // ajuste conforme necessário
 
