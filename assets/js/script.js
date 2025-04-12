@@ -18,7 +18,7 @@ const bairrosComTaxas = {
   "Centro": 4.00,
   "Nossa Senhora da Conceição": 5.50,
   "Engenho Maranguape": 6.50,
-  "Jardim Paulista Baixo": 6.50,
+  "Jardim Paulista": 6.50,
   "Jardim Paulista Alto": 6.50
 };
 
