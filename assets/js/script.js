@@ -6,8 +6,10 @@ mobileMenuToggle.addEventListener('click', () => {
   navMenu.classList.toggle('active');
 });
 
-// Localização fixa da pizzaria (exemplo: São Paulo)
-const storeLocation = { lat: -23.550520, lon: -46.633308 };
+// Localização fixa da pizzaria (CEP: 53409-760)
+// As coordenadas abaixo foram definidas como exemplo para esse CEP.
+// Caso precise de coordenadas mais precisas, ajuste conforme o endereço real.
+const storeLocation = { lat: -8.0476, lon: -34.8770 };
 // Taxa de entrega por km (em reais)
 const deliveryRatePerKm = 1.0; // ajuste conforme necessário
 
