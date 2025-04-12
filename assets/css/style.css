@@ -742,3 +742,13 @@ footer {
   text-align: center;
   white-space: nowrap; /* Impede quebra de linha */
 }
+
+/* Estilo para o campo de Número (caixa de texto) */
+#numero {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 1rem;
+  width: 100%;
+  margin-top: 5px;
+}
