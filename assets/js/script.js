@@ -28,6 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // -----------------------------
+  // Variável global para armazenar os dados do pedido
+  // -----------------------------
+  let pedidoInfo = {};
+
+  // -----------------------------
   // Funções de Modais
   // -----------------------------
   function openOrderModal(pizzaName) {
@@ -60,6 +65,8 @@ document.addEventListener('DOMContentLoaded', () => {
       paymentForm.reset();
     }
     document.getElementById('pix-info').style.display = 'none';
+    // Reinicializa os dados do pedido para evitar comportamento inesperado
+    pedidoInfo = {};
   }
   
   // Fechar modais se clicar fora do conteúdo
@@ -119,8 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // -----------------------------
   // Envio do Formulário de Pedido (Modal de Pedido)
   // -----------------------------
-  let pedidoInfo = {};
-  
   const orderForm = document.getElementById('modal-order-form');
   if (orderForm) {
     orderForm.addEventListener('submit', function (e) {
