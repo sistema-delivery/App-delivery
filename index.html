@@ -279,37 +279,54 @@
 <div id="payment-modal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closePaymentModal()">&times;</span>
-    <h2>Escolha a forma de pagamento</h2>
 
-    <form id="modal-payment-form">
-      <label><input type="radio" name="payment-method" value="Pix" required> Pix</label>
-      <label><input type="radio" name="payment-method" value="Cartão"> Cartão</label>
-      <label><input type="radio" name="payment-method" value="Dinheiro"> Dinheiro</label>
-
-      <!-- Seção para inserir o CEP e calcular a taxa de entrega -->
-      <div class="delivery-location" style="margin:20px 0; text-align: left;">
-        <label for="cep"><strong>Digite seu CEP para calcular a taxa de entrega:</strong></label>
-        <input type="text" id="cep" name="cep" placeholder="Ex: 01001-000" required style="width: 100%; padding: 10px; margin-top: 5px;">
-        
-        <!-- Endereço automático preenchido -->
-        <div id="address-fields" style="margin-top: 10px;">
-          <input type="text" id="rua" name="rua" placeholder="Rua" readonly style="width: 100%; padding: 8px; margin-top: 5px;">
-          <input type="text" id="bairro" name="bairro" placeholder="Bairro" readonly style="width: 100%; padding: 8px; margin-top: 5px;">
-          <input type="text" id="cidade" name="cidade" placeholder="Cidade" readonly style="width: 100%; padding: 8px; margin-top: 5px;">
-          <input type="text" id="estado" name="estado" placeholder="Estado" readonly style="width: 100%; padding: 8px; margin-top: 5px;">
-        </div>
-
-        <div id="delivery-fee" style="margin-top: 10px; font-weight: bold;">Taxa de Entrega: R$ 0,00</div>
+    <!-- Bloco: CEP e Endereço -->
+    <div class="delivery-location" style="margin:20px 0; text-align: left;">
+      <label for="cep"><strong>Digite seu CEP para calcular a taxa de entrega:</strong></label>
+      <input type="text" id="cep" name="cep" placeholder="Ex: 01001-000" required style="width: 100%; padding: 10px; margin-top: 5px;">
+      
+      <!-- Endereço automático preenchido -->
+      <div id="address-fields" style="margin-top: 10px;">
+        <input type="text" id="rua" name="rua" placeholder="Rua" readonly style="width: 100%; padding: 8px; margin-top: 5px;">
+        <input type="text" id="bairro" name="bairro" placeholder="Bairro" readonly style="width: 100%; padding: 8px; margin-top: 5px;">
+        <input type="text" id="cidade" name="cidade" placeholder="Cidade" readonly style="width: 100%; padding: 8px; margin-top: 5px;">
+        <input type="text" id="estado" name="estado" placeholder="Estado" readonly style="width: 100%; padding: 8px; margin-top: 5px;">
       </div>
+      <div id="delivery-fee" style="margin-top: 10px; font-weight: bold;">Taxa de Entrega: R$ 0,00</div>
+    </div>
 
-      <!-- Informações Pix -->
-      <div id="pix-info" style="display: none; margin-top: 10px;">
-        <p><strong>Chave Pix:</strong> 708.276.084-11</p>
-        <img src="images/qrcode-pix.png" alt="QR Code Pix" style="max-width: 200px; margin-top: 10px;">
+    <!-- Bloco: Seleção de Forma de Pagamento -->
+    <div class="payment-methods-section" style="margin:20px 0; text-align: center;">
+      <h2 style="margin-bottom: 15px;">Escolha a forma de pagamento</h2>
+      <div class="payment-methods">
+        <!-- Opção Pix -->
+        <label class="payment-option">
+          <input type="radio" name="payment-method" value="Pix" required>
+          <img src="assets/images/icon-pix.png" alt="Pix">
+          <span>Pix</span>
+        </label>
+        <!-- Opção Cartão -->
+        <label class="payment-option">
+          <input type="radio" name="payment-method" value="Cartão">
+          <img src="assets/images/icon-card.png" alt="Cartão">
+          <span>Cartão</span>
+        </label>
+        <!-- Opção Dinheiro -->
+        <label class="payment-option">
+          <input type="radio" name="payment-method" value="Dinheiro">
+          <img src="assets/images/icon-cash.png" alt="Dinheiro">
+          <span>Dinheiro</span>
+        </label>
       </div>
+    </div>
 
-      <button type="submit" class="btn">Finalizar Pedido</button>
-    </form>
+    <!-- Informações Pix (que serão exibidas se a opção Pix for selecionada) -->
+    <div id="pix-info" style="display: none; margin-top: 10px;">
+      <p><strong>Chave Pix:</strong> 708.276.084-11</p>
+      <img src="assets/images/qrcode-pix.png" alt="QR Code Pix" style="max-width: 200px; margin-top: 10px;">
+    </div>
+
+    <button type="submit" class="btn">Finalizar Pedido</button>
   </div>
 </div>
 
