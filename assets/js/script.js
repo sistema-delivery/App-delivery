@@ -28,11 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // -----------------------------
-  // Variável global para armazenar os dados do pedido
-  // -----------------------------
-  let pedidoInfo = {};
-
-  // -----------------------------
   // Funções de Modais
   // -----------------------------
   function openOrderModal(pizzaName) {
@@ -49,8 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (orderForm) {
       orderForm.reset();
     }
-    // Remover seleção de bebidas
-    document.querySelectorAll('.bebida-item').forEach(item => item.classList.remove('selected-bebida'));
     updateOrderSummary();
   }
   
@@ -65,8 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
       paymentForm.reset();
     }
     document.getElementById('pix-info').style.display = 'none';
-    // Reinicializa os dados do pedido para evitar comportamento inesperado
-    pedidoInfo = {};
   }
   
   // Fechar modais se clicar fora do conteúdo
@@ -108,10 +99,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('summary-crust').textContent = `Tipos de Massa: ${crust}`;
     document.getElementById('summary-border').textContent = `Borda: ${border}`;
     document.getElementById('summary-quantity').textContent = `Quantidade: ${quantity}`;
-    
-    // Atualiza o resumo da bebida
-    const bebidaSelecionada = pedidoInfo.bebida || 'Nenhuma selecionada';
-    document.getElementById('summary-bebida').textContent = `Bebida: ${bebidaSelecionada}`;
   }
   
   // Eventos para atualizar o resumo
@@ -126,6 +113,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // -----------------------------
   // Envio do Formulário de Pedido (Modal de Pedido)
   // -----------------------------
+  let pedidoInfo = {};
+  
   const orderForm = document.getElementById('modal-order-form');
   if (orderForm) {
     orderForm.addEventListener('submit', function (e) {
@@ -138,26 +127,12 @@ document.addEventListener('DOMContentLoaded', () => {
       pedidoInfo.quantidade = document.getElementById('modal-pizza-quantity').value;
       pedidoInfo.adicionais = document.getElementById('modal-additional')?.value || 'Nenhum';
   
-      closeOrderModal();
+      // Em vez de usar closeOrderModal (que reseta o formulário e pode causar fluxo inesperado),
+      // ocultamos o modal de pedido e abrimos imediatamente o modal de pagamento.
+      document.getElementById('order-modal').style.display = 'none';
       openPaymentModal();
     });
   }
-  
-  // -----------------------------
-  // Seleção de Bebidas no Modal de Pedido
-  // -----------------------------
-  const bebidaItems = document.querySelectorAll('.bebida-item');
-  bebidaItems.forEach(item => {
-    item.addEventListener('click', function() {
-      // Remove a seleção de todas as bebidas
-      bebidaItems.forEach(i => i.classList.remove('selected-bebida'));
-      // Adiciona a seleção no item clicado
-      item.classList.add('selected-bebida');
-      // Atualiza a informação da bebida no pedido
-      pedidoInfo.bebida = item.querySelector('p').textContent;
-      updateOrderSummary();
-    });
-  });
   
   // -----------------------------
   // Alternar Informações do Pix conforme método de pagamento selecionado
