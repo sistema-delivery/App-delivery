@@ -722,3 +722,23 @@ footer {
   padding: 4px;
   border-radius: 50%;
 }
+
+.payment-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  padding: 10px 15px;
+  border-radius: 8px;
+  transition: background-color 0.3s, border-color 0.3s;
+  width: 110px; /* Aumentei um pouco a largura para acomodar "Dinheiro" */
+}
+
+.payment-option span {
+  font-size: 1rem;
+  font-weight: bold;
+  text-align: center;
+  white-space: nowrap; /* Impede quebra de linha */
+}
