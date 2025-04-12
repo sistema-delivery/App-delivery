@@ -308,6 +308,38 @@
       <h2 style="margin-bottom: 15px;">Escolha a forma de pagamento</h2>
       <div class="payment-methods">
         <!-- Opção Pix -->
+<!-- Modal de Pagamento -->
+<div id="payment-modal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closePaymentModal()">&times;</span>
+    
+    <!-- Bloco: CEP e Endereço -->
+    <div class="delivery-location" style="margin:20px 0; text-align: left;">
+      <label for="cep"><strong>Digite seu CEP para calcular a taxa de entrega:</strong></label>
+      <input type="text" id="cep" name="cep" placeholder="Ex: 01001-000" required style="width: 100%; padding: 10px; margin-top: 5px;">
+      
+      <!-- Endereço automático preenchido -->
+      <div id="address-fields" style="margin-top: 10px;">
+        <input type="text" id="rua" name="rua" placeholder="Rua" readonly style="width: 100%; padding: 8px; margin-top: 5px;">
+        <input type="text" id="bairro" name="bairro" placeholder="Bairro" readonly style="width: 100%; padding: 8px; margin-top: 5px;">
+        <input type="text" id="cidade" name="cidade" placeholder="Cidade" readonly style="width: 100%; padding: 8px; margin-top: 5px;">
+        <input type="text" id="estado" name="estado" placeholder="Estado" readonly style="width: 100%; padding: 8px; margin-top: 5px;">
+      </div>
+
+      <!-- Campo: Número da Casa -->
+      <div style="margin-top: 10px;">
+        <label for="numero" style="font-weight: bold;">Número:</label>
+        <input type="text" id="numero" name="numero" placeholder="Digite o número da sua Residência" style="width: 100%; padding: 10px; margin-top: 5px;">
+      </div>
+      
+      <div id="delivery-fee" style="margin-top: 10px; font-weight: bold;">Taxa de Entrega: R$ 0,00</div>
+    </div>
+
+    <!-- Bloco: Seleção de Forma de Pagamento -->
+    <div class="payment-methods-section" style="margin:20px 0; text-align: center;">
+      <h2 style="margin-bottom: 15px;">Escolha a forma de pagamento</h2>
+      <div class="payment-methods">
+        <!-- Opção Pix -->
         <label class="payment-option">
           <input type="radio" name="payment-method" value="Pix" required>
           <img src="assets/images/icon-pix.png" alt="Pix">
@@ -328,14 +360,17 @@
       </div>
     </div>
 
-    <!-- Informações Pix -->
+    <!-- Bloco: Informações do Pix -->
     <div id="pix-info" style="display: none; margin-top: 10px; text-align: center;">
-      <p><strong>Chave Pix:</strong>b49c439f-0f26-4b81-9ec7-91a42f4deeec</p>
+      <p><strong>Chave Pix CPF:</strong> <span id="pix-key-text">708.276.084-11</span></p>
       <p>Ou pague QR CODE</p>
       <img src="assets/images/qrcode-pix.png" alt="QR Code Pix" style="max-width: 200px; margin-top: 10px;">
+      <div id="pix-key-container" style="margin-top: 10px;">
+        <button id="copy-button" class="btn">Copiar chave</button>
+      </div>
     </div>
 
-    <button type="submit" class="btn">Finalizar Pedido</button>
+    <button type="submit" class="btn">FINALIZAR PEDIDO</button>
   </div>
 </div>
 
