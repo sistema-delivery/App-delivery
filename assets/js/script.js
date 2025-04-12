@@ -31,10 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Funções de Modais
   // -----------------------------
   function openOrderModal(pizzaName) {
-    // Se o modal de pagamento já estiver aberto, não reagir ao clique
-    if (document.getElementById('payment-modal').style.display === 'block') {
-      return;
-    }
     const modalPizzaName = document.getElementById('modal-pizza-name');
     if (modalPizzaName) {
       modalPizzaName.textContent = pizzaName;
@@ -85,10 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // -----------------------------
   document.querySelectorAll('.horizontal-scroll .item').forEach(item => {
     item.addEventListener('click', function () {
-      // Se o modal de pagamento estiver aberto, ignora o clique
-      if (document.getElementById('payment-modal').style.display === 'block') {
-        return;
-      }
       const pizzaName = item.querySelector('p').textContent;
       openOrderModal(pizzaName);
     });
@@ -135,8 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
       pedidoInfo.quantidade = document.getElementById('modal-pizza-quantity').value;
       pedidoInfo.adicionais = document.getElementById('modal-additional')?.value || 'Nenhum';
   
-      // Ao confirmar o pedido, ocultamos o modal de pedido e abrimos imediatamente o modal de pagamento.
-      document.getElementById('order-modal').style.display = 'none';
+      closeOrderModal();
       openPaymentModal();
     });
   }
@@ -213,28 +204,28 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // -----------------------------
   // Envio do Formulário de Pagamento (Atualizado)
-  // -----------------------------
-  const paymentForm = document.getElementById('modal-payment-form');
-  if (paymentForm) {
-    paymentForm.addEventListener('submit', function (e) {
-      e.preventDefault();
+// -----------------------------
+const paymentForm = document.getElementById('modal-payment-form');
+if (paymentForm) {
+  paymentForm.addEventListener('submit', function (e) {
+    e.preventDefault();
 
-      const metodo = document.querySelector('input[name="payment-method"]:checked').value;
-      // Se for Pix, o status fica "Aguardando Comprovante"
-      const status = metodo === 'Pix' ? 'Aguardando Comprovante' : 'Pagamento na entrega';
-      const chavePix = '708.276.084-11';
-      const dataAtual = new Date();
-      const data = dataAtual.toLocaleDateString();
-      const hora = dataAtual.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      const taxaEntrega = pedidoInfo.deliveryFee ? `*Taxa de Entrega:* R$ ${pedidoInfo.deliveryFee}` : '*Taxa de Entrega:* R$ 0,00';
+    const metodo = document.querySelector('input[name="payment-method"]:checked').value;
+    // Se for Pix, o status fica "Aguardando Comprovante"
+    const status = metodo === 'Pix' ? 'Aguardando Comprovante' : 'Pagamento na entrega';
+    const chavePix = '708.276.084-11';
+    const dataAtual = new Date();
+    const data = dataAtual.toLocaleDateString();
+    const hora = dataAtual.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const taxaEntrega = pedidoInfo.deliveryFee ? `*Taxa de Entrega:* R$ ${pedidoInfo.deliveryFee}` : '*Taxa de Entrega:* R$ 0,00';
 
-      // Obter os dados de endereço
-      const rua = document.getElementById('rua').value;
-      const bairro = document.getElementById('bairro').value;
-      const cidade = document.getElementById('cidade').value;
-      const numero = document.getElementById('numero').value;
+    // Obter os dados de endereço
+    const rua = document.getElementById('rua').value;
+    const bairro = document.getElementById('bairro').value;
+    const cidade = document.getElementById('cidade').value;
+    const numero = document.getElementById('numero').value;
 
-      const mensagem = `
+    const mensagem = `
 *Pedido de Pizza - Pizza Express*
 ------------------------------------
 *Pizza:* ${pedidoInfo.nome}
@@ -261,13 +252,13 @@ ${taxaEntrega}
 Agradecemos o seu pedido!
 Pizza Express - Sabor que chega rápido!`.trim();
 
-      const whatsappNumber = '5581997333714';
-      const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(mensagem)}`;
+    const whatsappNumber = '5581997333714';
+    const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(mensagem)}`;
 
-      closePaymentModal();
-      window.open(whatsappURL, '_blank');
-    });
-  }
+    closePaymentModal();
+    window.open(whatsappURL, '_blank');
+  });
+}
   
   // -----------------------------
   // Botão Copiar Chave Pix
