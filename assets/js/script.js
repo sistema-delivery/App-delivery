@@ -27,6 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
     "Jardim Paulista Alto": 6.50
   };
 
+  // Variável para armazenar a bebida selecionada
+  let selectedBeverage = null;
+
   // -----------------------------
   // Funções de Modais
   // -----------------------------
@@ -44,6 +47,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (orderForm) {
       orderForm.reset();
     }
+    // Reset da seleção de bebida
+    selectedBeverage = null;
+    // Remover a classe "selected-bebida" de todos os itens
+    document.querySelectorAll('.bebida-item').forEach(item => item.classList.remove('selected-bebida'));
     updateOrderSummary();
   }
   
@@ -99,9 +106,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('summary-crust').textContent = `Tipos de Massa: ${crust}`;
     document.getElementById('summary-border').textContent = `Borda: ${border}`;
     document.getElementById('summary-quantity').textContent = `Quantidade: ${quantity}`;
+    document.getElementById('summary-beverage').textContent = `Bebida: ${selectedBeverage ? `${selectedBeverage.name} - R$ ${selectedBeverage.price}` : 'Não selecionada'}`;
   }
   
-  // Eventos para atualizar o resumo
+  // Eventos para atualizar o resumo dos demais itens
   document.querySelectorAll('input[name="pizza-size"]').forEach(el => el.addEventListener('change', updateOrderSummary));
   const crustSelect = document.querySelector('select[name="pizza-crust"]');
   if (crustSelect) crustSelect.addEventListener('change', updateOrderSummary);
@@ -109,6 +117,27 @@ document.addEventListener('DOMContentLoaded', () => {
   if (borderSelect) borderSelect.addEventListener('change', updateOrderSummary);
   const quantityInput = document.getElementById('modal-pizza-quantity');
   if (quantityInput) quantityInput.addEventListener('input', updateOrderSummary);
+  
+  // -----------------------------
+  // Seleção de Bebidas: Event Listeners para os itens de bebida
+  // -----------------------------
+  document.querySelectorAll('.bebida-item').forEach(bebidaItem => {
+    bebidaItem.addEventListener('click', () => {
+      // Remover a classe de seleção de todas as bebidas
+      document.querySelectorAll('.bebida-item').forEach(item => item.classList.remove('selected-bebida'));
+  
+      // Adicionar a classe de seleção na bebida clicada
+      bebidaItem.classList.add('selected-bebida');
+  
+      // Capturar os dados da bebida selecionada
+      const beverageName = bebidaItem.querySelector('p').textContent;
+      const beveragePrice = bebidaItem.querySelector('.price').textContent.replace('R$', '').trim();
+      selectedBeverage = { name: beverageName, price: beveragePrice };
+  
+      // Atualizar o resumo do pedido
+      updateOrderSummary();
+    });
+  });
   
   // -----------------------------
   // Envio do Formulário de Pedido (Modal de Pedido)
@@ -126,6 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
       pedidoInfo.border = document.querySelector('select[name="pizza-border"]').value;
       pedidoInfo.quantidade = document.getElementById('modal-pizza-quantity').value;
       pedidoInfo.adicionais = document.getElementById('modal-additional')?.value || 'Nenhum';
+      pedidoInfo.bebida = selectedBeverage ? `${selectedBeverage.name} - R$ ${selectedBeverage.price}` : 'Nenhuma';
   
       closeOrderModal();
       openPaymentModal();
@@ -235,6 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
 *Quantidade:* ${pedidoInfo.quantidade} unidade(s)
 
 *Observações:* ${pedidoInfo.adicionais}
+*Bebida:* ${pedidoInfo.bebida}
 
 *Status do Pagamento:* ${status}
 *Forma de Pagamento:* ${metodo}${metodo === 'Pix' ? ` (Chave: ${chavePix})` : ''}
