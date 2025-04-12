@@ -275,7 +275,7 @@
     </div>
   </div>
 
-  !-- Modal de Pagamento -->
+  <!-- Modal de Pagamento -->
 <div id="payment-modal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closePaymentModal()">&times;</span>
@@ -286,14 +286,23 @@
       <label><input type="radio" name="payment-method" value="Cartão"> Cartão</label>
       <label><input type="radio" name="payment-method" value="Dinheiro"> Dinheiro</label>
 
-      <!-- NOVA SEÇÃO PARA INSERIR O CEP E EXIBIR A TAXA DE ENTREGA -->
+      <!-- Seção para inserir o CEP e calcular a taxa de entrega -->
       <div class="delivery-location" style="margin:20px 0; text-align: left;">
         <label for="cep"><strong>Digite seu CEP para calcular a taxa de entrega:</strong></label>
         <input type="text" id="cep" name="cep" placeholder="Ex: 01001-000" required style="width: 100%; padding: 10px; margin-top: 5px;">
+        
+        <!-- Endereço automático preenchido -->
+        <div id="address-fields" style="margin-top: 10px;">
+          <input type="text" id="rua" name="rua" placeholder="Rua" readonly style="width: 100%; padding: 8px; margin-top: 5px;">
+          <input type="text" id="bairro" name="bairro" placeholder="Bairro" readonly style="width: 100%; padding: 8px; margin-top: 5px;">
+          <input type="text" id="cidade" name="cidade" placeholder="Cidade" readonly style="width: 100%; padding: 8px; margin-top: 5px;">
+          <input type="text" id="estado" name="estado" placeholder="Estado" readonly style="width: 100%; padding: 8px; margin-top: 5px;">
+        </div>
+
         <div id="delivery-fee" style="margin-top: 10px; font-weight: bold;">Taxa de Entrega: R$ 0,00</div>
       </div>
-      <!-- FIM DA NOVA SEÇÃO -->
 
+      <!-- Informações Pix -->
       <div id="pix-info" style="display: none; margin-top: 10px;">
         <p><strong>Chave Pix:</strong> 708.276.084-11</p>
         <img src="images/qrcode-pix.png" alt="QR Code Pix" style="max-width: 200px; margin-top: 10px;">
