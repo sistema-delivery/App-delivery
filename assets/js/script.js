@@ -75,11 +75,29 @@ document.addEventListener('DOMContentLoaded', () => {
     if (event.target === paymentModal) closePaymentModal();
   });
   
-  // Botões de fechar (X) – agora vinculados via JavaScript
+  // Botões de fechar (X) – vinculados via JavaScript
   document.querySelectorAll('.modal .close').forEach(closeBtn => {
     closeBtn.addEventListener('click', () => {
       closeOrderModal();
       closePaymentModal();
+    });
+  });
+
+  // -----------------------------
+  // Botão "Voltar" para fechar o modal
+  // -----------------------------
+  document.querySelectorAll('.modal .back').forEach(backBtn => {
+    backBtn.addEventListener('click', () => {
+      const modal = backBtn.closest('.modal');
+      if (!modal) return;
+      
+      if (modal.id === 'order-modal') {
+        closeOrderModal();
+      } else if (modal.id === 'payment-modal') {
+        closePaymentModal();
+      } else {
+        modal.style.display = 'none';
+      }
     });
   });
   
@@ -417,22 +435,4 @@ Pizza Express - Sabor que chega rápido!`.trim();
       if (dots[index]) dots[index].classList.add('active');
     });
   }
-});
-
-// Adiciona listener aos botões "Voltar" para fechar o modal correspondente
-document.querySelectorAll('.modal .back').forEach(backBtn => {
-  backBtn.addEventListener('click', () => {
-    const modal = backBtn.closest('.modal');
-    if (!modal) return;
-    
-    // Verifica qual modal está sendo fechado e chama a função correspondente
-    if (modal.id === 'order-modal') {
-      closeOrderModal();
-    } else if (modal.id === 'payment-modal') {
-      closePaymentModal();
-    } else {
-      // Se houver outros modais, simplesmente os oculta.
-      modal.style.display = 'none';
-    }
-  });
 });
