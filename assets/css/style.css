@@ -5,12 +5,12 @@
   box-sizing: border-box;
 }
 
-/* Variáveis de tema – valores padrão iguais ao design original */
+/* Variáveis de tema – valores padrão conforme o design original */
 :root {
-  --primary-color: #ff3c00;      /* Cor principal (ex.: botões, hover em links e detalhes) */
-  --secondary-color: #d35400;    /* Cor secundária (ex.: títulos e destaques) */
+  --primary-color: #ff3c00;      /* Cor principal: botões, hover em links, etc. */
+  --secondary-color: #d35400;    /* Cor secundária: títulos e destaques */
   --background-color: #fff;      /* Fundo geral */
-  --text-color: #333;            /* Cor do texto padrão */
+  --text-color: #333;            /* Cor padrão do texto */
 }
 
 /* GLOBAL */
@@ -157,33 +157,21 @@ header {
 .carousel-item img {
   width: 100%;
   height: 100%;
-  object-fit: contain;         /* Exibe a imagem inteira sem cortes */
-  object-position: left;       /* Alinha a imagem à esquerda */
+  object-fit: contain; /* Exibe a imagem inteira sem cortes */
+  object-position: left; /* Alinha a imagem à esquerda */
 }
 
-/* Animação do carrossel para transições suaves */
+/* Animação do carrossel */
 @keyframes slide {
-  0% {
-    transform: translateX(0%);
-  }
-  30% {
-    transform: translateX(0%);
-  }
-  35% {
-    transform: translateX(-100%);
-  }
-  65% {
-    transform: translateX(-100%);
-  }
-  70% {
-    transform: translateX(-200%);
-  }
-  100% {
-    transform: translateX(-200%);
-  }
+  0% { transform: translateX(0%); }
+  30% { transform: translateX(0%); }
+  35% { transform: translateX(-100%); }
+  65% { transform: translateX(-100%); }
+  70% { transform: translateX(-200%); }
+  100% { transform: translateX(-200%); }
 }
 
-/* Seções Horizontais para Categorias de Pizzas */
+/* Seções Horizontais para Pizzas */
 .horizontal-section {
   padding: 60px 20px;
   background: #f5f5f5;
@@ -197,7 +185,7 @@ header {
   margin-left: 20px;
 }
 
-/* Atualização para a seção "AS MAIS VENDIDAS": completa a largura da tela */
+/* Seção "AS MAIS VENDIDAS" */
 #vendas .container {
   width: 100%;
   padding: 0;
@@ -214,7 +202,7 @@ header {
 
 .horizontal-scroll .item {
   flex: 0 0 auto;
-  width: 250px; /* Ajuste conforme o design desejado */
+  width: 250px;
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
@@ -304,7 +292,7 @@ footer {
   }
 }
 
-/* Estilo para os preços das pizzas */
+/* Preços das Pizzas */
 .price {
   font-size: 1rem;
   margin: 10px 0 0;
@@ -320,7 +308,7 @@ footer {
   color: var(--secondary-color);
 }
 
-/* ESTILO DO MODAL (Pedida e Pagamento) */
+/* MODAIS (Pedido e Pagamento) */
 .modal {
   display: none;
   position: fixed;
@@ -344,12 +332,7 @@ footer {
   text-align: left;
 }
 
-/* Modal de Pagamento (manter igual ao original) */
-#payment-modal .modal-content {
-  max-width: 500px;
-}
-
-/* Botões para fechar e voltar dos modais */
+/* Botões dos modais: Voltar e Fechar */
 .modal .back,
 .modal .close {
   position: absolute;
@@ -365,14 +348,13 @@ footer {
   cursor: pointer;
   transition: background 0.3s, transform 0.2s;
   z-index: 2;
-  font-size: 0; /* Oculta qualquer conteúdo interno */
+  font-size: 0; /* Oculta texto interno */
   overflow: hidden;
 }
 
 .modal .back {
   left: 10px;
 }
-
 .modal .close {
   right: 10px;
 }
@@ -406,28 +388,13 @@ footer {
   color: #fff;
 }
 
-/* Ajustes visuais adicionais para o modal de pedido */
+/* Modal de Pedido (dados do pedido, seleção de opções) */
 .modal-content {
   padding: 30px;
   border-radius: 16px;
   text-align: center;
 }
 
-.modal-content h2 {
-  margin-bottom: 20px;
-}
-
-.modal-content p {
-  font-size: 1.2rem;
-  margin-bottom: 10px;
-}
-
-.modal-order-form label {
-  display: block;
-  margin: 10px 0 5px;
-}
-
-/* Modal de Pedido Específico */
 .modal-content p#modal-pizza-name {
   font-size: 1.5rem;
   color: var(--secondary-color);
@@ -459,59 +426,82 @@ footer {
   text-align: center;
 }
 
-/* Botão dentro do modal */
+/* Botão de Confirmação no Modal de Pedido */
 #modal-order-form .btn {
   width: 100%;
   margin-top: 20px;
   font-size: 1.1rem;
 }
 
-/* MODAIS REESTRUTURADOS EM ETAPAS */
-.modal-content h3 {
-  font-size: 1.3rem;
-  margin-top: 20px;
+/* Modal de Pagamento específico (layout conforme original) */
+#payment-modal .modal-content {
+  max-width: 500px;
+  text-align: left;
+}
+
+/* Resumo do Pedido no Modal de Pagamento */
+#payment-summary {
+  background-color: #f9f9f9;
+  border-left: 5px solid var(--primary-color);
+  padding: 15px;
+  border-radius: 8px;
+  margin: 20px 0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+#payment-summary p {
+  margin: 5px 0;
+  color: #333;
+}
+#payment-summary p strong {
   color: var(--secondary-color);
 }
 
-.modal-content select,
-.modal-content input[type="number"],
-.modal-content textarea {
-  width: 100%;
-  padding: 10px;
-  border-radius: 8px;
+/* Seleção de Forma de Pagamento */
+.payment-methods {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 15px;
+}
+
+.payment-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
   border: 1px solid #ccc;
-  margin: 10px 0;
+  padding: 10px 15px;
+  border-radius: 8px;
+  transition: background-color 0.3s, border-color 0.3s;
+  width: 100px;
+}
+
+.payment-option:hover {
+  border-color: var(--primary-color);
+  background-color: #ffece8;
+}
+
+.payment-option input[type="radio"] {
+  display: none;
+}
+
+.payment-option img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  margin-bottom: 5px;
+}
+
+.payment-option span {
   font-size: 1rem;
+  font-weight: bold;
+  text-align: center;
+  white-space: nowrap;
 }
 
-.modal-content textarea {
-  resize: vertical;
-  min-height: 80px;
-}
-
-/* Área de adicionais */
-.modal-content .adicionais-checkboxes {
-  text-align: left;
-  margin: 10px 0;
-}
-
-.modal-content .adicionais-checkboxes label {
-  display: block;
-  margin: 5px 0;
-  font-size: 1rem;
-}
-
-/* Estilo para o segundo modal (pagamento) */
-#payment-modal .modal-content {
-  max-width: 500px;
-}
-
-#payment-form .payment-method label {
-  display: block;
-  margin: 10px 0;
-}
-
-/* Seção Pix no Modal de Pagamento */
+/* Seção Pix (informações extra) */
 #pix-info {
   margin-top: 20px;
   text-align: center;
@@ -534,14 +524,14 @@ footer {
   border-radius: 12px;
 }
 
-/* Botões do segundo modal (pagamento) */
+/* Botão para Finalizar Pedido no Modal de Pagamento */
 #payment-form .btn {
   width: 100%;
   font-size: 1.1rem;
   margin-top: 20px;
 }
 
-/* Responsividade para modais em dispositivos menores */
+/* Responsividade dos modais */
 @media (max-width: 480px) {
   .modal-content {
     padding: 20px;
@@ -555,7 +545,7 @@ footer {
   }
 }
 
-/* Layout personalizado para seleção de tamanho */
+/* Layout para seleção de tamanho */
 .pizza-size-section {
   display: flex;
   align-items: flex-start;
@@ -580,7 +570,7 @@ footer {
   transition: transform 0.2s ease;
 }
 
-/* Contêiner que une o rótulo "Tamanho:" e as opções */
+/* Contêiner unindo o rótulo "Tamanho:" e as opções */
 .pizza-sizes {
   display: flex;
   align-items: center;
@@ -594,17 +584,11 @@ footer {
   font-size: 1.1rem;
 }
 
-/* Animação bounce na seleção de tamanho */
+/* Animação bounce ao selecionar um tamanho */
 @keyframes bounce {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.15);
-  }
-  100% {
-    transform: scale(1);
-  }
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
 }
 
 .pizza-size-section input[type="radio"]:checked + img {
@@ -630,20 +614,14 @@ footer {
 
 @keyframes pulseFire {
   0% {
-    box-shadow:
-      0 0 10px 4px orange,
-      0 0 20px 6px red,
-      0 0 30px 8px yellow;
+    box-shadow: 0 0 10px 4px orange, 0 0 20px 6px red, 0 0 30px 8px yellow;
   }
   100% {
-    box-shadow:
-      0 0 14px 6px orangered,
-      0 0 26px 10px orange,
-      0 0 36px 12px gold;
+    box-shadow: 0 0 14px 6px orangered, 0 0 26px 10px orange, 0 0 36px 12px gold;
   }
 }
 
-/* Scroll horizontal infinito para "As Mais Vendidas" */
+/* Scroll horizontal para "As Mais Vendidas" */
 .horizontal-scroll.vendidas {
   overflow-x: auto;
   overflow-y: hidden;
@@ -671,22 +649,11 @@ footer {
 }
 
 @keyframes slide-horizontal {
-  0% {
-    transform: translateX(0%);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
 }
 
-/* Ajuste para o carrossel ocupar toda a largura e ficar colado com o HERO */
-#carousel {
-  width: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-/* Indicadores (pontos) do carrossel */
+/* Indicadores do carrossel */
 .carousel-dots {
   position: absolute;
   bottom: 10px;
@@ -710,97 +677,4 @@ footer {
 .carousel-dots .dot.active {
   opacity: 1;
   background: var(--primary-color);
-}
-
-/* Carrossel de Imagens (repetição das regras para manter o mesmo padrão) */
-.carousel {
-  width: 100%;
-  aspect-ratio: 3780 / 1890;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  position: relative;
-}
-
-.carousel-inner {
-  display: flex;
-  width: 300%;
-  height: 100%;
-  animation: slide 12s infinite;
-}
-
-/* Seção Bebidas e Resumo do Pedido */
-
-/* Bebidas */
-.bebidas-section {
-  margin-top: 20px;
-}
-
-.bebidas-title {
-  font-size: 1.1rem;
-  font-weight: bold;
-  margin-bottom: 10px;
-  margin-left: 5px;
-}
-
-.horizontal-scroll.bebidas-scroll {
-  display: flex;
-  gap: 15px;
-  overflow-x: auto;
-  padding-bottom: 10px;
-  scroll-behavior: smooth;
-}
-
-.bebida-item {
-  flex: 0 0 auto;
-  width: 100px;
-  background: #fff;
-  border-radius: 8px;
-  text-align: center;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  padding: 10px;
-  cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.bebida-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-}
-
-.bebida-item img {
-  width: 80%;
-  margin: 0 auto;
-  display: block;
-  object-fit: contain;
-}
-
-.bebida-item.selected-bebida {
-  border: 2px solid var(--primary-color);
-  border-radius: 8px;
-  padding: 8px;
-}
-
-/* Resumo do Pedido */
-#order-summary {
-  background-color: #f9f9f9;
-  border-left: 5px solid var(--primary-color);
-  padding: 15px;
-  border-radius: 8px;
-  margin-top: 20px;
-  font-size: 1rem;
-  line-height: 1.5;
-}
-
-#order-summary h4 {
-  font-size: 1.5rem;
-  margin-bottom: 10px;
-  color: var(--secondary-color);
-  border-bottom: 1px solid #e0e0e0;
-  padding-bottom: 5px;
-}
-
-#order-summary p {
-  margin: 5px 0;
-  color: #333;
 }
