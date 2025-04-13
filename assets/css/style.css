@@ -850,9 +850,11 @@ footer {
   cursor: pointer;
   transition: background 0.3s, transform 0.2s;
   z-index: 2;
+  font-size: 0;  /* Oculta qualquer conteúdo interno */
+  overflow: hidden;  /* Garante que texto interno não apareça */
 }
 
-/* Posição: botão Voltar à esquerda, Fechar à direita */
+/* Posicionamento: botão Voltar à esquerda, Fechar à direita */
 .modal .back {
   left: 10px;
 }
@@ -860,26 +862,26 @@ footer {
   right: 10px;
 }
 
-/* Ícones com pseudo-elemento */
-/* O botão "back" exibirá o símbolo "<" e "close" exibirá o "×" */
+/* Pseudo-elementos para inserir os ícones */
 .modal .back::before,
 .modal .close::before {
   content: "";
   font-size: 1.5rem;
   font-weight: bold;
-  color: #ff3c00;
   transition: color 0.3s;
 }
 
 .modal .back::before {
   content: "<";
+  color: #ff3c00;
 }
 
 .modal .close::before {
   content: "×";
+  color: #ff3c00;
 }
 
-/* Efeito hover: fundo se torna a cor de destaque e os ícones passam a branco */
+/* Efeito hover: fundo muda de cor e os ícones ficam brancos */
 .modal .back:hover,
 .modal .close:hover {
   background: #ff3c00;
