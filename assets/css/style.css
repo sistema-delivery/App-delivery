@@ -336,21 +336,6 @@ footer {
   text-align: left;
 }
 
-.close {
-  position: absolute;
-  right: 20px;
-  top: 15px;
-  font-size: 28px;
-  font-weight: bold;
-  color: #333;
-  cursor: pointer;
-}
-
-.close:hover {
-  color: #ff3c00;
-}
-
-/* Ajustes internos do modal */
 .modal-content h2 {
   margin-bottom: 20px;
 }
@@ -847,9 +832,15 @@ footer {
   color: #333;
 }
 
-.back, .close {
+/* Botões dos modais */
+
+/* Botão fechar (X) */
+.modal .close {
   position: absolute;
+  right: 10px;
   top: 10px;
+  font-size: 28px;
+  font-weight: bold;
   background-color: #ff3c00;
   color: #fff;
   border: none;
@@ -858,17 +849,33 @@ footer {
   cursor: pointer;
   transition: background-color 0.3s ease;
   z-index: 2;
-  font-size: 16px;
 }
 
-.back:hover, .close:hover {
+.modal .close:hover {
   background-color: #e23300;
 }
 
-.back {
+/* Botão voltar com o símbolo estilizado */
+.modal .back {
+  position: absolute;
   left: 10px;
+  top: 10px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 0;
+  cursor: pointer;
+  z-index: 2;
 }
 
-.close {
-  right: 10px;
+.modal .back::before {
+  content: "<";
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #ff3c00;
+  display: inline-block;
+}
+
+.modal .back:hover::before {
+  color: #e23300;
 }
