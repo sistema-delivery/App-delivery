@@ -165,8 +165,10 @@ document.addEventListener('DOMContentLoaded', () => {
       basePrice = sizePrice + borderPrice;
     }
 
-    const pizzaTotal = basePrice * parseInt(quantity);
-    // Se selectedBeverage foi resetada, usa o valor salvo em pedidoInfo
+    const quantityNumber = parseInt(quantity);
+    const pizzaTotal = basePrice * quantityNumber;
+
+    // Bebida é cobrada apenas uma vez (não multiplicada pela quantidade)
     const beverageCost = selectedBeverage ? parseFloat(selectedBeverage.price) : (pedidoInfo.beverageCost || 0);
     const baseTotal = pizzaTotal + beverageCost;
     pedidoInfo.baseTotal = baseTotal; // Salva o valor sem taxa de entrega
