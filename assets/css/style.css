@@ -320,7 +320,7 @@ footer {
   color: var(--secondary-color);
 }
 
-/* ESTILO DO MODAL */
+/* ESTILO DO MODAL (Pedida e Pagamento) */
 .modal {
   display: none;
   position: fixed;
@@ -344,6 +344,75 @@ footer {
   text-align: left;
 }
 
+/* Modal de Pagamento (manter igual ao original) */
+#payment-modal .modal-content {
+  max-width: 500px;
+}
+
+/* Botões para fechar e voltar dos modais */
+.modal .back,
+.modal .close {
+  position: absolute;
+  top: 10px;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 2px solid var(--primary-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+  z-index: 2;
+  font-size: 0; /* Oculta qualquer conteúdo interno */
+  overflow: hidden;
+}
+
+.modal .back {
+  left: 10px;
+}
+
+.modal .close {
+  right: 10px;
+}
+
+.modal .back::before,
+.modal .close::before {
+  content: "";
+  font-size: 1.5rem;
+  font-weight: bold;
+  transition: color 0.3s;
+}
+
+.modal .back::before {
+  content: "<";
+  color: var(--primary-color);
+}
+
+.modal .close::before {
+  content: "×";
+  color: var(--primary-color);
+}
+
+.modal .back:hover,
+.modal .close:hover {
+  background: var(--primary-color);
+  transform: scale(1.1);
+}
+
+.modal .back:hover::before,
+.modal .close:hover::before {
+  color: #fff;
+}
+
+/* Ajustes visuais adicionais para o modal de pedido */
+.modal-content {
+  padding: 30px;
+  border-radius: 16px;
+  text-align: center;
+}
+
 .modal-content h2 {
   margin-bottom: 20px;
 }
@@ -358,13 +427,7 @@ footer {
   margin: 10px 0 5px;
 }
 
-/* Ajustes visuais adicionais para o modal de pedido */
-.modal-content {
-  padding: 30px;
-  border-radius: 16px;
-  text-align: center;
-}
-
+/* Modal de Pedido Específico */
 .modal-content p#modal-pizza-name {
   font-size: 1.5rem;
   color: var(--secondary-color);
@@ -426,7 +489,7 @@ footer {
   min-height: 80px;
 }
 
-/* Estilo para a área de adicionais */
+/* Área de adicionais */
 .modal-content .adicionais-checkboxes {
   text-align: left;
   margin: 10px 0;
@@ -448,6 +511,7 @@ footer {
   margin: 10px 0;
 }
 
+/* Seção Pix no Modal de Pagamento */
 #pix-info {
   margin-top: 20px;
   text-align: center;
@@ -470,7 +534,7 @@ footer {
   border-radius: 12px;
 }
 
-/* Botões do segundo modal */
+/* Botões do segundo modal (pagamento) */
 #payment-form .btn {
   width: 100%;
   font-size: 1.1rem;
@@ -530,7 +594,7 @@ footer {
   font-size: 1.1rem;
 }
 
-/* Adiciona animação bounce ao selecionar um tamanho */
+/* Animação bounce na seleção de tamanho */
 @keyframes bounce {
   0% {
     transform: scale(1);
@@ -579,7 +643,7 @@ footer {
   }
 }
 
-/* Scroll horizontal infinito e suave para a seção "As Mais Vendidas" */
+/* Scroll horizontal infinito para "As Mais Vendidas" */
 .horizontal-scroll.vendidas {
   overflow-x: auto;
   overflow-y: hidden;
@@ -648,10 +712,10 @@ footer {
   background: var(--primary-color);
 }
 
-/* Carrossel de Imagens (mantendo as regras originais) */
+/* Carrossel de Imagens (repetição das regras para manter o mesmo padrão) */
 .carousel {
   width: 100%;
-  aspect-ratio: 3780 / 1890; /* Proporção 2:1, conforme solicitado */
+  aspect-ratio: 3780 / 1890;
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -660,12 +724,13 @@ footer {
 
 .carousel-inner {
   display: flex;
-  width: 300%;  /* Considerando 3 itens no carrossel */
+  width: 300%;
   height: 100%;
   animation: slide 12s infinite;
 }
 
 /* Seção Bebidas e Resumo do Pedido */
+
 /* Bebidas */
 .bebidas-section {
   margin-top: 20px;
@@ -739,5 +804,3 @@ footer {
   margin: 5px 0;
   color: #333;
 }
-
-/* Fim das Seções Bebidas e Resumo do Pedido */
