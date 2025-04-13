@@ -13,6 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Dados fixos da Pizzaria e Taxas por Bairro
   // -----------------------------
   const storeLocation = { lat: -7.950346, lon: -34.902970 };
+  // OBS.: Agora as taxas de entrega devem ser obtidas do arquivo prices.js (deliveryFees)
+  // Caso queira usar essa definição local, comente a linha abaixo e use deliveryFees do prices.js.
   const bairrosComTaxas = {
     "Janga": 5.00,
     "Maranguape I": 6.00,
@@ -24,7 +26,14 @@ document.addEventListener('DOMContentLoaded', () => {
     "Nossa Senhora da Conceição": 5.50,
     "Engenho Maranguape": 6.50,
     "Jardim Paulista": 6.50,
-    "Jardim Paulista Alto": 6.50
+    "Jardim Paulista Alto": 6.50,
+    "Pau Amarelo": 7.00,
+    "Conceição": 5.00,
+    "Vila Torres Galvão": 5.00,
+    "Alto do Bigode": 6.00,
+    "Maria Farinha": 8.00,
+    "Nossa Senhora do Ó": 7.00,
+    "Loteamento Conceição": 5.50
   };
 
   // Variável para armazenar a bebida selecionada
@@ -136,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   
   // -----------------------------
-  // Atualização do Resumo do Pedido
+  // Atualização do Resumo do Pedido e Cálculo do Total
   // -----------------------------
   function updateOrderSummary() {
     const size = document.querySelector('input[name="pizza-size"]:checked')?.value || 'Não selecionado';
@@ -149,6 +158,39 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('summary-border').textContent = `Borda: ${border}`;
     document.getElementById('summary-quantity').textContent = `Quantidade: ${quantity}`;
     document.getElementById('summary-beverage').textContent = `Bebida: ${selectedBeverage ? `${selectedBeverage.name} - R$ ${selectedBeverage.price}` : 'Não selecionada'}`;
+  
+    // Cálculo do total:
+    // Obtenha o nome da pizza atualmente selecionada
+    const pizzaName = document.getElementById('modal-pizza-name')?.textContent || '';
+    let basePrice = 0;
+    if (pizzaName && typeof pizzas !== 'undefined' && pizzas[pizzaName]) {
+      const pizzaData = pizzas[pizzaName];
+      // Preço de acordo com o tamanho selecionado
+      const sizePrice = pizzaData.sizes[size] || 0;
+      // Para a borda, remova o valor exibido se necessário (ex: "Catupiry R$ 6,00" -> "Catupiry")
+      let borderKey = border;
+      if (border.includes('R$')) {
+         borderKey = border.split(' ')[0];
+      }
+      const borderPrice = pizzaData.borders[borderKey] || 0;
+      basePrice = sizePrice + borderPrice;
+    }
+  
+    const pizzaTotal = basePrice * parseInt(quantity);
+    const beverageCost = selectedBeverage ? parseFloat(selectedBeverage.price) : 0;
+    // Aqui, usamos a taxa de entrega do objeto deliveryFees definido em prices.js (ou o local bairrosComTaxas, se preferir)
+    const deliveryCost = pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0;
+  
+    const total = pizzaTotal + beverageCost + deliveryCost;
+  
+    // Atualizar ou criar o elemento de total na área de resumo do pedido
+    let totalElement = document.getElementById('summary-total');
+    if (!totalElement) {
+      totalElement = document.createElement('p');
+      totalElement.id = 'summary-total';
+      document.getElementById('order-summary').appendChild(totalElement);
+    }
+    totalElement.textContent = `Total: R$ ${total.toFixed(2)}`;
   }
   
   // Eventos para atualizar o resumo dos demais itens
@@ -227,34 +269,35 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   
   function lookupAddressByCEP(cep) {
-  fetch(`https://viacep.com.br/ws/${cep}/json/`)
-    .then(response => response.json())
-    .then(data => {
-      if (data.erro) {
-        document.getElementById('delivery-fee').textContent = "CEP não encontrado. Verifique o CEP informado.";
-        return;
-      }
-
-      document.getElementById('rua').value = data.logradouro || '';
-      document.getElementById('bairro').value = data.bairro || '';
-      document.getElementById('cidade').value = data.localidade || '';
-      document.getElementById('estado').value = data.uf || '';
-
-      const bairro = data.bairro;
-      if (bairro && deliveryFees.hasOwnProperty(bairro)) {
-        const fee = deliveryFees[bairro].toFixed(2);
-        document.getElementById('delivery-fee').textContent = `Taxa de Entrega: R$ ${fee}`;
-        pedidoInfo.deliveryFee = fee;
-      } else {
-        document.getElementById('delivery-fee').textContent = "Bairro fora da área de entrega.";
-        pedidoInfo.deliveryFee = null;
-      }
-    })
-    .catch(err => {
-      console.error(err);
-      document.getElementById('delivery-fee').textContent = "Erro ao buscar a localização.";
-    });
-}
+    fetch(`https://viacep.com.br/ws/${cep}/json/`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.erro) {
+          document.getElementById('delivery-fee').textContent = "CEP não encontrado. Verifique o CEP informado.";
+          return;
+        }
+  
+        document.getElementById('rua').value = data.logradouro || '';
+        document.getElementById('bairro').value = data.bairro || '';
+        document.getElementById('cidade').value = data.localidade || '';
+        document.getElementById('estado').value = data.uf || '';
+  
+        const bairro = data.bairro;
+        // Se possível, utilize o objeto deliveryFees do prices.js; caso contrário use bairrosComTaxas local
+        if (bairro && (typeof deliveryFees !== 'undefined' ? deliveryFees.hasOwnProperty(bairro) : bairrosComTaxas.hasOwnProperty(bairro))) {
+          const fee = typeof deliveryFees !== 'undefined' ? deliveryFees[bairro].toFixed(2) : bairrosComTaxas[bairro].toFixed(2);
+          document.getElementById('delivery-fee').textContent = `Taxa de Entrega: R$ ${fee}`;
+          pedidoInfo.deliveryFee = fee;
+        } else {
+          document.getElementById('delivery-fee').textContent = "Bairro fora da área de entrega.";
+          pedidoInfo.deliveryFee = null;
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById('delivery-fee').textContent = "Erro ao buscar a localização.";
+      });
+  }
   
   // -----------------------------
   // Conversão de Graus para Radianos (para cálculo de distância)
