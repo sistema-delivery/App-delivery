@@ -1,8 +1,10 @@
 /**
  * prices.js
  * 
- * Este arquivo gerencia os preços e detalhes de todos os itens da loja.
- * Os dados incluem informações específicas para cada pizza e para as bebidas.
+ * Este arquivo gerencia os preços e detalhes de todos os itens da loja, incluindo:
+ * - Dados das Pizzas (descrição, preços por tamanho e bordas)
+ * - Preços das Bebidas
+ * - Taxas de Entrega por Bairro
  */
 
 // Dados das Pizzas
@@ -10,7 +12,7 @@ const pizzas = {
   "Pizza Marguerita": {
     description: "A clássica Marguerita com molho de tomate fresco, mussarela, manjericão e um toque de azeite extra virgem.",
     sizes: {
-      "Pequena": 10.00,  // Preço em reais
+      "Pequena": 10.00,
       "Média": 15.00,
       "Grande": 20.00
     },
@@ -24,9 +26,9 @@ const pizzas = {
   "Pizza Calabresa": {
     description: "Pizza com rodelas de calabresa, cebola, azeitonas e orégano para um sabor marcante.",
     sizes: {
-      "Pequena": 22.90,
-      "Média": 34.90,
-      "Grande": 49.90
+      "Pequena": 12.00,
+      "Média": 18.00,
+      "Grande": 24.00
     },
     borders: {
       "Nenhuma": 0.00,
@@ -56,4 +58,26 @@ const beverages = {
   "Coca-Cola 1,5L": 5.00,
   "Guaraná 1L": 4.50,
   "Guaraná 2L": 3.00
+};
+
+// Taxas de Entrega por Bairro
+const deliveryFees = {
+  "Janga": 5.00,
+  "Maranguape I": 6.00,
+  "Maranguape II": 6.00,
+  "Arthur Lundgren I": 7.00,
+  "Arthur Lundgren II": 7.00,
+  "Paratibe": 8.00,
+  "Centro": 4.00,
+  "Nossa Senhora da Conceição": 5.50,
+  "Engenho Maranguape": 6.50,
+  "Jardim Paulista": 6.50,
+  "Jardim Paulista Alto": 6.50,
+  "Pau Amarelo": 7.00,
+  "Conceição": 5.00,
+  "Vila Torres Galvão": 5.00,
+  "Alto do Bigode": 6.00,
+  "Maria Farinha": 8.00,
+  "Nossa Senhora do Ó": 7.00,
+  "Loteamento Conceição": 5.50
 };
