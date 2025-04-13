@@ -111,6 +111,15 @@ const storeData = {
       "Açucena": 11.00
       // Adicione outros bairros conforme necessário
     },
+
+    "Recife (PE)": {
+      "Boa Viagem": 10.00,
+      "Brasília Teimosa": 5.50,
+      "Casa Amarela": 8.00,
+      "Afogados": 9.50,
+      "Água Fria": 11.00
+      // Adicione outros bairros conforme necessário
+    },
     
     "Rio de Janeiro (RJ)": {
       "Copacabana": 5.00,
