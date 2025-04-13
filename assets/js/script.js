@@ -1,4 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // Atualização dinâmica do tema (cores e logotipo)
+  if (window.storeData && window.storeData.theme) {
+    const theme = window.storeData.theme;
+    document.documentElement.style.setProperty('--primary-color', `#${theme.primaryColor}`);
+    document.documentElement.style.setProperty('--secondary-color', `#${theme.secondaryColor}`);
+    document.documentElement.style.setProperty('--accent-color', `#${theme.accentColor}`);
+    document.documentElement.style.setProperty('--background-color', `#${theme.backgroundColor}`);
+  }
+
   // Função auxiliar para converter strings de preço ("6,00") para formato numérico ("6.00")
   function parsePrice(str) {
     return parseFloat(str.replace(",", "."));
