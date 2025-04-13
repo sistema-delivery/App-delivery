@@ -834,48 +834,59 @@ footer {
 
 /* Botões dos modais */
 
-/* Botão fechar (X) */
+/* Estilo Elegante para os Botões dos Modais (Voltar e Fechar) */
+.modal .back,
 .modal .close {
   position: absolute;
-  right: 10px;
   top: 10px;
-  font-size: 28px;
-  font-weight: bold;
-  background-color: #ff3c00;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 6px 12px;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 2px solid #ff3c00;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background 0.3s, transform 0.2s;
   z-index: 2;
 }
 
-.modal .close:hover {
-  background-color: #e23300;
-}
-
-/* Botão voltar com o símbolo estilizado */
+/* Posição: botão Voltar à esquerda, Fechar à direita */
 .modal .back {
-  position: absolute;
   left: 10px;
-  top: 10px;
-  background: transparent;
-  border: none;
-  padding: 0;
-  font-size: 0;
-  cursor: pointer;
-  z-index: 2;
+}
+.modal .close {
+  right: 10px;
+}
+
+/* Ícones com pseudo-elemento */
+/* O botão "back" exibirá o símbolo "<" e "close" exibirá o "×" */
+.modal .back::before,
+.modal .close::before {
+  content: "";
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #ff3c00;
+  transition: color 0.3s;
 }
 
 .modal .back::before {
   content: "<";
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #ff3c00;
-  display: inline-block;
 }
 
-.modal .back:hover::before {
-  color: #e23300;
+.modal .close::before {
+  content: "×";
+}
+
+/* Efeito hover: fundo se torna a cor de destaque e os ícones passam a branco */
+.modal .back:hover,
+.modal .close:hover {
+  background: #ff3c00;
+  transform: scale(1.1);
+}
+
+.modal .back:hover::before,
+.modal .close:hover::before {
+  color: #fff;
 }
