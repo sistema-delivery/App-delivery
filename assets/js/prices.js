@@ -75,6 +75,7 @@ const deliveryFees = {
   "Jardim Paulista Alto": 6.50,
   "Pau Amarelo": 7.00,
   "Conceição": 5.00,
+  "Mirueira": 14.00,
   "Vila Torres Galvão": 5.00,
   "Alto do Bigode": 6.00,
   "Maria Farinha": 8.00,
