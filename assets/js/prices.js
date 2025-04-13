@@ -26,9 +26,9 @@ const pizzas = {
   "Pizza Calabresa": {
     description: "Pizza com rodelas de calabresa, cebola, azeitonas e orégano para um sabor marcante.",
     sizes: {
-      "Pequena": 12.00,
-      "Média": 18.00,
-      "Grande": 24.00
+      "Pequena": 23.90,
+      "Média": 34.90,
+      "Grande": 49.90
     },
     borders: {
       "Nenhuma": 0.00,
