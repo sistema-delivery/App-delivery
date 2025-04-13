@@ -10,9 +10,9 @@ const pizzas = {
   "Pizza Marguerita": {
     description: "A clássica Marguerita com molho de tomate fresco, mussarela, manjericão e um toque de azeite extra virgem.",
     sizes: {
-      "Pequena": 100.00,  // Preço em reais
-      "Média": 150.00,
-      "Grande": 200.00
+      "Pequena": 10.00,  // Preço em reais
+      "Média": 15.00,
+      "Grande": 20.00
     },
     borders: {
       "Nenhuma": 0.00,
@@ -57,10 +57,3 @@ const beverages = {
   "Guaraná 1L": 4.50,
   "Guaraná 2L": 3.00
 };
-
-// Exporta os dados para que possam ser utilizados em outros módulos
-// Se estiver utilizando módulos ES6 (import/export)
-export { pizzas, beverages };
-
-// Caso prefira o CommonJS (Node.js), comente a linha acima e descomente a linha abaixo:
-// module.exports = { pizzas, beverages };
