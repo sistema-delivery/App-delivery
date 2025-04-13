@@ -7,7 +7,7 @@
 
 /* Variáveis de tema – valores padrão iguais ao design original */
 :root {
-  --primary-color: #ff3c00;      /* Cor principal (ex.: botões, hover em links) */
+  --primary-color: #ff3c00;      /* Cor principal (ex.: botões, hover em links e detalhes) */
   --secondary-color: #d35400;    /* Cor secundária (ex.: títulos e destaques) */
   --background-color: #fff;      /* Fundo geral */
   --text-color: #333;            /* Cor do texto padrão */
@@ -268,7 +268,7 @@ form textarea {
 /* FOOTER */
 footer {
   background: #111;
-  color: white;
+  color: #fff;
   padding: 20px;
   text-align: center;
 }
@@ -456,7 +456,7 @@ footer {
 
 #pix-info p {
   font-weight: bold;
-  color: #333;
+  color: var(--text-color);
   margin-bottom: 10px;
 }
 
@@ -648,8 +648,7 @@ footer {
   background: var(--primary-color);
 }
 
-/* Configuração do carrossel de imagens */
-/* (suas regras já existentes do carrossel permanecem) */
+/* Carrossel de Imagens (mantendo as regras originais) */
 .carousel {
   width: 100%;
   aspect-ratio: 3780 / 1890; /* Proporção 2:1, conforme solicitado */
@@ -666,45 +665,79 @@ footer {
   animation: slide 12s infinite;
 }
 
-/* ... demais regras do carrossel permanecem ... */
-
-.payment-methods {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  gap: 15px;
+/* Seção Bebidas e Resumo do Pedido */
+/* Bebidas */
+.bebidas-section {
+  margin-top: 20px;
 }
 
-.payment-option {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border: 1px solid #ccc;
-  padding: 10px 15px;
-  border-radius: 8px;
-  transition: background-color 0.3s, border-color 0.3s;
-  width: 100px;
-}
-
-.payment-option:hover {
-  border-color: #ff3c00;
-  background-color: #ffece8;
-}
-
-.payment-option input[type="radio"] {
-  display: none;
-}
-
-.payment-option img {
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
-  margin-bottom: 5px;
-}
-
-.payment-option span {
-  font-size: 1rem;
+.bebidas-title {
+  font-size: 1.1rem;
   font-weight: bold;
+  margin-bottom: 10px;
+  margin-left: 5px;
 }
+
+.horizontal-scroll.bebidas-scroll {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scroll-behavior: smooth;
+}
+
+.bebida-item {
+  flex: 0 0 auto;
+  width: 100px;
+  background: #fff;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  padding: 10px;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.bebida-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+
+.bebida-item img {
+  width: 80%;
+  margin: 0 auto;
+  display: block;
+  object-fit: contain;
+}
+
+.bebida-item.selected-bebida {
+  border: 2px solid var(--primary-color);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+/* Resumo do Pedido */
+#order-summary {
+  background-color: #f9f9f9;
+  border-left: 5px solid var(--primary-color);
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 20px;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+#order-summary h4 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: var(--secondary-color);
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 5px;
+}
+
+#order-summary p {
+  margin: 5px 0;
+  color: #333;
+}
+
+/* Fim das Seções Bebidas e Resumo do Pedido */
