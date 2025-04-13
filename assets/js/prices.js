@@ -103,6 +103,15 @@ const storeData = {
       // Adicione outros bairros conforme necessário
     },
 
+    "Minas gerais (MG)": {
+      "Abadia dos Dourados": 10.00,
+      "Abaeté": 5.50,
+      "Abre Campo": 8.00,
+      "Acaiaca": 9.50,
+      "Açucena": 11.00
+      // Adicione outros bairros conforme necessário
+    },
+    
     "Rio de Janeiro (RJ)": {
       "Copacabana": 5.00,
       "Ipanema": 6.00,
