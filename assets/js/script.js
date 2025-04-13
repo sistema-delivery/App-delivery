@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // -----------------------------
   const storeLocation = { lat: -7.950346, lon: -34.902970 };
 
-  // Cidade padrão para entrega (ajuste conforme sua operação)
+  // Cidade padrão para entrega se os dados da API vierem incompletos (opcional)
   const defaultCity = "Paulista (PE)";
 
   // Variável para armazenar a bebida selecionada (temporária)
@@ -263,7 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // -----------------------------
-  // CEP e Endereço Automático
+  // CEP e Endereço Automático – Atualização para detectar cidade e usar a taxa correta
   // -----------------------------
   document.getElementById('cep').addEventListener('blur', function() {
     const cep = this.value.replace(/\D/g, '');
@@ -287,17 +287,18 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('cidade').value = data.localidade || '';
         document.getElementById('estado').value = data.uf || '';
 
-        // Usando defaultCity para buscar as taxas na estrutura storeData.deliveryFees
+        // Formata a chave da cidade: "Cidade (UF)" ou usa defaultCity se faltar informação
+        const cityKey = data.localidade && data.uf ? `${data.localidade} (${data.uf})` : defaultCity;
         const bairro = data.bairro;
         let fee;
         if (
-          bairro && 
-          window.storeData && 
-          window.storeData.deliveryFees && 
-          window.storeData.deliveryFees[defaultCity] && 
-          window.storeData.deliveryFees[defaultCity].hasOwnProperty(bairro)
+          bairro &&
+          window.storeData &&
+          window.storeData.deliveryFees &&
+          window.storeData.deliveryFees[cityKey] &&
+          window.storeData.deliveryFees[cityKey].hasOwnProperty(bairro)
         ) {
-          fee = window.storeData.deliveryFees[defaultCity][bairro].toFixed(2);
+          fee = window.storeData.deliveryFees[cityKey][bairro].toFixed(2);
           document.getElementById('delivery-fee').textContent = `Taxa de Entrega: R$ ${fee}`;
           pedidoInfo.deliveryFee = fee;
         } else {
