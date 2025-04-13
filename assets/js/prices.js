@@ -12,9 +12,9 @@ const pizzas = {
   "Pizza Marguerita": {
     description: "A clássica Marguerita com molho de tomate fresco, mussarela, manjericão e um toque de azeite extra virgem.",
     sizes: {
-      "Pequena": 10.00,
-      "Média": 15.00,
-      "Grande": 20.00
+      "Pequena": 23.90,
+      "Média": 34.90,
+      "Grande": 49.90
     },
     borders: {
       "Nenhuma": 0.00,
