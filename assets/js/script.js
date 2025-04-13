@@ -1,48 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // Integração do Tema – Injeta estilos dinâmicos para alterar as cores da loja
-  if (window.storeData && window.storeData.theme) {
-    const theme = window.storeData.theme;
-    // Gera um bloco de estilo que sobrescreve os valores de cores atuais
-    // Observe que os valores devem ser informados sem o # ou com ele, conforme definido em prices.js
-    const primaryColor = theme.primaryColor.charAt(0) === '#' ? theme.primaryColor : `#${theme.primaryColor}`;
-    const secondaryColor = theme.secondaryColor.charAt(0) === '#' ? theme.secondaryColor : `#${theme.secondaryColor}`;
-    const accentColor = theme.accentColor.charAt(0) === '#' ? theme.accentColor : `#${theme.accentColor}`;
-    const backgroundColor = theme.backgroundColor.charAt(0) === '#' ? theme.backgroundColor : `#${theme.backgroundColor}`;
-
-    const dynamicStyle = `
-      body { background: ${backgroundColor} !important; }
-      header { background: ${secondaryColor} !important; }
-      .nav-menu li a:hover { color: ${primaryColor} !important; }
-      .btn { background: ${primaryColor} !important; }
-      .btn:hover { background: ${accentColor} !important; }
-      .price span { color: ${accentColor} !important; }
-      /* Caso queira sobrescrever outras regras, adicione aqui */
-    `;
-    const styleEl = document.createElement('style');
-    styleEl.innerHTML = dynamicStyle;
-    document.head.appendChild(styleEl);
-
-    // Integração do Logotipo: se definido, atualiza ou insere a imagem no container da logo
-    if (theme.logo) {
-      const logoContainer = document.querySelector('.logo');
-      if (logoContainer) {
-        const existingImg = logoContainer.querySelector('img');
-        if (existingImg) {
-          existingImg.src = theme.logo;
-        } else {
-          const img = document.createElement('img');
-          img.src = theme.logo;
-          img.alt = logoContainer.textContent.trim();
-          img.style.height = "50px"; // ajuste conforme necessário
-          img.style.verticalAlign = "middle";
-          logoContainer.insertBefore(img, logoContainer.firstChild);
-          // Se preferir manter somente a imagem em vez do texto, pode ocultar o <h1>
-          // logoContainer.querySelector('h1').style.display = 'none';
-        }
-      }
-    }
-  }
-
   // Função auxiliar para converter strings de preço ("6,00") para formato numérico ("6.00")
   function parsePrice(str) {
     return parseFloat(str.replace(",", "."));
@@ -191,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('summary-crust').textContent = `Tipos de Massa: ${crust}`;
       document.getElementById('summary-border').textContent = `Borda: ${border}`;
       document.getElementById('summary-quantity').textContent = `Quantidade: ${quantity}`;
-      document.getElementById('summary-beverage').textContent =
+      document.getElementById('summary-beverage').textContent = 
         `Bebida: ${selectedBeverage ? `${selectedBeverage.name} - R$ ${parseFloat(selectedBeverage.price).toFixed(2)}` : (pedidoInfo.beverageCost ? `R$ ${pedidoInfo.beverageCost.toFixed(2)}` : 'Não selecionada')}`;
     }
 
@@ -203,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Para a borda: extrai a parte antes de "R$", se aplicável
       let borderKey = border;
       if (border.includes('R$')) {
-        borderKey = border.split('R$')[0].trim();
+         borderKey = border.split('R$')[0].trim();
       }
       const borderPrice = pizzaData.borders[borderKey] || 0;
       basePrice = sizePrice + borderPrice;
@@ -286,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
       pedidoInfo.border = document.querySelector('select[name="pizza-border"]').value;
       pedidoInfo.quantidade = document.getElementById('modal-pizza-quantity').value;
       pedidoInfo.adicionais = document.getElementById('modal-additional')?.value || 'Nenhum';
-      pedidoInfo.bebida = selectedBeverage
+      pedidoInfo.bebida = selectedBeverage 
         ? `${selectedBeverage.name} - R$ ${parseFloat(selectedBeverage.price).toFixed(2)}`
         : 'Nenhuma';
       updateOrderSummary();
