@@ -1,4 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // Função auxiliar para converter strings de preço ("6,00") para formato numérico ("6.00")
+  function parsePrice(str) {
+    return parseFloat(str.replace(",", "."));
+  }
+
   // -----------------------------
   // Mobile Menu Toggle
   // -----------------------------
@@ -153,13 +158,13 @@ document.addEventListener('DOMContentLoaded', () => {
       quantity = pedidoInfo.quantidade || 1;
     }
 
-    // Atualiza o DOM do resumo de pedido (se existir)
+    // Atualiza o DOM do resumo, se existir
     if (document.getElementById('order-summary')) {
       document.getElementById('summary-size').textContent = `Tamanho: ${size}`;
       document.getElementById('summary-crust').textContent = `Tipos de Massa: ${crust}`;
       document.getElementById('summary-border').textContent = `Borda: ${border}`;
       document.getElementById('summary-quantity').textContent = `Quantidade: ${quantity}`;
-      document.getElementById('summary-beverage').textContent = `Bebida: ${selectedBeverage ? `${selectedBeverage.name} - R$ ${selectedBeverage.price}` : (pedidoInfo.beverageCost ? `R$ ${pedidoInfo.beverageCost.toFixed(2)}` : 'Não selecionada')}`;
+      document.getElementById('summary-beverage').textContent = `Bebida: ${selectedBeverage ? `${selectedBeverage.name} - R$ ${parseFloat(selectedBeverage.price).toFixed(2)}` : (pedidoInfo.beverageCost ? `R$ ${pedidoInfo.beverageCost.toFixed(2)}` : 'Não selecionada')}`;
     }
 
     // Cálculo do valor da pizza: (valor do tamanho + valor da borda) * quantidade
@@ -167,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (pizzaName && typeof pizzas !== 'undefined' && pizzas[pizzaName]) {
       const pizzaData = pizzas[pizzaName];
       const sizePrice = pizzaData.sizes[size] || 0;
-      // Para a borda, extrai-se a parte antes de "R$" para manter "Cream cheese" completo
+      // Para a borda: extrai-se a parte antes de "R$" para manter, por exemplo, "Cream cheese" completo
       let borderKey = border;
       if (border.includes('R$')) {
          borderKey = border.split('R$')[0].trim();
@@ -177,12 +182,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const pizzaTotal = basePrice * parseInt(quantity);
-    // Se selectedBeverage foi resetada, use o valor salvo em pedidoInfo
+    // Se selectedBeverage foi resetada, usa o valor salvo em pedidoInfo
     const beverageCost = selectedBeverage ? parseFloat(selectedBeverage.price) : (pedidoInfo.beverageCost || 0);
     const baseTotal = pizzaTotal + beverageCost;
     pedidoInfo.baseTotal = baseTotal; // Salva o valor sem taxa de entrega
 
-    // A taxa de entrega (se definida)
+    // Taxa de entrega, se definida (pode ser 0 se ainda não informado)
     const deliveryFee = pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0;
     const total = baseTotal + deliveryFee;
     pedidoInfo.total = total; // Salva o valor final
@@ -209,10 +214,10 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.bebida-item').forEach(item => item.classList.remove('selected-bebida'));
       bebidaItem.classList.add('selected-bebida');
       const beverageName = bebidaItem.querySelector('p').textContent;
-      const beveragePrice = bebidaItem.querySelector('.price').textContent.replace('R$', '').trim();
+      const beveragePrice = parsePrice(bebidaItem.querySelector('.price').textContent.replace('R$', '').trim());
       selectedBeverage = { name: beverageName, price: beveragePrice };
-      // Armazena o valor da bebida para uso posterior
-      pedidoInfo.beverageCost = parseFloat(beveragePrice);
+      // Salva o valor da bebida para uso posterior
+      pedidoInfo.beverageCost = beveragePrice;
       updateOrderSummary();
     });
   });
@@ -253,8 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
       pedidoInfo.border = document.querySelector('select[name="pizza-border"]').value;
       pedidoInfo.quantidade = document.getElementById('modal-pizza-quantity').value;
       pedidoInfo.adicionais = document.getElementById('modal-additional')?.value || 'Nenhum';
-      pedidoInfo.bebida = selectedBeverage ? `${selectedBeverage.name} - R$ ${selectedBeverage.price}` : 'Nenhuma';
-      // Atualiza os totais com base nos dados preenchidos
+      pedidoInfo.bebida = selectedBeverage ? `${selectedBeverage.name} - R$ ${parseFloat(selectedBeverage.price).toFixed(2)}` : 'Nenhuma';
       updateOrderSummary();
       closeOrderModal();
       openPaymentModal();
@@ -355,7 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const cidade = document.getElementById('cidade').value;
       const numero = document.getElementById('numero').value;
 
-      // Organização da mensagem do WhatsApp incluindo o total do pedido
+      // Montagem organizada da mensagem do WhatsApp
       const mensagem = `
 *Pedido de Pizza - Pizza Express*
 ------------------------------------
