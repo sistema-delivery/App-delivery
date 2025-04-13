@@ -15,30 +15,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // -----------------------------
-  // Dados fixos da Pizzaria e Taxas por Bairro
+  // Dados de Localização da Loja (exemplo para cálculo de distância futuro)
   // -----------------------------
   const storeLocation = { lat: -7.950346, lon: -34.902970 };
-  // Se desejar usar deliveryFees de prices.js, mantenha-o ativo; senão, use bairrosComTaxas local
-  const bairrosComTaxas = {
-    "Janga": 5.00,
-    "Maranguape I": 6.00,
-    "Maranguape II": 6.00,
-    "Arthur Lundgren I": 7.00,
-    "Arthur Lundgren II": 7.00,
-    "Paratibe": 8.00,
-    "Centro": 4.00,
-    "Nossa Senhora da Conceição": 5.50,
-    "Engenho Maranguape": 6.50,
-    "Jardim Paulista": 6.50,
-    "Jardim Paulista Alto": 6.50,
-    "Pau Amarelo": 7.00,
-    "Conceição": 5.00,
-    "Vila Torres Galvão": 5.00,
-    "Alto do Bigode": 6.00,
-    "Maria Farinha": 8.00,
-    "Nossa Senhora do Ó": 7.00,
-    "Loteamento Conceição": 5.50
-  };
+
+  // Cidade padrão para entrega (ajuste conforme sua operação)
+  const defaultCity = "Paulista (PE)";
 
   // Variável para armazenar a bebida selecionada (temporária)
   let selectedBeverage = null;
@@ -54,8 +36,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modalPizzaName) {
       modalPizzaName.textContent = pizzaName;
     }
-    if (typeof pizzas !== 'undefined' && pizzas[pizzaName]) {
-      const pizzaData = pizzas[pizzaName];
+    // Usando a nova estrutura: window.storeData.pizzas
+    if (window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizzaName]) {
+      const pizzaData = window.storeData.pizzas[pizzaName];
       const modalDescription = document.getElementById('modal-pizza-description');
       if (modalDescription) {
         modalDescription.textContent = pizzaData.description;
@@ -164,15 +147,16 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('summary-crust').textContent = `Tipos de Massa: ${crust}`;
       document.getElementById('summary-border').textContent = `Borda: ${border}`;
       document.getElementById('summary-quantity').textContent = `Quantidade: ${quantity}`;
-      document.getElementById('summary-beverage').textContent = `Bebida: ${selectedBeverage ? `${selectedBeverage.name} - R$ ${parseFloat(selectedBeverage.price).toFixed(2)}` : (pedidoInfo.beverageCost ? `R$ ${pedidoInfo.beverageCost.toFixed(2)}` : 'Não selecionada')}`;
+      document.getElementById('summary-beverage').textContent = 
+        `Bebida: ${selectedBeverage ? `${selectedBeverage.name} - R$ ${parseFloat(selectedBeverage.price).toFixed(2)}` : (pedidoInfo.beverageCost ? `R$ ${pedidoInfo.beverageCost.toFixed(2)}` : 'Não selecionada')}`;
     }
 
     // Cálculo do valor da pizza: (valor do tamanho + valor da borda) * quantidade
     let basePrice = 0;
-    if (pizzaName && typeof pizzas !== 'undefined' && pizzas[pizzaName]) {
-      const pizzaData = pizzas[pizzaName];
+    if (pizzaName && window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizzaName]) {
+      const pizzaData = window.storeData.pizzas[pizzaName];
       const sizePrice = pizzaData.sizes[size] || 0;
-      // Para a borda: extrai-se a parte antes de "R$" para manter, por exemplo, "Cream cheese" completo
+      // Para a borda: extrai a parte antes de "R$", se aplicável
       let borderKey = border;
       if (border.includes('R$')) {
          borderKey = border.split('R$')[0].trim();
@@ -258,7 +242,9 @@ document.addEventListener('DOMContentLoaded', () => {
       pedidoInfo.border = document.querySelector('select[name="pizza-border"]').value;
       pedidoInfo.quantidade = document.getElementById('modal-pizza-quantity').value;
       pedidoInfo.adicionais = document.getElementById('modal-additional')?.value || 'Nenhum';
-      pedidoInfo.bebida = selectedBeverage ? `${selectedBeverage.name} - R$ ${parseFloat(selectedBeverage.price).toFixed(2)}` : 'Nenhuma';
+      pedidoInfo.bebida = selectedBeverage 
+        ? `${selectedBeverage.name} - R$ ${parseFloat(selectedBeverage.price).toFixed(2)}`
+        : 'Nenhuma';
       updateOrderSummary();
       closeOrderModal();
       openPaymentModal();
@@ -301,9 +287,17 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('cidade').value = data.localidade || '';
         document.getElementById('estado').value = data.uf || '';
 
+        // Usando defaultCity para buscar as taxas na estrutura storeData.deliveryFees
         const bairro = data.bairro;
-        if (bairro && (typeof deliveryFees !== 'undefined' ? deliveryFees.hasOwnProperty(bairro) : bairrosComTaxas.hasOwnProperty(bairro))) {
-          const fee = typeof deliveryFees !== 'undefined' ? deliveryFees[bairro].toFixed(2) : bairrosComTaxas[bairro].toFixed(2);
+        let fee;
+        if (
+          bairro && 
+          window.storeData && 
+          window.storeData.deliveryFees && 
+          window.storeData.deliveryFees[defaultCity] && 
+          window.storeData.deliveryFees[defaultCity].hasOwnProperty(bairro)
+        ) {
+          fee = window.storeData.deliveryFees[defaultCity][bairro].toFixed(2);
           document.getElementById('delivery-fee').textContent = `Taxa de Entrega: R$ ${fee}`;
           pedidoInfo.deliveryFee = fee;
         } else {
