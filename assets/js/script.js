@@ -419,15 +419,20 @@ Pizza Express - Sabor que chega rápido!`.trim();
   }
 });
 
-// Botões de voltar – adiciona listener para fechar o modal
+// Adiciona listener aos botões "Voltar" para fechar o modal correspondente
 document.querySelectorAll('.modal .back').forEach(backBtn => {
   backBtn.addEventListener('click', () => {
     const modal = backBtn.closest('.modal');
+    if (!modal) return;
+    
     // Verifica qual modal está sendo fechado e chama a função correspondente
     if (modal.id === 'order-modal') {
       closeOrderModal();
     } else if (modal.id === 'payment-modal') {
       closePaymentModal();
+    } else {
+      // Se houver outros modais, simplesmente os oculta.
+      modal.style.display = 'none';
     }
   });
 });
