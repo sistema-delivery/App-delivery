@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // -----------------------------
   const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
   const navMenu = document.querySelector('.nav-menu');
-  
+
   mobileMenuToggle.addEventListener('click', () => {
     navMenu.classList.toggle('active');
   });
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
       modalPizzaName.textContent = pizzaName;
     }
 
-    // Atualiza a descrição e os preços dos tamanhos se os dados estiverem disponíveis
+    // Atualiza a descrição e os preços dos tamanhos, se disponíveis
     if (typeof pizzas !== 'undefined' && pizzas[pizzaName]) {
       const pizzaData = pizzas[pizzaName];
 
@@ -143,14 +143,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // Atualização do Resumo do Pedido e Cálculo do Total
   // -----------------------------
   function updateOrderSummary() {
-    // Se os dados do pedido já estiverem armazenados, utiliza-os; caso contrário, usa o DOM.
+    // Se os dados do pedido já estiverem armazenados, utilize-os; caso contrário, busque do DOM.
     const pizzaName = pedidoInfo.nome || document.getElementById('modal-pizza-name')?.textContent || '';
     const size = pedidoInfo.tamanho || (document.querySelector('input[name="pizza-size"]:checked')?.value || 'Não selecionado');
     const crust = pedidoInfo.crust || (document.querySelector('select[name="pizza-crust"]').value || 'Não selecionado');
     const border = pedidoInfo.border || (document.querySelector('select[name="pizza-border"]').value || 'Não selecionado');
     const quantity = pedidoInfo.quantidade || (document.getElementById('modal-pizza-quantity')?.value || 1);
   
-    // Atualiza o DOM do resumo do pedido, se existir (modal aberto)
+    // Atualiza o DOM do resumo, se existir
     if (document.getElementById('summary-size'))
       document.getElementById('summary-size').textContent = `Tamanho: ${size}`;
     if (document.getElementById('summary-crust'))
@@ -166,10 +166,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (pizzaName && typeof pizzas !== 'undefined' && pizzas[pizzaName]) {
       const pizzaData = pizzas[pizzaName];
       const sizePrice = pizzaData.sizes[size] || 0;
-      // Para a borda: se a opção inclui "R$", extraímos apenas o nome
+      // Para a borda: se a opção contém "R$", extraímos tudo que vem antes para manter "Cream cheese" completo
       let borderKey = border;
       if (border.includes('R$')) {
-         borderKey = border.split(' ')[0];
+         borderKey = border.split('R$')[0].trim();
       }
       const borderPrice = pizzaData.borders[borderKey] || 0;
       basePrice = sizePrice + borderPrice;
@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
     const pizzaTotal = basePrice * parseInt(quantity);
     const beverageCost = selectedBeverage ? parseFloat(selectedBeverage.price) : 0;
-    // Usa a taxa de entrega se já foi definida (inserida pelo CEP)
+    // Usa a taxa de entrega se definida (após CEP)
     const deliveryCost = pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0;
   
     const total = pizzaTotal + beverageCost + deliveryCost;
@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
     pedidoInfo.total = total;
   }
   
-  // Eventos para atualizar o resumo dinamicamente
+  // Eventos para atualizar o resumo conforme alterações
   document.querySelectorAll('input[name="pizza-size"]').forEach(el => el.addEventListener('change', updateOrderSummary));
   const crustSelect = document.querySelector('select[name="pizza-crust"]');
   if (crustSelect) crustSelect.addEventListener('change', updateOrderSummary);
@@ -310,8 +310,8 @@ document.addEventListener('DOMContentLoaded', () => {
           pedidoInfo.deliveryFee = null;
         }
         updateOrderSummary();
-        // Se o modal de pagamento estiver aberto, atualiza também o resumo
-        if(document.getElementById('payment-modal').style.display === 'block'){
+        // Se o modal de pagamento estiver aberto, atualize o resumo
+        if (document.getElementById('payment-modal').style.display === 'block') {
           updatePaymentSummary();
         }
       })
