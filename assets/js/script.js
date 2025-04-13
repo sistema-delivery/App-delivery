@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
       modalPizzaName.textContent = pizzaName;
     }
 
-    // Atualiza descrição e preços dos tamanhos se os dados estiverem disponíveis
+    // Atualiza a descrição e os preços dos tamanhos se os dados estiverem disponíveis
     if (typeof pizzas !== 'undefined' && pizzas[pizzaName]) {
       const pizzaData = pizzas[pizzaName];
 
@@ -143,24 +143,30 @@ document.addEventListener('DOMContentLoaded', () => {
   // Atualização do Resumo do Pedido e Cálculo do Total
   // -----------------------------
   function updateOrderSummary() {
-    const size = document.querySelector('input[name="pizza-size"]:checked')?.value || 'Não selecionado';
-    const crust = document.querySelector('select[name="pizza-crust"]').value || 'Não selecionado';
-    const border = document.querySelector('select[name="pizza-border"]').value || 'Não selecionado';
-    const quantity = document.getElementById('modal-pizza-quantity')?.value || 1;
+    // Se os dados do pedido já estiverem armazenados, utiliza-os; caso contrário, usa o DOM.
+    const pizzaName = pedidoInfo.nome || document.getElementById('modal-pizza-name')?.textContent || '';
+    const size = pedidoInfo.tamanho || (document.querySelector('input[name="pizza-size"]:checked')?.value || 'Não selecionado');
+    const crust = pedidoInfo.crust || (document.querySelector('select[name="pizza-crust"]').value || 'Não selecionado');
+    const border = pedidoInfo.border || (document.querySelector('select[name="pizza-border"]').value || 'Não selecionado');
+    const quantity = pedidoInfo.quantidade || (document.getElementById('modal-pizza-quantity')?.value || 1);
   
-    document.getElementById('summary-size').textContent = `Tamanho: ${size}`;
-    document.getElementById('summary-crust').textContent = `Tipos de Massa: ${crust}`;
-    document.getElementById('summary-border').textContent = `Borda: ${border}`;
-    document.getElementById('summary-quantity').textContent = `Quantidade: ${quantity}`;
-    document.getElementById('summary-beverage').textContent = `Bebida: ${selectedBeverage ? `${selectedBeverage.name} - R$ ${selectedBeverage.price}` : 'Não selecionada'}`;
+    // Atualiza o DOM do resumo do pedido, se existir (modal aberto)
+    if (document.getElementById('summary-size'))
+      document.getElementById('summary-size').textContent = `Tamanho: ${size}`;
+    if (document.getElementById('summary-crust'))
+      document.getElementById('summary-crust').textContent = `Tipos de Massa: ${crust}`;
+    if (document.getElementById('summary-border'))
+      document.getElementById('summary-border').textContent = `Borda: ${border}`;
+    if (document.getElementById('summary-quantity'))
+      document.getElementById('summary-quantity').textContent = `Quantidade: ${quantity}`;
+    if (document.getElementById('summary-beverage'))
+      document.getElementById('summary-beverage').textContent = `Bebida: ${selectedBeverage ? `${selectedBeverage.name} - R$ ${selectedBeverage.price}` : 'Não selecionada'}`;
   
-    // Cálculo do total:
-    const pizzaName = document.getElementById('modal-pizza-name')?.textContent || '';
     let basePrice = 0;
     if (pizzaName && typeof pizzas !== 'undefined' && pizzas[pizzaName]) {
       const pizzaData = pizzas[pizzaName];
       const sizePrice = pizzaData.sizes[size] || 0;
-      // Para a borda: se a opção inclui "R$", extraímos apenas o nome para pesquisar no objeto
+      // Para a borda: se a opção inclui "R$", extraímos apenas o nome
       let borderKey = border;
       if (border.includes('R$')) {
          borderKey = border.split(' ')[0];
@@ -171,24 +177,25 @@ document.addEventListener('DOMContentLoaded', () => {
   
     const pizzaTotal = basePrice * parseInt(quantity);
     const beverageCost = selectedBeverage ? parseFloat(selectedBeverage.price) : 0;
+    // Usa a taxa de entrega se já foi definida (inserida pelo CEP)
     const deliveryCost = pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0;
   
     const total = pizzaTotal + beverageCost + deliveryCost;
   
-    // Atualiza ou cria o elemento de total (em negrito) no resumo do pedido
     let totalElement = document.getElementById('summary-total');
-    if (!totalElement) {
+    if (!totalElement && document.getElementById('order-summary')) {
       totalElement = document.createElement('p');
       totalElement.id = 'summary-total';
       document.getElementById('order-summary').appendChild(totalElement);
     }
-    totalElement.innerHTML = `<strong>Total: R$ ${total.toFixed(2)}</strong>`;
   
-    // Armazena o total no objeto pedidoInfo para uso no modal de pagamento
+    if (totalElement) {
+      totalElement.innerHTML = `<strong>Total: R$ ${total.toFixed(2)}</strong>`;
+    }
     pedidoInfo.total = total;
   }
   
-  // Eventos para atualizar o resumo dos itens dinamicamente
+  // Eventos para atualizar o resumo dinamicamente
   document.querySelectorAll('input[name="pizza-size"]').forEach(el => el.addEventListener('change', updateOrderSummary));
   const crustSelect = document.querySelector('select[name="pizza-crust"]');
   if (crustSelect) crustSelect.addEventListener('change', updateOrderSummary);
@@ -214,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   
   // -----------------------------
-  // Função para atualizar o resumo no Modal de Pagamento
+  // Atualização do Resumo no Modal de Pagamento
   // -----------------------------
   function updatePaymentSummary() {
     let paymentSummaryElement = document.getElementById('payment-summary');
@@ -258,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   // -----------------------------
-  // Alternar Informações do Pix conforme método de pagamento selecionado
+  // Alternar Informações do Pix conforme método de pagamento
   // -----------------------------
   document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
     radio.addEventListener('change', function () {
@@ -315,7 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   // -----------------------------
-  // Conversão de Graus para Radianos (para cálculo de distância)
+  // Conversão de Graus para Radianos (Cálculo de Distância)
   // -----------------------------
   function toRad(degrees) {
     return degrees * Math.PI / 180;
