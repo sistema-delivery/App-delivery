@@ -38,6 +38,30 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modalPizzaName) {
       modalPizzaName.textContent = pizzaName;
     }
+
+    // Se os dados estiverem disponíveis, atualiza a descrição e os preços dos tamanhos
+    if (typeof pizzas !== 'undefined' && pizzas[pizzaName]) {
+      const pizzaData = pizzas[pizzaName];
+
+      // Atualiza a descrição no modal
+      const modalDescription = document.getElementById('modal-pizza-description');
+      if (modalDescription) {
+        modalDescription.textContent = pizzaData.description;
+      }
+
+      // Atualiza os preços dos tamanhos dinamicamente
+      const sizeLabels = document.querySelectorAll('.pizza-size-section label');
+      sizeLabels.forEach(label => {
+        const radio = label.querySelector('input[type="radio"]');
+        if (radio && pizzaData.sizes[radio.value]) {
+          const priceDiv = label.querySelector('.price-size');
+          if (priceDiv) {
+            priceDiv.textContent = pizzaData.sizes[radio.value].toFixed(2);
+          }
+        }
+      });
+    }
+    
     document.getElementById('order-modal').style.display = 'block';
   }
   
