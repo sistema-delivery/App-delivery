@@ -129,18 +129,6 @@ const storeData = {
       "Barra da Tijuca": 7.00
       // Adicione outros bairros conforme necessário
     }
-  },
-
-  // NOVA CONFIGURAÇÃO DE TEMA – Modificação das cores da loja e logotipo
-  theme: {
-    // Cores atualizadas: altere os valores conforme desejado
-    primaryColor: "#3C8DBC",       // Cor principal (ex: botões, destaques)
-    secondaryColor: "#2C3E50",     // Cor secundária (ex: fundos, textos)
-    accentColor: "#E74C3C",        // Cor de destaque adicional
-    backgroundColor: "#FFFFFF",    // Cor de fundo geral da loja
-
-    // Novo logotipo da loja – sem alterar o layout atual
-    logo: "assets/images/nova-logo.png"
   }
 };
 
