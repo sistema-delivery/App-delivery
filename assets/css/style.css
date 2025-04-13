@@ -892,3 +892,19 @@ footer {
 .modal .close:hover::before {
   color: #fff;
 }
+
+/* Estilo para o bloco de resumo no modal de pagamento */
+#payment-summary {
+  margin-top: 10px;
+  background-color: #f0f0f0;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+#payment-summary p {
+  margin: 5px 0;
+}
+#payment-summary p strong {
+  color: #d35400;
+}
