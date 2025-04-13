@@ -227,34 +227,34 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   
   function lookupAddressByCEP(cep) {
-    fetch(`https://viacep.com.br/ws/${cep}/json/`)
-      .then(response => response.json())
-      .then(data => {
-        if (data.erro) {
-          document.getElementById('delivery-fee').textContent = "CEP não encontrado. Verifique o CEP informado.";
-          return;
-        }
-  
-        document.getElementById('rua').value = data.logradouro || '';
-        document.getElementById('bairro').value = data.bairro || '';
-        document.getElementById('cidade').value = data.localidade || '';
-        document.getElementById('estado').value = data.uf || '';
-  
-        const bairro = data.bairro;
-        if (bairro && bairrosComTaxas.hasOwnProperty(bairro)) {
-          const fee = bairrosComTaxas[bairro].toFixed(2);
-          document.getElementById('delivery-fee').textContent = `Taxa de Entrega: R$ ${fee}`;
-          pedidoInfo.deliveryFee = fee;
-        } else {
-          document.getElementById('delivery-fee').textContent = "Bairro fora da área de entrega.";
-          pedidoInfo.deliveryFee = null;
-        }
-      })
-      .catch(err => {
-        console.error(err);
-        document.getElementById('delivery-fee').textContent = "Erro ao buscar a localização.";
-      });
-  }
+  fetch(`https://viacep.com.br/ws/${cep}/json/`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.erro) {
+        document.getElementById('delivery-fee').textContent = "CEP não encontrado. Verifique o CEP informado.";
+        return;
+      }
+
+      document.getElementById('rua').value = data.logradouro || '';
+      document.getElementById('bairro').value = data.bairro || '';
+      document.getElementById('cidade').value = data.localidade || '';
+      document.getElementById('estado').value = data.uf || '';
+
+      const bairro = data.bairro;
+      if (bairro && deliveryFees.hasOwnProperty(bairro)) {
+        const fee = deliveryFees[bairro].toFixed(2);
+        document.getElementById('delivery-fee').textContent = `Taxa de Entrega: R$ ${fee}`;
+        pedidoInfo.deliveryFee = fee;
+      } else {
+        document.getElementById('delivery-fee').textContent = "Bairro fora da área de entrega.";
+        pedidoInfo.deliveryFee = null;
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      document.getElementById('delivery-fee').textContent = "Erro ao buscar a localização.";
+    });
+}
   
   // -----------------------------
   // Conversão de Graus para Radianos (para cálculo de distância)
