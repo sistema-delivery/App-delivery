@@ -19,7 +19,13 @@
         <li><a href="#vendas">Mais Vendidas</a></li>
         <li><a href="#tradicionais">Tradicionais</a></li>
         <li><a href="#premium">Premium</a></li>
-        <li><a href="#contact">Contato</a></li>
+        <li class="menu-item-has-children">
+          <a href="#">Contato</a>
+          <ul class="sub-menu">
+            <li><a href="https://instagram.com/seuInstagram" target="_blank">Instagram</a></li>
+            <li><a href="https://wa.me/5581997333714" target="_blank">WhatsApp</a></li>
+          </ul>
+        </li>
       </ul>
       <div class="mobile-menu-toggle">
         <span class="bar"></span>
@@ -175,19 +181,6 @@
     </div>
   </section>
 
-  <!-- Seção de Contato -->
-  <section id="contact" class="section contact">
-    <div class="container">
-      <h2>Entre em Contato</h2>
-      <form id="contact-form">
-        <input type="text" name="name" placeholder="Seu nome" required>
-        <input type="email" name="email" placeholder="Seu e-mail" required>
-        <textarea name="message" rows="4" placeholder="Sua mensagem" required></textarea>
-        <button type="submit" class="btn">Enviar Mensagem</button>
-      </form>
-    </div>
-  </section>
-
   <!-- Modal de Pedido -->
   <div id="order-modal" class="modal">
     <div class="modal-content">
@@ -326,7 +319,7 @@
           <div id="delivery-fee" style="margin-top: 10px; font-weight: bold;">Taxa de Entrega: R$ 0,00</div>
         </div>
 
-        <!-- Bloco: Seleção de Forma de Pagamento em formato horizontal -->
+        <!-- Bloco: Seleção de Forma de Pagamento -->
         <div class="payment-methods-section" style="margin:20px 0; text-align: center;">
           <h2 style="margin-bottom: 15px;">Escolha a forma de pagamento</h2>
           <div class="payment-methods">
