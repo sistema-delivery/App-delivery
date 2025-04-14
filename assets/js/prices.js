@@ -53,6 +53,62 @@ const storeData = {
         "Cheddar": 5.00,
         "Cream cheese": 3.50
       }
+    },
+    "Pizza Portuguesa": {
+      description: "Pizza com molho de tomate, mussarela e orégano, ideal para os amantes da tradição.",
+      sizes: {
+        "Pequena": 16.00,
+        "Média": 22.00,
+        "Grande": 28.00
+      },
+      borders: {
+        "Nenhuma": 0.00,
+        "Catupiry": 6.00,
+        "Cheddar": 5.00,
+        "Cream cheese": 3.50
+      }
+    },
+    "Marguerita Clássica": {
+      description: "Variante da clássica marguerita, com ingredientes frescos e um toque especial.",
+      sizes: {
+        "Pequena": 18.00,
+        "Média": 25.00,
+        "Grande": 32.00
+      },
+      borders: {
+        "Nenhuma": 0.00,
+        "Catupiry": 6.00,
+        "Cheddar": 5.00,
+        "Cream cheese": 3.50
+      }
+    },
+    "Pizza Trufada": {
+      description: "Pizza com massa premium e cobertura trufada, para quem busca um sabor sofisticado.",
+      sizes: {
+        "Pequena": 20.00,
+        "Média": 30.00,
+        "Grande": 40.00
+      },
+      borders: {
+        "Nenhuma": 0.00,
+        "Catupiry": 6.00,
+        "Cheddar": 5.00,
+        "Cream cheese": 3.50
+      }
+    },
+    "Especial Gourmet": {
+      description: "Pizza com ingredientes gourmet e toques inovadores, perfeita para ocasiões especiais.",
+      sizes: {
+        "Pequena": 22.00,
+        "Média": 33.00,
+        "Grande": 44.00
+      },
+      borders: {
+        "Nenhuma": 0.00,
+        "Catupiry": 6.00,
+        "Cheddar": 5.00,
+        "Cream cheese": 3.50
+      }
     }
   },
 
@@ -66,10 +122,6 @@ const storeData = {
    * Estrutura de taxas de entrega organizada por cidades.
    * Cada chave é o nome da cidade (ou região) e seu valor é um objeto que mapeia
    * os bairros da cidade para a respectiva taxa de entrega.
-   * 
-   * Exemplo:
-   * "Paulista (PE)": { "Janga": 5.00, "Maranguape I": 6.00, ... },
-   * "São Paulo (SP)": { "Centro": 4.00, "Jardim Paulista": 5.50, ... }
    */
   deliveryFees: {
     "Paulista (PE)": {
@@ -100,7 +152,6 @@ const storeData = {
       "Pinheiros": 6.00,
       "Vila Madalena": 6.50,
       "Brooklin": 7.00
-      // Adicione outros bairros conforme necessário
     },
 
     "Minas gerais (MG)": {
@@ -109,7 +160,6 @@ const storeData = {
       "Abre Campo": 8.00,
       "Acaiaca": 9.50,
       "Açucena": 11.00
-      // Adicione outros bairros conforme necessário
     },
 
     "Recife (PE)": {
@@ -118,7 +168,6 @@ const storeData = {
       "Casa Amarela": 8.00,
       "Afogados": 9.50,
       "Água Fria": 11.00
-      // Adicione outros bairros conforme necessário
     },
     
     "Rio de Janeiro (RJ)": {
@@ -127,7 +176,6 @@ const storeData = {
       "Leblon": 6.50,
       "Botafogo": 5.50,
       "Barra da Tijuca": 7.00
-      // Adicione outros bairros conforme necessário
     }
   }
 };
