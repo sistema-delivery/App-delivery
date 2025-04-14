@@ -1,910 +1,379 @@
-/* RESET */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* GLOBAL */
-body {
-  font-family: 'Segoe UI', sans-serif;
-  line-height: 1.6;
-  background: #fff;
-  color: #333;
-}
-
-img {
-  max-width: 100%;
-  height: auto;
-}
-
-.container {
-  width: 90%;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-/* HEADER */
-header {
-  background: #111;
-  color: #fff;
-  padding: 20px 0;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-}
-
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.logo h1 {
-  font-size: 24px;
-  margin-left: 20px;
-}
-
-.nav-menu {
-  display: flex;
-  list-style: none;
-  gap: 20px;
-  margin-right: 20px;
-}
-
-.nav-menu li a {
-  color: #fff;
-  text-decoration: none;
-  font-weight: bold;
-  transition: 0.3s;
-}
-
-.nav-menu li a:hover {
-  color: #ff3c00;
-}
-
-/* Mobile menu */
-.mobile-menu-toggle {
-  display: none;
-  flex-direction: column;
-  cursor: pointer;
-  margin-right: 20px;
-}
-
-.bar {
-  width: 25px;
-  height: 3px;
-  background-color: white;
-  margin: 4px 0;
-}
-
-/* HERO */
-.hero {
-  background-image: url('../images/hero-bg.jpg');
-  background-size: cover;
-  background-position: center;
-  padding: 120px 20px;
-  text-align: center;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.hero-content {
-  background: rgba(0, 0, 0, 0.6);
-  padding: 40px;
-  border-radius: 16px;
-}
-
-.hero h1 {
-  font-size: 48px;
-  margin-bottom: 20px;
-}
-
-.hero p {
-  font-size: 20px;
-  margin-bottom: 30px;
-}
-
-.btn {
-  background: #ff3c00;
-  color: #fff;
-  padding: 12px 28px;
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  text-decoration: none;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.btn:hover {
-  background: #e23300;
-}
-
-/* CAROUSEL - Banner */
-.carousel {
-  width: 100%;
-  aspect-ratio: 3780 / 1890; /* Equivalente a 2:1 */
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  position: relative;
-}
-
-.carousel-inner {
-  display: flex;
-  width: 300%;  /* Considerando 3 itens no carrossel */
-  height: 100%;
-  animation: slide 12s infinite;
-}
-
-.carousel-item {
-  flex: 0 0 100%;
-  height: 100%;
-}
-
-.carousel-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;         /* Exibe a imagem inteira sem cortes */
-  object-position: left;       /* Alinha a imagem à esquerda */
-}
-
-/* Animação do carrossel para transições suaves */
-@keyframes slide {
-  0% {
-    transform: translateX(0%);
-  }
-  30% {
-    transform: translateX(0%);
-  }
-  35% {
-    transform: translateX(-100%);
-  }
-  65% {
-    transform: translateX(-100%);
-  }
-  70% {
-    transform: translateX(-200%);
-  }
-  100% {
-    transform: translateX(-200%);
-  }
-}
-
-/* Seções Horizontais para Categorias de Pizzas */
-.horizontal-section {
-  padding: 60px 20px;
-  background: #f5f5f5;
-}
-
-.horizontal-section h2 {
-  font-size: 2.5rem;
-  color: #d35400;
-  text-align: left;
-  margin-bottom: 20px;
-  margin-left: 20px;
-}
-
-/* Atualização para a seção "AS MAIS VENDIDAS": completa a largura da tela */
-#vendas .container {
-  width: 100%;
-  padding: 0;
-  margin: 0;
-}
-
-.horizontal-scroll {
-  display: flex;
-  overflow-x: auto;
-  gap: 20px;
-  padding: 0 20px;
-  scroll-behavior: smooth;
-}
-
-.horizontal-scroll .item {
-  flex: 0 0 auto;
-  width: 250px; /* Ajuste conforme o design desejado */
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  cursor: pointer;
-}
-
-.horizontal-scroll .item img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
-}
-
-.horizontal-scroll .item p {
-  padding: 10px;
-  color: #333;
-  font-size: 1.1rem;
-  margin: 0;
-}
-
-.horizontal-scroll .item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-}
-
-/* CONTATO */
-.section.contact {
-  padding: 60px 20px;
-  background: #fff;
-  text-align: center;
-}
-
-form {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-form input,
-form textarea {
-  width: 100%;
-  padding: 12px;
-  margin: 10px 0;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 16px;
-}
-
-/* FOOTER */
-footer {
-  background: #111;
-  color: white;
-  padding: 20px;
-  text-align: center;
-}
-
-/* RESPONSIVIDADE */
-@media (max-width: 768px) {
-  .horizontal-section h2 {
-    font-size: 1.4rem;
-    text-align: center;
-  }
-  .hero p {
-    font-size: 16px;
-  }
-  .nav-menu {
-    display: none;
-    flex-direction: column;
-    background: #111;
-    width: 100%;
-    text-align: center;
-    margin-top: 10px;
-  }
-  .nav-menu.active {
-    display: flex;
-  }
-  .mobile-menu-toggle {
-    display: flex;
-  }
-  .horizontal-scroll .item {
-    width: 200px;
-  }
-  .horizontal-scroll .item img {
-    height: 150px;
-  }
-}
-
-/* Estilo para os preços das pizzas */
-.price {
-  font-size: 1rem;
-  margin: 10px 0 0;
-}
-
-.price del {
-  margin-right: 5px;
-  color: #999;
-}
-
-.price span {
-  font-weight: bold;
-  color: #d35400;
-}
-
-/* ESTILO DO MODAL */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 2000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.6);
-}
-
-.modal-content {
-  background-color: #fefefe;
-  margin: 10% auto;
-  padding: 20px;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 500px;
-  position: relative;
-  text-align: left;
-}
-
-.modal-content h2 {
-  margin-bottom: 20px;
-}
-
-.modal-content p {
-  font-size: 1.2rem;
-  margin-bottom: 10px;
-}
-
-.modal-order-form label {
-  display: block;
-  margin: 10px 0 5px;
-}
-
-/* Ajustes visuais adicionais para o modal de pedido */
-.modal-content {
-  padding: 30px;
-  border-radius: 16px;
-  text-align: center;
-}
-
-.modal-content p#modal-pizza-name {
-  font-size: 1.5rem;
-  color: #d35400;
-  margin-bottom: 20px;
-}
-
-.pizza-sizes,
-.payment-method {
-  margin: 20px 0;
-  text-align: left;
-}
-
-.pizza-sizes label,
-.payment-method label {
-  display: block;
-  margin: 8px 0;
-  font-size: 1rem;
-}
-
-#modal-pizza-quantity {
-  width: 100%;
-  max-width: 100px;
-  margin: 0 auto 20px;
-  display: block;
-  font-size: 1rem;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  text-align: center;
-}
-
-/* Botão dentro do modal */
-#modal-order-form .btn {
-  width: 100%;
-  margin-top: 20px;
-  font-size: 1.1rem;
-}
-
-/* MODAIS REESTRUTURADOS EM ETAPAS */
-.modal-content h3 {
-  font-size: 1.3rem;
-  margin-top: 20px;
-  color: #d35400;
-}
-
-.modal-content select,
-.modal-content input[type="number"],
-.modal-content textarea {
-  width: 100%;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  margin: 10px 0;
-  font-size: 1rem;
-}
-
-.modal-content textarea {
-  resize: vertical;
-  min-height: 80px;
-}
-
-/* Estilo para a área de adicionais */
-.modal-content .adicionais-checkboxes {
-  text-align: left;
-  margin: 10px 0;
-}
-
-.modal-content .adicionais-checkboxes label {
-  display: block;
-  margin: 5px 0;
-  font-size: 1rem;
-}
-
-/* Estilo para o segundo modal (pagamento) */
-#payment-modal .modal-content {
-  max-width: 500px;
-}
-
-#payment-form .payment-method label {
-  display: block;
-  margin: 10px 0;
-}
-
-#pix-info {
-  margin-top: 20px;
-  text-align: center;
-  display: none;
-}
-
-#pix-info p {
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 10px;
-}
-
-#pix-qr-code {
-  width: 200px;
-  height: 200px;
-  margin: 0 auto;
-  display: block;
-  object-fit: contain;
-  border: 1px solid #ccc;
-  border-radius: 12px;
-}
-
-/* Botões do segundo modal */
-#payment-form .btn {
-  width: 100%;
-  font-size: 1.1rem;
-  margin-top: 20px;
-}
-
-/* Responsividade para modais em dispositivos menores */
-@media (max-width: 480px) {
-  .modal-content {
-    padding: 20px;
-  }
-  .modal-content h2 {
-    font-size: 1.3rem;
-  }
-  #pix-qr-code {
-    width: 150px;
-    height: 150px;
-  }
-}
-
-/* Layout personalizado para seleção de tamanho */
-.pizza-size-section {
-  display: flex;
-  align-items: flex-start;
-  margin: 20px 0;
-  gap: 15px;
-}
-
-.pizza-size-section label {
-  text-align: center;
-  cursor: pointer;
-}
-
-.pizza-size-section input[type="radio"] {
-  display: none;
-}
-
-.pizza-size-section label img {
-  width: 60px;
-  height: 60px;
-  object-fit: contain;
-  margin-bottom: 8px;
-  transition: transform 0.2s ease;
-}
-
-/* Contêiner que une o rótulo "Tamanho:" e as opções */
-.pizza-sizes {
-  display: flex;
-  align-items: center;
-  gap: 15px; /* Espaço entre o título e as opções */
-  margin-top: -10px; /* Reposiciona a linha para mais cima */
-}
-
-.tamanho-title {
-  margin: 0; /* Remove a margem inferior */
-  font-weight: bold;
-  font-size: 1.1rem;
-}
-
-/* Adiciona animação bounce ao selecionar um tamanho */
-@keyframes bounce {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.15);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-.pizza-size-section input[type="radio"]:checked + img {
-  animation: bounce 0.3s ease;
-  transform: scale(1.1);
-  border: 2px solid #d35400;
-  border-radius: 8px;
-}
-
-/* Efeito de fogo nos cards da seção "As Mais Vendidas" */
-.card-fire {
-  position: relative;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 0 10px 4px orange;
-  animation: pulseFire 1.5s infinite alternate ease-in-out;
-  transition: transform 0.3s ease;
-}
-
-.card-fire:hover {
-  transform: scale(1.03);
-}
-
-@keyframes pulseFire {
-  0% {
-    box-shadow:
-      0 0 10px 4px orange,
-      0 0 20px 6px red,
-      0 0 30px 8px yellow;
-  }
-  100% {
-    box-shadow:
-      0 0 14px 6px orangered,
-      0 0 26px 10px orange,
-      0 0 36px 12px gold;
-  }
-}
-
-/* Scroll horizontal infinito e suave para a seção "As Mais Vendidas" */
-.horizontal-scroll.vendidas {
-  overflow-x: auto;
-  overflow-y: hidden;
-  scroll-behavior: smooth;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  position: relative;
-}
-
-.horizontal-scroll.vendidas::-webkit-scrollbar {
-  display: none;
-}
-
-.horizontal-scroll-track {
-  display: flex;
-  width: max-content;
-  gap: 20px;
-  animation: slide-horizontal 30s linear infinite;
-  will-change: transform;
-}
-
-.horizontal-scroll-track > * {
-  scroll-snap-align: start;
-  flex-shrink: 0;
-}
-
-@keyframes slide-horizontal {
-  0% {
-    transform: translateX(0%);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-/* Ajuste para o carrossel ocupar toda a largura e ficar colado com o HERO */
-#carousel {
-  width: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-/* Indicadores (pontos) do carrossel */
-.carousel-dots {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 8px;
-  z-index: 10;
-}
-
-.carousel-dots .dot {
-  width: 10px;
-  height: 10px;
-  background: #fff;
-  opacity: 0.5;
-  border-radius: 50%;
-  transition: opacity 0.3s, background 0.3s;
-  cursor: pointer;
-}
-
-.carousel-dots .dot.active {
-  opacity: 1;
-  background: #ff3c00; /* ou a cor que preferir */
-}
-
-/* Configuração do carrossel de imagens */
-/* (suas regras já existentes do carrossel permanecem) */
-.carousel {
-  width: 100%;
-  aspect-ratio: 3780 / 1890; /* Proporção 2:1, conforme solicitado */
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  position: relative;
-}
-
-.carousel-inner {
-  display: flex;
-  width: 300%;  /* Considerando 3 itens no carrossel */
-  height: 100%;
-  animation: slide 12s infinite;
-}
-
-/* ... demais regras do carrossel permanecem ... */
-
-.payment-methods {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  gap: 15px;
-}
-
-.payment-option {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border: 1px solid #ccc;
-  padding: 10px 15px;
-  border-radius: 8px;
-  transition: background-color 0.3s, border-color 0.3s;
-  width: 100px; /* ou ajuste conforme seu design */
-}
-
-.payment-option:hover {
-  border-color: #ff3c00;
-  background-color: #ffece8;
-}
-
-.payment-option input[type="radio"] {
-  display: none;
-}
-
-.payment-option img {
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
-  margin-bottom: 5px;
-}
-
-.payment-option span {
-  font-size: 1rem;
-  font-weight: bold;
-}
-
-/* Caso queira destacar a opção selecionada, utilize JavaScript ou o seletor :checked com pseudo-elementos */
-.payment-option input[type="radio"]:checked + img {
-  border: 2px solid #ff3c00;
-  padding: 4px;
-  border-radius: 50%;
-}
-
-.payment-option {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border: 1px solid #ccc;
-  padding: 10px 15px;
-  border-radius: 8px;
-  transition: background-color 0.3s, border-color 0.3s;
-  width: 110px; /* Aumentei um pouco a largura para acomodar "Dinheiro" */
-}
-
-.payment-option span {
-  font-size: 1rem;
-  font-weight: bold;
-  text-align: center;
-  white-space: nowrap; /* Impede quebra de linha */
-}
-
-/* Estilo para o campo de Número (caixa de texto) */
-#numero {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 10px;
-  font-size: 1rem;
-  width: 100%;
-  margin-top: 5px;
-}
-
-/* Seção Bebidas no modal */
-.bebidas-section {
-  margin-top: 20px;
-}
-
-.bebidas-title {
-  font-size: 1.1rem;
-  font-weight: bold;
-  margin-bottom: 10px;
-  margin-left: 5px;
-}
-
-/* Container horizontal com scroll para bebidas */
-.horizontal-scroll.bebidas-scroll {
-  display: flex;
-  gap: 15px;
-  overflow-x: auto;
-  padding-bottom: 10px;
-  scroll-behavior: smooth;
-}
-
-/* Estilo dos itens de bebida */
-.bebida-item {
-  flex: 0 0 auto;
-  width: 100px;
-  background: #fff;
-  border-radius: 8px;
-  text-align: center;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  padding: 10px;
-  cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.bebida-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-}
-
-.bebida-item img {
-  width: 80%;
-  margin: 0 auto;
-  display: block;
-  object-fit: contain;
-}
-
-/* Destaque para a bebida selecionada */
-.bebida-item.selected-bebida {
-  border: 2px solid #ff3c00;
-  border-radius: 8px;
-  padding: 8px;
-}
-
-/* ============================== */
-/* Estilo Personalizado - Observações e Resumo do Pedido */
-/* ============================== */
-
-/* Campo de Observações */
-#modal-additional {
-  border: 2px solid #ff3c00;
-  border-radius: 8px;
-  padding: 10px;
-  font-size: 1rem;
-  background-color: #fff;
-  transition: border-color 0.3s ease;
-  margin-top: 10px;
-}
-#modal-additional:focus {
-  border-color: #e23300;
-  outline: none;
-}
-
-/* Resumo do Pedido */
-#order-summary {
-  background-color: #f9f9f9;
-  border-left: 5px solid #ff3c00;
-  padding: 15px;
-  border-radius: 8px;
-  margin-top: 20px;
-  font-size: 1rem;
-  line-height: 1.5;
-}
-#order-summary h4 {
-  font-size: 1.5rem;
-  margin-bottom: 10px;
-  color: #d35400;
-  border-bottom: 1px solid #e0e0e0;
-  padding-bottom: 5px;
-}
-#order-summary p {
-  margin: 5px 0;
-  color: #333;
-}
-
-/* Botões dos modais */
-
-/* Estilo Elegante para os Botões dos Modais (Voltar e Fechar) */
-.modal .back,
-.modal .close {
-  position: absolute;
-  top: 10px;
-  width: 40px;
-  height: 40px;
-  background: rgba(255, 255, 255, 0.8);
-  border: 2px solid #ff3c00;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.3s, transform 0.2s;
-  z-index: 2;
-  font-size: 0;  /* Oculta qualquer conteúdo interno */
-  overflow: hidden;  /* Garante que texto interno não apareça */
-}
-
-/* Posicionamento: botão Voltar à esquerda, Fechar à direita */
-.modal .back {
-  left: 10px;
-}
-.modal .close {
-  right: 10px;
-}
-
-/* Pseudo-elementos para inserir os ícones */
-.modal .back::before,
-.modal .close::before {
-  content: "";
-  font-size: 1.5rem;
-  font-weight: bold;
-  transition: color 0.3s;
-}
-
-.modal .back::before {
-  content: "<";
-  color: #ff3c00;
-}
-
-.modal .close::before {
-  content: "×";
-  color: #ff3c00;
-}
-
-/* Efeito hover: fundo muda de cor e os ícones ficam brancos */
-.modal .back:hover,
-.modal .close:hover {
-  background: #ff3c00;
-  transform: scale(1.1);
-}
-
-.modal .back:hover::before,
-.modal .close:hover::before {
-  color: #fff;
-}
-
-/* Estilo para o bloco de resumo no modal de pagamento */
-#payment-summary {
-  margin-top: 10px;
-  background-color: #f0f0f0;
-  padding: 15px;
-  border-radius: 8px;
-  font-size: 1rem;
-  line-height: 1.5;
-}
-#payment-summary p {
-  margin: 5px 0;
-}
-#payment-summary p strong {
-  color: #d35400;
-}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pizza Express - Delivery de Pizzas</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="shortcut icon" href="assets/images/favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <!-- Header / Navigation -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <h1>Pizza Express</h1>
+      </div>
+      <ul class="nav-menu">
+        <li><a href="#home">Início</a></li>
+        <li><a href="#vendas">Mais Vendidas</a></li>
+        <li><a href="#tradicionais">Tradicionais</a></li>
+        <li><a href="#premium">Premium</a></li>
+        <li><a href="#contact">Contato</a></li>
+      </ul>
+      <div class="mobile-menu-toggle">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="home" class="hero">
+    <div class="hero-content">
+      <h1>A Melhor Pizza da Cidade</h1>
+      <p>Sabores irresistíveis, ingredientes selecionados e entrega rápida!</p>
+      <a href="#vendas" class="btn">Peça Agora</a>
+    </div>
+  </section>
+
+  <!-- Carousel Section (Banner) -->
+  <section id="carousel" class="carousel no-margin">
+    <div class="carousel-inner">
+      <div class="carousel-item">
+        <a href="https://example.com/promocao1" target="_blank">
+          <img src="assets/images/carousel1.jpg" alt="Promoção Especial 1">
+        </a>
+      </div>
+      <div class="carousel-item">
+        <a href="https://example.com/promocao2" target="_blank">
+          <img src="assets/images/carousel2.jpg" alt="Promoção Especial 2">
+        </a>
+      </div>
+      <div class="carousel-item">
+        <a href="https://example.com/promocao3" target="_blank">
+          <img src="assets/images/carousel3.jpg" alt="Promoção Especial 3">
+        </a>
+      </div>
+    </div>
+    <!-- Indicadores (pontos) do carrossel -->
+    <div class="carousel-dots">
+      <span class="dot active"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </div>
+  </section>
+
+  <!-- Horizontal Section: AS MAIS VENDIDAS -->
+  <section id="vendas" class="horizontal-section">
+    <div class="container">
+      <h2>AS MAIS VENDIDAS</h2>
+      <div class="horizontal-scroll vendidas">
+        <div class="horizontal-scroll-track">
+          <div class="item card-fire" onclick="openOrderModal('Pizza Marguerita')">
+            <img src="assets/images/pizza1.jpg" alt="Pizza Marguerita">
+            <p>Pizza Marguerita</p>
+            <p class="price">
+              <del>R$55,90</del>
+              <span>R$37,90</span>
+            </p>
+          </div>
+          <div class="item card-fire" onclick="openOrderModal('Pizza Calabresa')">
+            <img src="assets/images/pizza2.jpg" alt="Pizza Calabresa">
+            <p>Pizza Calabresa</p>
+            <p class="price">
+              <del>R$55,90</del>
+              <span>R$37,90</span>
+            </p>
+          </div>
+          <div class="item card-fire" onclick="openOrderModal('Pizza Quatro Queijos')">
+            <img src="assets/images/pizza3.jpg" alt="Pizza Quatro Queijos">
+            <p>Pizza Quatro Queijos</p>
+            <p class="price">
+              <del>R$55,90</del>
+              <span>R$37,90</span>
+            </p>
+          </div>
+          <!-- Duplicação dos cards para possibilitar o looping infinito -->
+          <div class="item card-fire" onclick="openOrderModal('Pizza Marguerita')">
+            <img src="assets/images/pizza1.jpg" alt="Pizza Marguerita">
+            <p>Pizza Marguerita</p>
+            <p class="price">
+              <del>R$55,90</del>
+              <span>R$37,90</span>
+            </p>
+          </div>
+          <div class="item card-fire" onclick="openOrderModal('Pizza Calabresa')">
+            <img src="assets/images/pizza2.jpg" alt="Pizza Calabresa">
+            <p>Pizza Calabresa</p>
+            <p class="price">
+              <del>R$55,90</del>
+              <span>R$37,90</span>
+            </p>
+          </div>
+          <div class="item card-fire" onclick="openOrderModal('Pizza Quatro Queijos')">
+            <img src="assets/images/pizza3.jpg" alt="Pizza Quatro Queijos">
+            <p>Pizza Quatro Queijos</p>
+            <p class="price">
+              <del>R$55,90</del>
+              <span>R$37,90</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Horizontal Section: PIZZAS TRADICIONAIS -->
+  <section id="tradicionais" class="horizontal-section">
+    <div class="container">
+      <h2>PIZZAS TRADICIONAIS</h2>
+      <div class="horizontal-scroll">
+        <div class="item" onclick="openOrderModal('Pizza Portuguesa')">
+          <img src="assets/images/pizza4.jpg" alt="Pizza Portuguesa">
+          <p>Pizza Portuguesa</p>
+          <p class="price">
+            <del>R$55,90</del>
+            <span>R$37,90</span>
+          </p>
+        </div>
+        <div class="item" onclick="openOrderModal('Marguerita Clássica')">
+          <img src="assets/images/pizza5.jpg" alt="Pizza Marguerita Clássica">
+          <p>Marguerita Clássica</p>
+          <p class="price">
+            <del>R$55,90</del>
+            <span>R$37,90</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Horizontal Section: PIZZAS PREMIUM -->
+  <section id="premium" class="horizontal-section">
+    <div class="container">
+      <h2>PIZZAS PREMIUM</h2>
+      <div class="horizontal-scroll">
+        <div class="item" onclick="openOrderModal('Pizza Trufada')">
+          <img src="assets/images/pizza6.jpg" alt="Pizza Trufada">
+          <p>Pizza Trufada</p>
+          <p class="price">
+            <del>R$55,90</del>
+            <span>R$37,90</span>
+          </p>
+        </div>
+        <div class="item" onclick="openOrderModal('Especial Gourmet')">
+          <img src="assets/images/pizza7.jpg" alt="Pizza Especial Gourmet">
+          <p>Especial Gourmet</p>
+          <p class="price">
+            <del>R$55,90</del>
+            <span>R$37,90</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Seção de Contato -->
+  <section id="contact" class="section contact">
+    <div class="container">
+      <h2>Entre em Contato</h2>
+      <form id="contact-form">
+        <input type="text" name="name" placeholder="Seu nome" required>
+        <input type="email" name="email" placeholder="Seu e-mail" required>
+        <textarea name="message" rows="4" placeholder="Sua mensagem" required></textarea>
+        <button type="submit" class="btn">Enviar Mensagem</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Modal de Pedido -->
+  <div id="order-modal" class="modal">
+    <div class="modal-content">
+      <!-- Botão Voltar -->
+      <button type="button" class="back"></button>
+      <span class="close"></span>
+      <h2>Monte seu Pedido</h2>
+
+      <form id="modal-order-form">
+        <p><strong>Pizza:</strong> <span id="modal-pizza-name"></span></p>
+        <!-- Linha para descrição -->
+        <p id="modal-pizza-description">Descrição: Adicione os ingredientes que essa pizza tem.</p>
+
+        <!-- Bloco de Seleção: Tamanho, Tipos de Massa, Borda e Quantidade -->
+        <div class="pizza-options" style="display: flex; flex-direction: column; align-items: flex-start;">
+          <!-- Seleção de Tamanho -->
+          <div class="pizza-sizes">
+            <p class="tamanho-title">Tamanho:</p>
+            <div class="pizza-size-section">
+              <label>
+                <input type="radio" name="pizza-size" value="Pequena" required>
+                <img src="assets/images/tamanho-pequena.png" alt="Pizza Pequena">
+                <div class="price-size">10.00</div>
+                <div>Pequena</div>
+              </label>
+              <label>
+                <input type="radio" name="pizza-size" value="Média">
+                <img src="assets/images/tamanho-media.png" alt="Pizza Média">
+                <div class="price-size">15.00</div>
+                <div>Média</div>
+              </label>
+              <label>
+                <input type="radio" name="pizza-size" value="Grande">
+                <img src="assets/images/tamanho-grande.png" alt="Pizza Grande">
+                <div class="price-size">20.00</div>
+                <div>Grande</div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Seção: Tipos de Massa -->
+          <div class="pizza-crust" style="margin-top: 20px; text-align: left;">
+            <p class="crust-title"><strong>Tipos de Massa:</strong></p>
+            <select name="pizza-crust" required>
+              <option value="">Selecione</option>
+              <option value="Massa Fina">Massa Fina</option>
+              <option value="Massa Tradicional">Massa Tradicional</option>
+            </select>
+          </div>
+
+          <!-- Seção: Borda -->
+          <div class="pizza-border" style="margin-top: 20px; text-align: left;">
+            <p class="border-title"><strong>Borda:</strong></p>
+            <select name="pizza-border" required>
+              <option value="">Selecione</option>
+              <option value="Nenhuma">Nenhuma</option>
+              <option value="Catupiry R$ 6,00">Catupiry R$ 6,00</option>
+              <option value="Cheddar R$ 5,00">Cheddar R$ 5,00</option>
+              <option value="Cream cheese R$ 3,50">Cream cheese R$ 3,50</option>
+            </select>
+          </div>
+
+          <!-- Seção: Quantidade -->
+          <div class="pizza-quantity" style="margin-top: 20px; text-align: left;">
+            <label for="modal-pizza-quantity"><strong>Quantidade:</strong></label>
+            <input type="number" id="modal-pizza-quantity" value="1" min="1" required>
+          </div>
+        </div>
+
+        <!-- Nova Seção: Bebidas -->
+        <div class="bebidas-section" style="margin-top: 20px; text-align: left;">
+          <p class="bebidas-title"><strong>Bebidas:</strong></p>
+          <div class="horizontal-scroll bebidas-scroll">
+            <div class="bebida-item">
+              <img src="assets/images/bebida1.jpg" alt="Coca-Cola 1,5L">
+              <p>Coca-Cola 1,5L</p>
+              <p class="price">R$ 5,00</p>
+            </div>
+            <div class="bebida-item">
+              <img src="assets/images/bebida2.jpg" alt="Guaraná 1L">
+              <p>Guaraná 1L</p>
+              <p class="price">R$ 4,50</p>
+            </div>
+            <div class="bebida-item">
+              <img src="assets/images/bebida3.jpg" alt="Guaraná 2L">
+              <p>Guaraná 2L</p>
+              <p class="price">R$ 3,00</p>
+            </div>
+          </div>
+        </div>
+
+        <label for="modal-additional">Observações:</label>
+        <input type="text" id="modal-additional" placeholder="Ex: sem cebola, extra queijo...">
+
+        <!-- Resumo do Pedido -->
+        <div id="order-summary">
+          <h4>Resumo do Pedido:</h4>
+          <p id="summary-size"></p>
+          <p id="summary-crust"></p>
+          <p id="summary-border"></p>
+          <p id="summary-quantity"></p>
+          <p id="summary-beverage"></p>
+        </div>
+
+        <button type="submit" class="btn">Confirmar Pedido</button>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Modal de Pagamento -->
+  <div id="payment-modal" class="modal">
+    <div class="modal-content">
+      <!-- Botão Voltar -->
+      <button type="button" class="back"></button>
+      <span class="close"></span>
+      <form id="modal-payment-form">
+        <!-- Bloco: CEP e Endereço -->
+        <div class="delivery-location" style="margin:20px 0; text-align: left;">
+          <label for="cep"><strong>Digite seu CEP para calcular a taxa de entrega:</strong></label>
+          <input type="text" id="cep" name="cep" placeholder="Ex: 01001-000" required style="width: 100%; padding: 10px; margin-top: 5px;">
+          
+          <!-- Endereço automático preenchido -->
+          <div id="address-fields" style="margin-top: 10px;">
+            <input type="text" id="rua" name="rua" placeholder="Rua" readonly style="width: 100%; padding: 8px; margin-top: 5px;">
+            <input type="text" id="bairro" name="bairro" placeholder="Bairro" readonly style="width: 100%; padding: 8px; margin-top: 5px;">
+            <input type="text" id="cidade" name="cidade" placeholder="Cidade" readonly style="width: 100%; padding: 8px; margin-top: 5px;">
+            <input type="text" id="estado" name="estado" placeholder="Estado" readonly style="width: 100%; padding: 8px; margin-top: 5px;">
+          </div>
+
+          <!-- Novo campo: Número da Casa -->
+          <div style="margin-top: 10px;">
+            <label for="numero" style="font-weight: bold;">Número:</label>
+            <input type="text" id="numero" name="numero" placeholder="Digite o número da sua casa" style="width: 100%; padding: 10px; margin-top: 5px;">
+          </div>
+
+          <div id="delivery-fee" style="margin-top: 10px; font-weight: bold;">Taxa de Entrega: R$ 0,00</div>
+        </div>
+
+        <!-- Bloco: Seleção de Forma de Pagamento em formato horizontal -->
+        <div class="payment-methods-section" style="margin:20px 0; text-align: center;">
+          <h2 style="margin-bottom: 15px;">Escolha a forma de pagamento</h2>
+          <div class="payment-methods">
+            <!-- Opção Pix -->
+            <label class="payment-option">
+              <input type="radio" name="payment-method" value="Pix" required>
+              <img src="assets/images/icon-pix.png" alt="Pix">
+              <span>Pix</span>
+            </label>
+            <!-- Opção Cartão -->
+            <label class="payment-option">
+              <input type="radio" name="payment-method" value="Cartão">
+              <img src="assets/images/icon-card.png" alt="Cartão">
+              <span>Cartão</span>
+            </label>
+            <!-- Opção Dinheiro -->
+            <label class="payment-option">
+              <input type="radio" name="payment-method" value="Dinheiro">
+              <img src="assets/images/icon-cash.png" alt="Dinheiro">
+              <span>Dinheiro</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Bloco: Informações do Pix -->
+        <div id="pix-info" style="display: none; margin-top: 10px; text-align: center;">
+          <p><strong>Chave Pix:</strong> <span id="pix-key-text">708.276.084-11</span></p>
+          <button id="copy-button" class="btn" type="button" style="margin: 10px 0;">Copiar chave</button>
+          <p>Ou pague QR CODE</p>
+          <img src="assets/images/qrcode-pix.png" alt="QR Code Pix" style="max-width: 200px; margin-top: 10px;">
+        </div>
+
+        <!-- Botão para finalizar o pedido -->
+        <button type="submit" class="btn">Finalizar Pedido</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 Pizza Express. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- Inclusão dos scripts JavaScript -->
+  <script src="assets/js/prices.js"></script>
+  <script src="assets/js/script.js"></script>
+</body>
+</html>
