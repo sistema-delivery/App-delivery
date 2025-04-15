@@ -1,11 +1,10 @@
-// Declaração global do carrinho para que todas as funções possam acessá-lo
+// Declaração global do carrinho
 let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
 
-// Função centralizada para calcular o total dos itens do pedido (sem a taxa de entrega)
+// Função para calcular o total do pedido (sem entrega)
 function calcularTotalPedido() {
   let total = 0;
   carrinho.forEach((pizza) => {
-    // Preço do tamanho
     let sizePrice = 0;
     if (
       window.storeData &&
@@ -15,36 +14,21 @@ function calcularTotalPedido() {
     ) {
       sizePrice = window.storeData.pizzas[pizza.nome].sizes[pizza.tamanho] || 0;
     } else {
-      sizePrice = pizza.tamanho === "Pequena"
-        ? 10
-        : pizza.tamanho === "Média"
-          ? 15
-          : 20;
+      sizePrice = pizza.tamanho === "Pequena" ? 10 : pizza.tamanho === "Média" ? 15 : 20;
     }
-    // Para as bordas, se houver dados no storeData, usa os preços definidos
-    let pizzaData = (window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizza.nome])
-                      ? window.storeData.pizzas[pizza.nome]
-                      : null;
+    let pizzaData = window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizza.nome]
+      ? window.storeData.pizzas[pizza.nome]
+      : null;
     const cheddarPrice = pizzaData ? pizzaData.borders["Cheddar"] : 5.00;
     const catupiryPrice = pizzaData ? pizzaData.borders["Catupiry"] : 6.00;
     const creamCheesePrice = pizzaData ? pizzaData.borders["Cream cheese"] : 3.50;
 
     const bordasCost = (pizza.bordas.cheddar * cheddarPrice) +
-                       (pizza.bordas.catupiry * catupiryPrice) +
-                       (pizza.bordas.cream * creamCheesePrice);
-
-    // Bebidas: tenta usar os valores do storeData.beverages se disponíveis
+                        (pizza.bordas.catupiry * catupiryPrice) +
+                        (pizza.bordas.cream * creamCheesePrice);
     const bebidasCost = pizza.bebidas
-      ? pizza.bebidas.reduce((acc, bev) => {
-          const priceFromStore = (window.storeData &&
-                                  window.storeData.beverages &&
-                                  window.storeData.beverages[bev.name] !== undefined)
-                                  ? window.storeData.beverages[bev.name]
-                                  : bev.price;
-          return acc + (priceFromStore * bev.quantity);
-        }, 0)
+      ? pizza.bebidas.reduce((acc, bev) => acc + (bev.price * bev.quantity), 0)
       : 0;
-
     const subtotal = (sizePrice * pizza.quantidade) + bordasCost + bebidasCost;
     total += subtotal;
   });
@@ -52,12 +36,12 @@ function calcularTotalPedido() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Função auxiliar para converter strings de preço ("6,00") para formato numérico ("6.00")
+  // Função auxiliar para converter preços
   function parsePrice(str) {
     return parseFloat(str.replace(",", "."));
   }
 
-  // Incrementa o valor de um input (bordas)
+  // Incrementa inputs (bordas e bebidas)
   window.incrementField = function(fieldId) {
     const input = document.getElementById(fieldId);
     if (input) {
@@ -67,7 +51,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // Incrementa o valor do input imediatamente anterior (bebidas)
   window.incrementSibling = function(button) {
     const input = button.previousElementSibling;
     if (input && input.tagName === 'INPUT') {
@@ -77,40 +60,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // Mobile Menu Toggle
+  // Mobile menu toggle
   const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
   const navMenu = document.querySelector('.nav-menu');
-  mobileMenuToggle.addEventListener('click', () => {
-    navMenu.classList.toggle('active');
-  });
+  if (mobileMenuToggle) {
+    mobileMenuToggle.addEventListener('click', () => {
+      navMenu.classList.toggle('active');
+    });
+  }
 
-  const storeLocation = { lat: -7.950346, lon: -34.902970 };
   const defaultCity = "Paulista (PE)";
-  let pedidoInfo = {}; // Armazena o pedido atual
+  let pedidoInfo = {};
 
-  // ============================
-  // Funções de Modais
-  // ============================
+  // Funções de modais
   function openOrderModal(pizzaName) {
     const modalPizzaName = document.getElementById('modal-pizza-name');
-    if (modalPizzaName) {
-      modalPizzaName.textContent = pizzaName;
-    }
+    if (modalPizzaName) { modalPizzaName.textContent = pizzaName; }
     if (window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizzaName]) {
       const pizzaData = window.storeData.pizzas[pizzaName];
       const modalDescription = document.getElementById('modal-pizza-description');
-      if (modalDescription) {
-        modalDescription.textContent = pizzaData.description;
-      }
-      // Atualiza os preços por tamanho conforme os dados da pizza
+      if (modalDescription) { modalDescription.textContent = pizzaData.description; }
       const sizeLabels = document.querySelectorAll('.pizza-size-section label');
       sizeLabels.forEach(label => {
         const radio = label.querySelector('input[type="radio"]');
         if (radio && pizzaData.sizes[radio.value]) {
           const priceDiv = label.querySelector('.price-size');
-          if (priceDiv) {
-            priceDiv.textContent = pizzaData.sizes[radio.value].toFixed(2);
-          }
+          if (priceDiv) { priceDiv.textContent = pizzaData.sizes[radio.value].toFixed(2); }
         }
       });
     }
@@ -120,57 +95,44 @@ document.addEventListener('DOMContentLoaded', () => {
   function closeOrderModal() {
     document.getElementById('order-modal').style.display = 'none';
     const orderForm = document.getElementById('modal-order-form');
-    if (orderForm) {
-      orderForm.reset();
-    }
-    // Reset dos inputs de bordas e bebidas
+    if (orderForm) { orderForm.reset(); }
+    // Reset bordas e bebidas
     document.getElementById('border-cheddar').value = 0;
     document.getElementById('border-catupiry').value = 0;
     document.getElementById('border-cream-cheese').value = 0;
     document.querySelectorAll('.bebida-quantity').forEach(input => input.value = 0);
   }
 
-  function openPaymentModal() {
-    document.getElementById('payment-modal').style.display = 'block';
-  }
-
+  function openPaymentModal() { document.getElementById('payment-modal').style.display = 'block'; }
   function closePaymentModal() {
     document.getElementById('payment-modal').style.display = 'none';
     const paymentForm = document.getElementById('modal-payment-form');
-    if (paymentForm) {
-      paymentForm.reset();
-    }
+    if (paymentForm) { paymentForm.reset(); }
     document.getElementById('pix-info').style.display = 'none';
   }
 
   window.addEventListener('click', function(event) {
     const orderModal = document.getElementById('order-modal');
     const paymentModal = document.getElementById('payment-modal');
-    if (event.target === orderModal) closeOrderModal();
-    if (event.target === paymentModal) closePaymentModal();
+    if (event.target === orderModal) { closeOrderModal(); }
+    if (event.target === paymentModal) { closePaymentModal(); }
   });
 
   document.querySelectorAll('.modal .close').forEach(closeBtn => {
-    closeBtn.addEventListener('click', () => {
-      closeOrderModal();
-      closePaymentModal();
-    });
+    closeBtn.addEventListener('click', () => { closeOrderModal(); closePaymentModal(); });
   });
 
   document.querySelectorAll('.modal .back').forEach(backBtn => {
     backBtn.addEventListener('click', () => {
       const modal = backBtn.closest('.modal');
       if (!modal) return;
-      if (modal.id === 'order-modal') {
-        closeOrderModal();
-      } else if (modal.id === 'payment-modal') {
-        closePaymentModal();
-      } else {
-        modal.style.display = 'none';
-      }
+      if (modal.id === 'order-modal') { closeOrderModal(); }
+      else if (modal.id === 'payment-modal') { closePaymentModal(); }
+      else { modal.style.display = 'none'; }
     });
   });
 
+  // Abre modal ao clicar no item
   document.querySelectorAll('.horizontal-scroll .item').forEach(item => {
     item.addEventListener('click', function () {
       const pizzaName = item.querySelector('p').textContent;
@@ -178,9 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // ====================================
-  // Atualiza o Resumo do Pedido (Modal)
-  // ====================================
+  // Atualiza o resumo do pedido dentro do modal
   function updateOrderSummary() {
     const pizzaName = document.getElementById('modal-pizza-name')?.textContent.trim() || '';
     const size = document.querySelector('input[name="pizza-size"]:checked')?.value || 'Não selecionado';
@@ -193,14 +153,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const somaBordas = cheddarQuantity + catupiryQuantity + creamCheeseQuantity;
     const semBorda = totalPizzas - (somaBordas > totalPizzas ? totalPizzas : somaBordas);
     
-    let sizePrice = 0;
-    let pizzaData = null;
+    let sizePrice = 0, pizzaData = null;
     if (pizzaName && window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizzaName]) {
       pizzaData = window.storeData.pizzas[pizzaName];
       sizePrice = pizzaData.sizes[size] || 0;
     }
 
-    // Usa os preços definidos no storeData, se disponíveis; caso contrário, valores padrão
     const cheddarPrice = pizzaData ? pizzaData.borders["Cheddar"] : 5.00;
     const catupiryPrice = pizzaData ? pizzaData.borders["Catupiry"] : 6.00;
     const creamCheesePrice = pizzaData ? pizzaData.borders["Cream cheese"] : 3.50;
@@ -216,7 +174,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const bebidaName = item.querySelector('p').textContent;
       const priceText = item.querySelector('.price').textContent.replace('R$', '').trim();
       let bebidaPrice = parsePrice(priceText);
-      // Se houver valor definido no storeData, usa-o
       if (window.storeData && window.storeData.beverages && window.storeData.beverages[bebidaName] !== undefined) {
         bebidaPrice = window.storeData.beverages[bebidaName];
       }
@@ -229,7 +186,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const baseTotal = pizzasCost + beveragesCost;
     pedidoInfo.baseTotal = baseTotal;
-
     const deliveryFee = pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0;
     pedidoInfo.total = baseTotal + deliveryFee;
 
@@ -239,14 +195,12 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('summary-border').textContent = `Bordas: Cheddar (${cheddarQuantity} un. × R$ ${cheddarPrice.toFixed(2)}) + Catupiry (${catupiryQuantity} un. × R$ ${catupiryPrice.toFixed(2)}) + Cream cheese (${creamCheeseQuantity} un. × R$ ${creamCheesePrice.toFixed(2)})`;
       document.getElementById('summary-quantity').textContent = `Quantidade de Pizzas: ${totalPizzas} (Sem borda: ${semBorda})`;
       document.getElementById('summary-beverage').textContent = `Bebidas: ${beveragesSummary.length > 0 ? beveragesSummary.join(', ') : 'Nenhuma selecionada'}`;
-      
       if (document.getElementById('summary-total')) {
         document.getElementById('summary-total').innerHTML = `<strong>Total: R$ ${pedidoInfo.total.toFixed(2)}</strong>`;
       }
     }
   }
 
-  // Eventos para atualizar o resumo conforme as escolhas do usuário
   document.querySelectorAll('input[name="pizza-size"]').forEach(el => el.addEventListener('change', updateOrderSummary));
   const crustSelect = document.querySelector('select[name="pizza-crust"]');
   if (crustSelect) crustSelect.addEventListener('change', updateOrderSummary);
@@ -259,9 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
     input.addEventListener('input', updateOrderSummary);
   });
 
-  // ========================================
-  // Processamento do formulário de pedido
-  // ========================================
+  // Processa o formulário de pedido
   const orderForm = document.getElementById('modal-order-form');
   if (orderForm) {
     orderForm.addEventListener('submit', function (e) {
@@ -301,9 +253,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ========================================
-  // Atualiza o resumo de pagamento do modal, incluindo a taxa de entrega
-  // ========================================
   function updatePaymentSummaryCart() {
     let paymentSummaryElement = document.getElementById('payment-summary');
     if (!paymentSummaryElement) {
@@ -326,8 +275,9 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         sizePrice = pizza.tamanho === "Pequena" ? 10 : pizza.tamanho === "Média" ? 15 : 20;
       }
-      let pizzaData = (window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizza.nome])
-                        ? window.storeData.pizzas[pizza.nome] : null;
+      let pizzaData = window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizza.nome]
+        ? window.storeData.pizzas[pizza.nome]
+        : null;
       const cheddarPrice = pizzaData ? pizzaData.borders["Cheddar"] : 5.00;
       const catupiryPrice = pizzaData ? pizzaData.borders["Catupiry"] : 6.00;
       const creamCheesePrice = pizzaData ? pizzaData.borders["Cream cheese"] : 3.50;
@@ -357,9 +307,6 @@ document.addEventListener('DOMContentLoaded', () => {
     paymentSummaryElement.innerHTML = summaryText;
   }
 
-  // ========================================
-  // Eventos para método de pagamento e CEP
-  // ========================================
   document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
     radio.addEventListener('change', function () {
       const pixInfo = document.getElementById('pix-info');
@@ -388,7 +335,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('bairro').value = data.bairro || '';
         document.getElementById('cidade').value = data.localidade || '';
         document.getElementById('estado').value = data.uf || '';
-
         const cityKey = data.localidade && data.uf ? `${data.localidade} (${data.uf})` : defaultCity;
         const bairro = data.bairro;
         let fee;
@@ -419,10 +365,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
 
-  function toRad(degrees) {
-    return degrees * Math.PI / 180;
-  }
-
+  function toRad(degrees) { return degrees * Math.PI / 180; }
   function calculateDistance(loc1, loc2) {
     const R = 6371;
     const dLat = toRad(loc2.lat - loc1.lat);
@@ -434,18 +377,13 @@ document.addEventListener('DOMContentLoaded', () => {
     return R * c;
   }
 
-  // ========================================
-  // Processamento do formulário de pagamento
-  // ========================================
+  // Processa o formulário de pagamento
   const paymentForm = document.getElementById('modal-payment-form');
   if (paymentForm) {
     paymentForm.addEventListener('submit', function (e) {
       e.preventDefault();
       const metodo = document.querySelector('input[name="payment-method"]:checked').value;
-      
       if (metodo === 'Pix') {
-        // Fluxo para Pagamento via Pix:
-        // Chama o endpoint do seu servidor para gerar o QR CODE
         fetch('https://meu-app-sooty.vercel.app/mp-pix', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -462,7 +400,6 @@ document.addEventListener('DOMContentLoaded', () => {
               <p style="font-size: 0.9rem; color: #555;">Após escanear o QR Code, aguarde a confirmação do pagamento.</p>
             `;
             pixInfoDiv.style.display = 'block';
-            // Desabilita o botão para evitar múltiplas requisições
             paymentForm.querySelector('button[type="submit"]').disabled = true;
           } else {
             alert("Não foi possível gerar o pagamento via Pix. Tente novamente.");
@@ -473,19 +410,16 @@ document.addEventListener('DOMContentLoaded', () => {
           alert("Erro ao criar pagamento via Pix. Tente novamente.");
         });
       } else {
-        // Fluxo para outras formas de pagamento (mantém o fluxo original via WhatsApp)
         const status = 'Pagamento na entrega';
         const chavePix = '708.276.084-11';
         const dataAtual = new Date();
         const data = dataAtual.toLocaleDateString();
         const hora = dataAtual.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const taxaEntrega = pedidoInfo.deliveryFee ? `*Taxa de Entrega:* R$ ${pedidoInfo.deliveryFee}` : '*Taxa de Entrega:* R$ 0,00';
-
         const rua = document.getElementById('rua').value;
         const bairro = document.getElementById('bairro').value;
         const cidade = document.getElementById('cidade').value;
         const numero = document.getElementById('numero').value;
-
         const mensagem = `
 *Pedido de Pizza - Pizza Express*
 ------------------------------------
@@ -512,7 +446,6 @@ ${taxaEntrega}
 
 Agradecemos o seu pedido!
 Pizza Express - Sabor que chega rápido!`.trim();
-
         const whatsappNumber = '5581997333714';
         const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(mensagem)}`;
         closePaymentModal();
@@ -526,176 +459,17 @@ Pizza Express - Sabor que chega rápido!`.trim();
     copyButton.addEventListener('click', () => {
       const pixKey = document.getElementById('pix-key-text').textContent;
       navigator.clipboard.writeText(pixKey)
-        .then(() => {
-          alert('Chave Pix copiada!');
-        })
-        .catch(err => {
-          console.error('Erro ao copiar a chave Pix:', err);
-        });
+        .then(() => { alert('Chave Pix copiada!'); })
+        .catch(err => { console.error('Erro ao copiar a chave Pix:', err); });
     });
   }
 
-  // ========================================
-  // Scroll horizontal infinito para a seção "As Mais Vendidas"
-  // ========================================
-  const scrollContainer = document.querySelector('.horizontal-scroll.vendidas');
-  if (scrollContainer) {
-    const scrollTrack = scrollContainer.querySelector('.horizontal-scroll-track');
-    let animationTimeout;
-    function pauseAnimation() {
-      scrollTrack.style.animationPlayState = 'paused';
-      clearTimeout(animationTimeout);
-      animationTimeout = setTimeout(() => {
-        scrollTrack.style.animationPlayState = 'running';
-      }, 2000);
-    }
-    scrollContainer.addEventListener('scroll', pauseAnimation);
-    scrollContainer.addEventListener('mouseenter', pauseAnimation);
-    scrollContainer.addEventListener('touchstart', pauseAnimation);
-  }
-
-  // ========================================
-  // Carousel dos banners
-  // ========================================
-  const dots = document.querySelectorAll('.carousel-dots .dot');
-  const carouselInner = document.querySelector('.carousel-inner');
-  let currentIndex = 0;
-  function updateCarousel(index) {
-    carouselInner.style.transition = 'transform 0.5s ease-in-out';
-    carouselInner.style.transform = `translateX(-${index * 100}%)`;
-    dots.forEach(dot => dot.classList.remove('active'));
-    if (dots[index]) dots[index].classList.add('active');
-    currentIndex = index;
-  }
-  setInterval(() => {
-    updateCarousel((currentIndex + 1) % dots.length);
-  }, 4000);
-  dots.forEach((dot, index) => {
-    dot.addEventListener('click', () => {
-      updateCarousel(index);
-    });
-  });
-  let startX = 0;
-  let isDragging = false;
-  let currentTranslate = 0;
-  carouselInner.addEventListener('touchstart', (e) => {
-    startX = e.touches[0].clientX;
-    isDragging = true;
-  });
-  carouselInner.addEventListener('touchmove', (e) => {
-    if (!isDragging) return;
-    const diff = e.touches[0].clientX - startX;
-    currentTranslate = -currentIndex * 100 + (diff / window.innerWidth) * 100;
-    carouselInner.style.transition = 'none';
-    carouselInner.style.transform = `translateX(${currentTranslate}%)`;
-  });
-  carouselInner.addEventListener('touchend', (e) => {
-    isDragging = false;
-    const endX = e.changedTouches[0].clientX;
-    const diff = endX - startX;
-    if (diff > 50 && currentIndex > 0) {
-      updateCarousel(currentIndex - 1);
-    } else if (diff < -50 && currentIndex < dots.length - 1) {
-      updateCarousel(currentIndex + 1);
-    } else {
-      updateCarousel(currentIndex);
-    }
-  });
-  let mouseStartX = 0;
-  carouselInner.addEventListener('mousedown', (e) => {
-    mouseStartX = e.clientX;
-    isDragging = true;
-  });
-  carouselInner.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
-    const diff = e.clientX - mouseStartX;
-    currentTranslate = -currentIndex * 100 + (diff / window.innerWidth) * 100;
-    carouselInner.style.transition = 'none';
-    carouselInner.style.transform = `translateX(${currentTranslate}%)`;
-  });
-  carouselInner.addEventListener('mouseup', (e) => {
-    isDragging = false;
-    const diff = e.clientX - mouseStartX;
-    if (diff > 50 && currentIndex > 0) {
-      updateCarousel(currentIndex - 1);
-    } else if (diff < -50 && currentIndex < dots.length - 1) {
-      updateCarousel(currentIndex + 1);
-    } else {
-      updateCarousel(currentIndex);
-    }
-  });
-  const carouselViewport = document.querySelector('.carousel-viewport');
-  if (carouselViewport) {
-    carouselViewport.addEventListener('scroll', () => {
-      const index = Math.round(carouselViewport.scrollLeft / carouselViewport.offsetWidth);
-      dots.forEach(dot => dot.classList.remove('active'));
-      if (dots[index]) dots[index].classList.add('active');
-    });
-  }
-
-  // ========================================
-  // Carrinho de Compras com LocalStorage
-  // ========================================
-  function atualizarLocalStorage() {
-    localStorage.setItem('carrinho', JSON.stringify(carrinho));
-  }
-
-  // Adiciona o pedido atual ao carrinho e persiste os dados
-  window.adicionarAoCarrinho = function() {
-    const tamanho = document.querySelector('input[name="pizza-size"]:checked')?.value;
-    const massa = document.querySelector('select[name="pizza-crust"]').value;
-    const quantidade = parseInt(document.getElementById("modal-pizza-quantity").value);
-
-    const cheddar = parseInt(document.getElementById("border-cheddar").value);
-    const catupiry = parseInt(document.getElementById("border-catupiry").value);
-    const cream = parseInt(document.getElementById("border-cream-cheese").value);
-
-    if (!tamanho || !massa || quantidade < 1) {
-      alert("Por favor, preencha todos os campos obrigatórios.");
-      return;
-    }
-    
-    // Coleta as bebidas selecionadas
-    const bebidas = [];
-    document.querySelectorAll('.bebida-item').forEach(item => {
-      const bebidaName = item.querySelector('p').textContent;
-      const priceText = item.querySelector('.price').textContent.replace('R$', '').trim();
-      let bebidaPrice = parsePrice(priceText);
-      if (window.storeData && window.storeData.beverages && window.storeData.beverages[bebidaName] !== undefined) {
-        bebidaPrice = window.storeData.beverages[bebidaName];
-      }
-      const bebidaQuantity = parseInt(item.querySelector('.bebida-quantity').value) || 0;
-      if(bebidaQuantity > 0){
-        bebidas.push({
-          name: bebidaName,
-          price: bebidaPrice,
-          quantity: bebidaQuantity
-        });
-      }
-    });
-
-    const pizza = {
-      nome: document.getElementById('modal-pizza-name').textContent.trim(),
-      tamanho,
-      massa,
-      quantidade,
-      bordas: { cheddar, catupiry, cream },
-      bebidas  // Guarda as bebidas selecionadas
-    };
-
-    carrinho.push(pizza);
-    atualizarLocalStorage();
-    alert("Pizza adicionada ao carrinho!");
-    closeOrderModal();
-    atualizarCarrinhoUI();
-  };
-
-  // Atualiza a interface do carrinho (lista de itens e total)
+  // Atualiza o carrinho e a contagem (badge)
   function atualizarCarrinhoUI() {
     const lista = document.getElementById("cart-items");
     const totalEl = document.getElementById("cart-total");
     lista.innerHTML = "";
-    
+    let totalItens = 0;
     carrinho.forEach((pizza) => {
       let sizePrice = 0;
       if (
@@ -708,79 +482,49 @@ Pizza Express - Sabor que chega rápido!`.trim();
       } else {
         sizePrice = pizza.tamanho === "Pequena" ? 10 : pizza.tamanho === "Média" ? 15 : 20;
       }
-      let pizzaData = (window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizza.nome])
-                        ? window.storeData.pizzas[pizza.nome]
-// Função que atualiza a interface do carrinho (lista de itens e total) e atualiza a contagem do badge
-function atualizarCarrinhoUI() {
-  const lista = document.getElementById("cart-items");
-  const totalEl = document.getElementById("cart-total");
-  lista.innerHTML = "";
-  
-  // Calcula a soma total de pizzas no carrinho (considerando a propriedade "quantidade" de cada item)
-  let totalItens = 0;
-  
-  carrinho.forEach((pizza) => {
-    let sizePrice = 0;
-    if (
-      window.storeData &&
-      window.storeData.pizzas &&
-      window.storeData.pizzas[pizza.nome] &&
-      window.storeData.pizzas[pizza.nome].sizes
-    ) {
-      sizePrice = window.storeData.pizzas[pizza.nome].sizes[pizza.tamanho] || 0;
-    } else {
-      sizePrice = pizza.tamanho === "Pequena" ? 10 : pizza.tamanho === "Média" ? 15 : 20;
-    }
-    let pizzaData = (window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizza.nome])
-                      ? window.storeData.pizzas[pizza.nome]
-                      : null;
-    const cheddarPrice = pizzaData ? pizzaData.borders["Cheddar"] : 5.00;
-    const catupiryPrice = pizzaData ? pizzaData.borders["Catupiry"] : 6.00;
-    const creamCheesePrice = pizzaData ? pizzaData.borders["Cream cheese"] : 3.50;
-    
-    const bordasCost = (pizza.bordas.cheddar * cheddarPrice) +
-                        (pizza.bordas.catupiry * catupiryPrice) +
-                        (pizza.bordas.cream * creamCheesePrice);
-    const bebidasCost = pizza.bebidas
-      ? pizza.bebidas.reduce((acc, bev) => acc + (bev.price * bev.quantity), 0)
-      : 0;
-    const subtotal = (sizePrice * pizza.quantidade) + bordasCost + bebidasCost;
-    
-    totalItens += parseInt(pizza.quantidade) || 1;
-    
-    let bebidaText = "";
-    if (pizza.bebidas && pizza.bebidas.length > 0) {
-      bebidaText = " - Bebidas: " + pizza.bebidas.map(b => `${b.name} x${b.quantity}`).join(', ');
-    }
-    
-    const item = document.createElement("li");
-    item.innerText = `Pizza: ${pizza.nome} - ${pizza.tamanho}, ${pizza.massa}, Qtde: ${pizza.quantidade}${bebidaText} - R$ ${subtotal.toFixed(2)}`;
-    lista.appendChild(item);
-  });
-  
-  totalEl.innerText = calcularTotalPedido().toFixed(2);
-  // Atualiza o badge do carrinho com a contagem total de itens
-  document.getElementById("cart-count").innerText = totalItens;
-}
+      let pizzaData = window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizza.nome]
+        ? window.storeData.pizzas[pizza.nome] : null;
+      const cheddarPrice = pizzaData ? pizzaData.borders["Cheddar"] : 5.00;
+      const catupiryPrice = pizzaData ? pizzaData.borders["Catupiry"] : 6.00;
+      const creamCheesePrice = pizzaData ? pizzaData.borders["Cream cheese"] : 3.50;
+      
+      const bordasCost = (pizza.bordas.cheddar * cheddarPrice) +
+                         (pizza.bordas.catupiry * catupiryPrice) +
+                         (pizza.bordas.cream * creamCheesePrice);
+      const bebidasCost = pizza.bebidas
+        ? pizza.bebidas.reduce((acc, bev) => acc + (bev.price * bev.quantity), 0)
+        : 0;
+      const subtotal = (sizePrice * pizza.quantidade) + bordasCost + bebidasCost;
+      totalItens += parseInt(pizza.quantidade) || 1;
+      let bebidaText = "";
+      if (pizza.bebidas && pizza.bebidas.length > 0) {
+        bebidaText = " - Bebidas: " + pizza.bebidas.map(b => `${b.name} x${b.quantity}`).join(', ');
+      }
+      const item = document.createElement("li");
+      item.innerText = `Pizza: ${pizza.nome} - ${pizza.tamanho}, ${pizza.massa}, Qtde: ${pizza.quantidade}${bebidaText} - R$ ${subtotal.toFixed(2)}`;
+      lista.appendChild(item);
+    });
+    totalEl.innerText = calcularTotalPedido().toFixed(2);
+    document.getElementById("cart-count").innerText = totalItens;
+  }
 
-// Sempre que o carrinho for atualizado, essa função é chamada.
-// Também, ao carregar a página, chamamos atualizarCarrinhoUI();
-atualizarCarrinhoUI();
+  window.abrirCarrinho = function() {
+    document.getElementById("cart").style.display = "block";
+    atualizarCarrinhoUI();
+  };
 
   window.fecharCarrinho = function() {
     document.getElementById("cart").style.display = "none";
   };
 
-  // Ao clicar em "Finalizar Pedido" no carrinho, abre o modal de pagamento
   window.finalizarPedido = function() {
     if (carrinho.length === 0) {
       alert("Seu carrinho está vazio!");
       return;
     }
-    updatePaymentSummaryCart();  // Atualiza o resumo do pagamento unificando os cálculos
+    updatePaymentSummaryCart();
     openPaymentModal();
   };
 
-  // Atualiza a interface do carrinho ao carregar a página
   atualizarCarrinhoUI();
 });
