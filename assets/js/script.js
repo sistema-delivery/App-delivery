@@ -123,16 +123,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function openPaymentModal() {
     const modal = document.getElementById('payment-modal');
-    if(modal) modal.style.display = 'block';
+    if (modal) modal.style.display = 'block';
   }
 
   function closePaymentModal() {
     const modal = document.getElementById('payment-modal');
-    if(modal) modal.style.display = 'none';
+    if (modal) modal.style.display = 'none';
     const paymentForm = document.getElementById('modal-payment-form');
     if (paymentForm) paymentForm.reset();
     const pixInfo = document.getElementById('pix-info');
-    if(pixInfo) pixInfo.style.display = 'none';
+    if (pixInfo) pixInfo.style.display = 'none';
   }
 
   // Fechar modais quando o usuário clica fora deles
@@ -172,42 +172,38 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // -----------------------------
-  // updateOrderSummary – Cálculo conforme modelo:
-  // 1. Total do preço do tamanho = (Preço do Tamanho) x (Quantidade)
-  // 2. Total das bordas = soma para cada input: (Preço da Borda) x (Quantidade informada)
-  // 3. Bebida = valor adicionado uma vez
-  // 4. Total Final = tamanhoTotal + borderTotal + beverageCost (+ eventual taxa de entrega)
+  // updateOrderSummary – Atualizado para cálculo real do pedido
   // -----------------------------
   function updateOrderSummary() {
-    // Se o modal estiver aberto, leia os valores atuais; senão, use dados de pedidoInfo
+    // Recupera dados do modal (ou de pedidoInfo, se já estiverem salvos)
     const modalPizzaNameElem = document.getElementById("modal-pizza-name");
     const sizeElem = document.querySelector('input[name="pizza-size"]:checked');
     const quantityElem = document.getElementById("modal-pizza-quantity");
     const crustElem = document.querySelector('select[name="pizza-crust"]');
 
-    // Use os valores do formulário se possível; caso contrário, recorra a pedidoInfo
     const pizzaName = modalPizzaNameElem ? modalPizzaNameElem.textContent.trim() : (pedidoInfo.nome || "");
     const size = sizeElem ? sizeElem.value : (pedidoInfo.tamanho || "");
     const quantity = quantityElem ? parseInt(quantityElem.value, 10) : (pedidoInfo.quantidade ? parseInt(pedidoInfo.quantidade, 10) : 1);
     const crust = crustElem ? crustElem.value : (pedidoInfo.crust || "");
 
-    // Atualiza os dados no resumo do pedido
+    // Atualiza os elementos do resumo no modal de pedido
     if (document.getElementById("order-summary")) {
       document.getElementById("summary-size").textContent = "Tamanho: " + size;
       document.getElementById("summary-crust").textContent = "Tipo de Massa: " + crust;
       document.getElementById("summary-quantity").textContent = "Quantidade: " + quantity;
     }
 
-    // Obter dados da pizza selecionada
+    // Recupera os dados da pizza selecionada
     let pizzaData = null;
     if (pizzaName && window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizzaName]) {
       pizzaData = window.storeData.pizzas[pizzaName];
     }
 
-    // 1. Calcular total do preço do tamanho
+    // 1. Calcular total do preço do tamanho: (Preço do Tamanho) x (Quantidade)
     const sizePrice = pizzaData ? (pizzaData.sizes[size] || 0) : 0;
     const sizeTotal = sizePrice * quantity;
-    // 2. Calcular total do custo das bordas
+
+    // 2. Calcular total do custo das bordas: soma para cada input: (Preço da Borda) x (Quantidade informada)
     let borderTotal = 0;
     let borderSummary = "";
     const borderContainer = document.getElementById("border-options-container");
@@ -223,21 +219,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
     }
-    // Atualiza o resumo de bordas no DOM
     if (document.getElementById("order-summary")) {
       document.getElementById("summary-border").textContent = "Borda: " + (borderSummary || "Nenhuma");
     }
 
-    // 3. Valor da bebida (cobrada apenas uma vez)
+    // 3. Bebida (cobrada apenas uma vez)
     const beverageCost = selectedBeverage ? parseFloat(selectedBeverage.price) : 0;
     if (document.getElementById("order-summary")) {
       document.getElementById("summary-beverage").textContent =
         "Bebida: " + (selectedBeverage ? `${selectedBeverage.name} - R$ ${beverageCost.toFixed(2)}` : "Não selecionada");
     }
 
-    // 4. Total final (sem taxa de entrega)
+    // 4. Total Base: soma do tamanho, bordas e bebida
     const baseTotal = sizeTotal + borderTotal + beverageCost;
     pedidoInfo.baseTotal = baseTotal;
+
+    // Se a taxa de entrega já foi definida (via CEP), ela é adicionada ao total final
     const deliveryFee = pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0;
     const total = baseTotal + deliveryFee;
     pedidoInfo.total = total;
@@ -245,11 +242,10 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById("summary-total").innerHTML = `<strong>Total: R$ ${total.toFixed(2)}</strong>`;
     }
 
-    // Debug: exibe os valores no console
-    console.log("SizeTotal:", sizeTotal, "BorderTotal:", borderTotal, "BeverageCost:", beverageCost, "Total:", total);
+    console.log("SizeTotal:", sizeTotal, "BorderTotal:", borderTotal, "BeverageCost:", beverageCost, "DeliveryFee:", deliveryFee, "Total:", total);
   }
 
-  // Atualiza as opções de borda sempre que a quantidade for alterada
+  // Atualiza as opções de borda e o resumo sempre que a quantidade for alterada
   const quantityInput = document.getElementById('modal-pizza-quantity');
   if (quantityInput) {
     quantityInput.addEventListener('input', () => {
@@ -306,6 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
       pedidoInfo.tamanho = document.querySelector('input[name="pizza-size"]:checked').value;
       pedidoInfo.crust = document.querySelector('select[name="pizza-crust"]').value;
       pedidoInfo.quantidade = document.getElementById('modal-pizza-quantity').value;
+      
       // Armazena a distribuição das bordas
       const borderContainer = document.getElementById('border-options-container');
       let borderDistribution = {};
@@ -342,7 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // -----------------------------
-  // CEP e Endereço Automático
+  // CEP e Endereço Automático e Cálculo da Taxa de Entrega
   // -----------------------------
   document.getElementById('cep').addEventListener('blur', function() {
     const cep = this.value.replace(/\D/g, '');
@@ -380,7 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
           pedidoInfo.deliveryFee = fee;
         } else {
           document.getElementById('delivery-fee').textContent = "Bairro fora da área de entrega.";
-          pedidoInfo.deliveryFee = null;
+          pedidoInfo.deliveryFee = 0;
         }
         updateOrderSummary();
         if (document.getElementById('payment-modal').style.display === 'block'){
