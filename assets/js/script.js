@@ -48,29 +48,30 @@ function calcularTotalPedido() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+
   // Função auxiliar para converter strings de preço ("6,00") para formato numérico ("6.00")
   function parsePrice(str) {
     return parseFloat(str.replace(",", "."));
   }
 
   // Funções para incrementar inputs (bordas e bebidas)
-  window.incrementField = function(fieldId) {
+  function incrementField(fieldId) {
     const input = document.getElementById(fieldId);
     if (input) {
       let current = parseInt(input.value) || 0;
       input.value = current + 1;
       input.dispatchEvent(new Event('input'));
     }
-  };
+  }
 
-  window.incrementSibling = function(button) {
+  function incrementSibling(button) {
     const input = button.previousElementSibling;
     if (input && input.tagName === 'INPUT') {
       let current = parseInt(input.value) || 0;
       input.value = current + 1;
       input.dispatchEvent(new Event('input'));
     }
-  };
+  }
 
   // Mobile Menu Toggle
   const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
@@ -454,7 +455,7 @@ document.addEventListener('DOMContentLoaded', () => {
           body: JSON.stringify({
             valor: pedidoInfo.total,
             nome: nomePix,
-            email: emailPix,
+            email: emailPix
           })
         })
         .then(response => response.json())
@@ -489,54 +490,6 @@ document.addEventListener('DOMContentLoaded', () => {
         pedidoInfo.total = pedidoInfo.baseTotal + taxaEntrega;
         const mensagem = `
 *Pedido de Pizza - Pizza Express*
-// Processamento do formulário de pagamento (único listener)
-const paymentForm = document.getElementById('modal-payment-form');
-if (paymentForm) {
-  paymentForm.addEventListener('submit', function (e) {
-    e.preventDefault();
-    const metodo = document.querySelector('input[name="payment-method"]:checked').value;
-    
-    if (metodo === 'Pix') {
-      // Chamando o endpoint do backend para gerar pagamento via Pix utilizando apenas o valor total do pedido.
-      fetch('https://meu-app-sooty.vercel.app/mp-pix', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          valor: pedidoInfo.total
-        })
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.pix && data.pix.transaction_data && data.pix.transaction_data.qr_code_base64) {
-          const pixInfoDiv = document.getElementById('pix-info');
-          pixInfoDiv.innerHTML = `
-            <p style="font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">Pagamento via Pix Gerado com Sucesso!</p>
-            <p style="margin-bottom: 10px;">Utilize o QR Code abaixo para efetuar o pagamento no valor de R$ ${pedidoInfo.total.toFixed(2)}</p>
-            <img src="data:image/png;base64,${data.pix.transaction_data.qr_code_base64}" alt="QR Code Pix" style="max-width: 200px; display: block; margin: 0 auto 10px;">
-            <p style="font-size: 0.9rem; color: #555;">Após escanear o QR Code, aguarde a confirmação do pagamento.</p>
-          `;
-          pixInfoDiv.style.display = 'block';
-          // Desabilita o botão de submit para evitar múltiplas requisições
-          paymentForm.querySelector('button[type="submit"]').disabled = true;
-        } else {
-          alert("Não foi possível gerar o pagamento via Pix. Tente novamente.");
-        }
-      })
-      .catch(err => {
-        console.error("Erro ao processar pagamento via Pix:", err);
-        alert("Erro ao criar pagamento via Pix. Tente novamente.");
-      });
-    } else {
-      // Fluxo para Cartão ou Dinheiro (mantendo a lógica original)
-      const status = metodo === 'Pix' ? 'Aguardando Comprovante' : 'Pagamento na entrega';
-      const chavePix = '708.276.084-11';
-      const dataAtual = new Date();
-      const data = dataAtual.toLocaleDateString();
-      const hora = dataAtual.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      const taxaEntrega = pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0;
-      pedidoInfo.total = pedidoInfo.baseTotal + taxaEntrega;
-      const mensagem = `
-*Pedido de Pizza - Pizza Express*
 ------------------------------------
 *Pizza:* ${pedidoInfo.nome}
 *Tamanho:* ${pedidoInfo.tamanho}
@@ -561,13 +514,13 @@ if (paymentForm) {
 
 Agradecemos o seu pedido!
 Pizza Express - Sabor que chega rápido!`.trim();
-      const whatsappNumber = '5581997333714';
-      const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(mensagem)}`;
-      closePaymentModal();
-      window.open(whatsappURL, '_blank');
-    }
-  });
-}
+        const whatsappNumber = '5581997333714';
+        const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(mensagem)}`;
+        closePaymentModal();
+        window.open(whatsappURL, '_blank');
+      }
+    });
+  }
 
   // ========================================
   // Carrinho de Compras com LocalStorage
@@ -577,7 +530,7 @@ Pizza Express - Sabor que chega rápido!`.trim();
   }
 
   // Adiciona o pedido atual ao carrinho e persiste os dados
-  window.adicionarAoCarrinho = function() {
+  function adicionarAoCarrinho() {
     const tamanho = document.querySelector('input[name="pizza-size"]:checked')?.value;
     const massa = document.querySelector('select[name="pizza-crust"]').value;
     const quantidade = parseInt(document.getElementById("modal-pizza-quantity").value);
@@ -624,7 +577,7 @@ Pizza Express - Sabor que chega rápido!`.trim();
     alert("Pizza adicionada ao carrinho!");
     closeOrderModal();
     atualizarCarrinhoUI();
-  };
+  }
 
   // Atualiza a interface do carrinho (lista de itens e total)
   function atualizarCarrinhoUI() {
@@ -672,25 +625,38 @@ Pizza Express - Sabor que chega rápido!`.trim();
     totalEl.innerText = calcularTotalPedido().toFixed(2);
   }
 
-  window.abrirCarrinho = function() {
+  function abrirCarrinho() {
     document.getElementById("cart").style.display = "block";
     atualizarCarrinhoUI();
-  };
+  }
 
-  window.fecharCarrinho = function() {
+  function fecharCarrinho() {
     document.getElementById("cart").style.display = "none";
-  };
+  }
 
   // Ao clicar em "Finalizar Pedido" no carrinho, abre o modal de pagamento
-  window.finalizarPedido = function() {
+  function finalizarPedido() {
     if (carrinho.length === 0) {
       alert("Seu carrinho está vazio!");
       return;
     }
     updatePaymentSummaryCart();  // Atualiza o resumo do pagamento unificando os cálculos
     openPaymentModal();
-  };
+  }
 
   // Atualiza a interface do carrinho ao carregar a página
   atualizarCarrinhoUI();
+
+  // Expondo as funções globais necessárias para o HTML
+  window.openOrderModal = openOrderModal;
+  window.closeOrderModal = closeOrderModal;
+  window.openPaymentModal = openPaymentModal;
+  window.closePaymentModal = closePaymentModal;
+  window.incrementField = incrementField;
+  window.incrementSibling = incrementSibling;
+  window.adicionarAoCarrinho = adicionarAoCarrinho;
+  window.abrirCarrinho = abrirCarrinho;
+  window.fecharCarrinho = fecharCarrinho;
+  window.finalizarPedido = finalizarPedido;
+
 });
