@@ -908,3 +908,27 @@ footer {
 #payment-summary p strong {
   color: #d35400;
 }
+
+.btn-plus {
+  background-color: #ff5722;
+  border: none;
+  color: #fff;
+  padding: 4px 10px;
+  margin-left: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.btn-plus:hover {
+  background-color: #e64a19;
+}
+
+/* Exemplo de estilo para inputs numéricos para padronizar */
+input[type="number"] {
+  padding: 4px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
