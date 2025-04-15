@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // -----------------------------
   const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
   const navMenu = document.querySelector('.nav-menu');
-
   mobileMenuToggle.addEventListener('click', () => {
     navMenu.classList.toggle('active');
   });
@@ -22,9 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Objeto global para armazenar os dados do pedido
   let pedidoInfo = {};
-
-  // Variável para armazenar bebidas (não mais singular, agora somamos multiplas unidades)
-  // Não utilizaremos a variável "selectedBeverage" isoladamente.
 
   // -----------------------------
   // Funções de Modais
@@ -40,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (modalDescription) {
         modalDescription.textContent = pizzaData.description;
       }
+      // Atualiza os preços por tamanho conforme dados da pizza
       const sizeLabels = document.querySelectorAll('.pizza-size-section label');
       sizeLabels.forEach(label => {
         const radio = label.querySelector('input[type="radio"]');
@@ -60,12 +57,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (orderForm) {
       orderForm.reset();
     }
-    // Reset das quantidades de bebidas e quantidade de borda
+    // Reset das quantidades dos campos de borda e bebidas
+    document.getElementById('border-cheddar').value = 0;
+    document.getElementById('border-catupiry').value = 0;
     document.querySelectorAll('.bebida-quantity').forEach(input => input.value = 0);
-    const borderQtyInput = document.getElementById('modal-border-quantity');
-    if (borderQtyInput) {
-      borderQtyInput.value = 0;
-    }
     updateOrderSummary();
   }
 
@@ -123,34 +118,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // -----------------------------
   // Atualização do Resumo do Pedido e Cálculo do Total
-  // Regra: 
-  //    - (Valor do tamanho × Quantidade de pizzas)
-  //    - + (Valor da borda × Quantidade de pizzas com borda)
-  //    - + (Soma de todas as bebidas: (Preço da bebida × Quantidade))
+  // Regra:
+  //  - (Valor do tamanho × Quantidade de pizzas)
+  //  - + (Adicional: Cheddar × quantidade escolhida + Catupiry × quantidade escolhida)
+  //  - + (Soma de todas as bebidas: (Preço da bebida × Quantidade))
   // -----------------------------
   function updateOrderSummary() {
-    // Coletar dados do modal
+    // Coleta dados do modal
     const pizzaName = document.getElementById('modal-pizza-name')?.textContent.trim() || '';
     const size = document.querySelector('input[name="pizza-size"]:checked')?.value || 'Não selecionado';
     const crust = document.querySelector('select[name="pizza-crust"]').value || 'Não selecionado';
-    const border = document.querySelector('select[name="pizza-border"]').value || 'Não selecionado';
-    const quantity = parseInt(document.getElementById('modal-pizza-quantity')?.value) || 1;
-    const borderQuantity = parseInt(document.getElementById('modal-border-quantity')?.value) || 0;
+    const totalPizzas = parseInt(document.getElementById('modal-pizza-quantity')?.value) || 1;
+    // Para bordas individuais
+    const cheddarQuantity = parseInt(document.getElementById('border-cheddar')?.value) || 0;
+    const catupiryQuantity = parseInt(document.getElementById('border-catupiry')?.value) || 0;
+    // Validação: se a soma das pizzas com borda ultrapassar o total, limitar
+    const somaBordas = cheddarQuantity + catupiryQuantity;
+    const semBorda = totalPizzas - (somaBordas > totalPizzas ? totalPizzas : somaBordas);
 
-    // Preço do tamanho e da borda
-    let sizePrice = 0, borderPrice = 0;
+    // Obter preço do tamanho a partir dos dados da pizza
+    let sizePrice = 0;
     if (pizzaName && window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizzaName]) {
       const pizzaData = window.storeData.pizzas[pizzaName];
       sizePrice = pizzaData.sizes[size] || 0;
-      let borderKey = border;
-      if (border.includes('R$')) {
-        borderKey = border.split('R$')[0].trim();
-      }
-      borderPrice = pizzaData.borders[borderKey] || 0;
     }
-    
-    // Cálculo das pizzas
-    const pizzasCost = (sizePrice * quantity) + (borderPrice * borderQuantity);
+
+    // Preços fixos para bordas (definidos em prices.js)
+    const cheddarPrice = 5.00;
+    const catupiryPrice = 6.00;
+
+    // Cálculo de custos:
+    // - Pizzas base: (valor do tamanho × total de pizzas)
+    // - Adicional de borda: (cheddarQuantity × cheddarPrice) + (catupiryQuantity × catupiryPrice)
+    const pizzasCost = (sizePrice * totalPizzas) + (cheddarQuantity * cheddarPrice) + (catupiryQuantity * catupiryPrice);
 
     // Cálculo das bebidas
     let beveragesCost = 0;
@@ -170,17 +170,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const baseTotal = pizzasCost + beveragesCost;
     pedidoInfo.baseTotal = baseTotal;
 
-    // Taxa de entrega, se houver
+    // Taxa de entrega (se houver)
     const deliveryFee = pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0;
     const total = baseTotal + deliveryFee;
     pedidoInfo.total = total;
 
-    // Atualizar o resumo na tela
+    // Atualiza o resumo na tela
     if (document.getElementById('order-summary')) {
       document.getElementById('summary-size').textContent = `Tamanho: ${size} - R$ ${sizePrice.toFixed(2)}`;
       document.getElementById('summary-crust').textContent = `Tipo de Massa: ${crust}`;
-      document.getElementById('summary-border').textContent = `Borda: ${border} (${borderQuantity} un.) - R$ ${(borderPrice * borderQuantity).toFixed(2)}`;
-      document.getElementById('summary-quantity').textContent = `Quantidade de Pizzas: ${quantity}`;
+      document.getElementById('summary-border').textContent = `Bordas: Cheddar (${cheddarQuantity} un. × R$ ${cheddarPrice.toFixed(2)}) + Catupiry (${catupiryQuantity} un. × R$ ${catupiryPrice.toFixed(2)})`;
+      document.getElementById('summary-quantity').textContent = `Quantidade de Pizzas: ${totalPizzas} (Sem borda: ${semBorda})`;
       document.getElementById('summary-beverage').textContent = `Bebidas: ${beveragesSummary.length > 0 ? beveragesSummary.join(', ') : 'Nenhuma selecionada'}`;
       
       if (document.getElementById('summary-total')) {
@@ -189,16 +189,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Ouvintes para atualização conforme alteração dos novos campos
+  // Ouvintes para atualização dos campos
   document.querySelectorAll('input[name="pizza-size"]').forEach(el => el.addEventListener('change', updateOrderSummary));
   const crustSelect = document.querySelector('select[name="pizza-crust"]');
   if (crustSelect) crustSelect.addEventListener('change', updateOrderSummary);
-  const borderSelect = document.querySelector('select[name="pizza-border"]');
-  if (borderSelect) borderSelect.addEventListener('change', updateOrderSummary);
   const quantityInput = document.getElementById('modal-pizza-quantity');
   if (quantityInput) quantityInput.addEventListener('input', updateOrderSummary);
-  const borderQuantityInput = document.getElementById('modal-border-quantity');
-  if (borderQuantityInput) borderQuantityInput.addEventListener('input', updateOrderSummary);
+  document.getElementById('border-cheddar').addEventListener('input', updateOrderSummary);
+  document.getElementById('border-catupiry').addEventListener('input', updateOrderSummary);
   document.querySelectorAll('.bebida-quantity').forEach(input => {
     input.addEventListener('input', updateOrderSummary);
   });
@@ -213,12 +211,13 @@ document.addEventListener('DOMContentLoaded', () => {
       pedidoInfo.nome = document.getElementById('modal-pizza-name').textContent;
       pedidoInfo.tamanho = document.querySelector('input[name="pizza-size"]:checked').value;
       pedidoInfo.crust = document.querySelector('select[name="pizza-crust"]').value;
-      pedidoInfo.border = document.querySelector('select[name="pizza-border"]').value;
-      pedidoInfo.borderQuantity = document.getElementById('modal-border-quantity').value;
+      // Armazena as quantidades de borda selecionadas
+      pedidoInfo.borderCheddar = document.getElementById('border-cheddar').value;
+      pedidoInfo.borderCatupiry = document.getElementById('border-catupiry').value;
       pedidoInfo.quantidade = document.getElementById('modal-pizza-quantity').value;
       pedidoInfo.adicionais = document.getElementById('modal-additional')?.value || 'Nenhum';
       
-      // Coletar dados das bebidas
+      // Coleta dados das bebidas
       const bebidas = [];
       document.querySelectorAll('.bebida-item').forEach(item => {
         const bebidaName = item.querySelector('p').textContent;
@@ -253,8 +252,8 @@ document.addEventListener('DOMContentLoaded', () => {
       <p><strong>Pizza:</strong> ${pedidoInfo.nome}</p>
       <p><strong>Tamanho:</strong> ${pedidoInfo.tamanho}</p>
       <p><strong>Tipo de Massa:</strong> ${pedidoInfo.crust}</p>
-      <p><strong>Borda:</strong> ${pedidoInfo.border} (Qtd: ${pedidoInfo.borderQuantity})</p>
-      <p><strong>Quantidade:</strong> ${pedidoInfo.quantidade}</p>
+      <p><strong>Bordas:</strong> Cheddar (${pedidoInfo.borderCheddar} un.) + Catupiry (${pedidoInfo.borderCatupiry} un.)</p>
+      <p><strong>Quantidade de Pizzas:</strong> ${pedidoInfo.quantidade}</p>
       <p><strong>Bebida(s):</strong> ${pedidoInfo.bebida}</p>
       <p><strong>Total do Pedido:</strong> R$ ${pedidoInfo.total.toFixed(2)}</p>
     `;
@@ -367,7 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
 *Pizza:* ${pedidoInfo.nome}
 *Tamanho:* ${pedidoInfo.tamanho}
 *Tipos de Massa:* ${pedidoInfo.crust}
-*Borda:* ${pedidoInfo.border} (Qtd: ${pedidoInfo.borderQuantity})
+*Bordas:* Cheddar (${pedidoInfo.borderCheddar} un.) + Catupiry (${pedidoInfo.borderCatupiry} un.)
 *Quantidade:* ${pedidoInfo.quantidade} unidade(s)
 *Bebida(s):* ${pedidoInfo.bebida}
 *Total do Pedido:* R$ ${pedidoInfo.total.toFixed(2)}
@@ -435,7 +434,6 @@ Pizza Express - Sabor que chega rápido!`.trim();
   const dots = document.querySelectorAll('.carousel-dots .dot');
   const carouselInner = document.querySelector('.carousel-inner');
   let currentIndex = 0;
-
   function updateCarousel(index) {
     carouselInner.style.transition = 'transform 0.5s ease-in-out';
     carouselInner.style.transform = `translateX(-${index * 100}%)`;
@@ -443,26 +441,21 @@ Pizza Express - Sabor que chega rápido!`.trim();
     if (dots[index]) dots[index].classList.add('active');
     currentIndex = index;
   }
-
   setInterval(() => {
     updateCarousel((currentIndex + 1) % dots.length);
   }, 4000);
-
   dots.forEach((dot, index) => {
     dot.addEventListener('click', () => {
       updateCarousel(index);
     });
   });
-
   let startX = 0;
   let isDragging = false;
   let currentTranslate = 0;
-
   carouselInner.addEventListener('touchstart', (e) => {
     startX = e.touches[0].clientX;
     isDragging = true;
   });
-
   carouselInner.addEventListener('touchmove', (e) => {
     if (!isDragging) return;
     const diff = e.touches[0].clientX - startX;
@@ -470,7 +463,6 @@ Pizza Express - Sabor que chega rápido!`.trim();
     carouselInner.style.transition = 'none';
     carouselInner.style.transform = `translateX(${currentTranslate}%)`;
   });
-
   carouselInner.addEventListener('touchend', (e) => {
     isDragging = false;
     const endX = e.changedTouches[0].clientX;
@@ -483,13 +475,11 @@ Pizza Express - Sabor que chega rápido!`.trim();
       updateCarousel(currentIndex);
     }
   });
-
   let mouseStartX = 0;
   carouselInner.addEventListener('mousedown', (e) => {
     mouseStartX = e.clientX;
     isDragging = true;
   });
-
   carouselInner.addEventListener('mousemove', (e) => {
     if (!isDragging) return;
     const diff = e.clientX - mouseStartX;
@@ -497,7 +487,6 @@ Pizza Express - Sabor que chega rápido!`.trim();
     carouselInner.style.transition = 'none';
     carouselInner.style.transform = `translateX(${currentTranslate}%)`;
   });
-
   carouselInner.addEventListener('mouseup', (e) => {
     isDragging = false;
     const diff = e.clientX - mouseStartX;
@@ -509,7 +498,6 @@ Pizza Express - Sabor que chega rápido!`.trim();
       updateCarousel(currentIndex);
     }
   });
-
   const carouselViewport = document.querySelector('.carousel-viewport');
   if (carouselViewport) {
     carouselViewport.addEventListener('scroll', () => {
