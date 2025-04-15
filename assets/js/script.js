@@ -56,7 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const pizzaData = window.storeData.pizzas[pizzaName];
     const borders = Object.keys(pizzaData.borders);
-    // Para cada opção de borda disponível, crie um input para informar quantas pizzas usarão essa borda.
     borders.forEach(borderOption => {
       const div = document.createElement('div');
       div.style.marginBottom = "5px";
@@ -66,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
       input.type = "number";
       input.min = "0";
       input.max = quantity.toString();
-      input.value = "0";
+      input.value = "0"; // Valor padrão
       input.style.width = "50px";
       input.dataset.border = borderOption;
       input.addEventListener('change', updateOrderSummary);
@@ -91,7 +90,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       console.error('Elemento "modal-pizza-name" não encontrado.');
     }
-
     if (window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizzaName]) {
       const pizzaData = window.storeData.pizzas[pizzaName];
       const modalDescription = document.getElementById('modal-pizza-description');
@@ -110,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
     modal.style.display = 'block';
-    generateBorderOptions(); // Gere as opções de borda ao abrir
+    generateBorderOptions();
   }
 
   function closeOrderModal() {
@@ -137,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(pixInfo) pixInfo.style.display = 'none';
   }
 
-  // Fechar modais clicando fora deles
+  // Fechar modais quando o usuário clica fora deles
   window.addEventListener('click', function(event) {
     const orderModal = document.getElementById('order-modal');
     const paymentModal = document.getElementById('payment-modal');
@@ -165,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Abertura do Modal de Pedido ao clicar em um item da seção de pizzas
+  // Abertura do Modal de Pedido ao clicar em um item de pizza
   document.querySelectorAll('.horizontal-scroll .item').forEach(item => {
     item.addEventListener('click', function () {
       const pizzaName = item.querySelector('p').textContent;
@@ -174,42 +172,42 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // -----------------------------
-  // Função updateOrderSummary – Cálculo exato conforme especificado:
-  // 1. Preço do tamanho: (Preço do Tamanho) x (Quantidade Total de Pizzas)
-  // 2. Custo das bordas: para cada sabor, (Preço da Borda) x (Quantidade informada)  
-  // 3. Bebida: adicionada uma única vez.
+  // updateOrderSummary – Cálculo conforme modelo:
+  // 1. Total do preço do tamanho = (Preço do Tamanho) x (Quantidade)
+  // 2. Total das bordas = soma para cada input: (Preço da Borda) x (Quantidade informada)
+  // 3. Bebida = valor adicionado uma vez
+  // 4. Total Final = tamanhoTotal + borderTotal + beverageCost (+ eventual taxa de entrega)
   // -----------------------------
   function updateOrderSummary() {
-    // Obter dados do modal
+    // Se o modal estiver aberto, leia os valores atuais; senão, use dados de pedidoInfo
     const modalPizzaNameElem = document.getElementById("modal-pizza-name");
     const sizeElem = document.querySelector('input[name="pizza-size"]:checked');
     const quantityElem = document.getElementById("modal-pizza-quantity");
     const crustElem = document.querySelector('select[name="pizza-crust"]');
 
-    const pizzaName = modalPizzaNameElem ? modalPizzaNameElem.textContent.trim() : "";
-    const size = sizeElem ? sizeElem.value : "";
-    const quantity = quantityElem ? parseInt(quantityElem.value, 10) : 1;
-    const crust = crustElem ? crustElem.value : "";
+    // Use os valores do formulário se possível; caso contrário, recorra a pedidoInfo
+    const pizzaName = modalPizzaNameElem ? modalPizzaNameElem.textContent.trim() : (pedidoInfo.nome || "");
+    const size = sizeElem ? sizeElem.value : (pedidoInfo.tamanho || "");
+    const quantity = quantityElem ? parseInt(quantityElem.value, 10) : (pedidoInfo.quantidade ? parseInt(pedidoInfo.quantidade, 10) : 1);
+    const crust = crustElem ? crustElem.value : (pedidoInfo.crust || "");
 
-    // Atualiza os campos do resumo no DOM
+    // Atualiza os dados no resumo do pedido
     if (document.getElementById("order-summary")) {
       document.getElementById("summary-size").textContent = "Tamanho: " + size;
       document.getElementById("summary-crust").textContent = "Tipo de Massa: " + crust;
       document.getElementById("summary-quantity").textContent = "Quantidade: " + quantity;
     }
 
-    // Obter dados da pizza no storeData
-    const pizzaData =
-      pizzaName && window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizzaName]
-        ? window.storeData.pizzas[pizzaName]
-        : null;
+    // Obter dados da pizza selecionada
+    let pizzaData = null;
+    if (pizzaName && window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizzaName]) {
+      pizzaData = window.storeData.pizzas[pizzaName];
+    }
 
-    // 1. Total do Tamanho:
+    // 1. Calcular total do preço do tamanho
     const sizePrice = pizzaData ? (pizzaData.sizes[size] || 0) : 0;
     const sizeTotal = sizePrice * quantity;
-    // Exemplo: 23,90 * 3 = 71,70
-
-    // 2. Cálculo do custo das bordas segundo a distribuição definida pelo cliente:
+    // 2. Calcular total do custo das bordas
     let borderTotal = 0;
     let borderSummary = "";
     const borderContainer = document.getElementById("border-options-container");
@@ -225,31 +223,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
     }
+    // Atualiza o resumo de bordas no DOM
     if (document.getElementById("order-summary")) {
       document.getElementById("summary-border").textContent = "Borda: " + (borderSummary || "Nenhuma");
     }
 
-    // 3. Bebida: valor cobrado uma única vez
+    // 3. Valor da bebida (cobrada apenas uma vez)
     const beverageCost = selectedBeverage ? parseFloat(selectedBeverage.price) : 0;
     if (document.getElementById("order-summary")) {
       document.getElementById("summary-beverage").textContent =
         "Bebida: " + (selectedBeverage ? `${selectedBeverage.name} - R$ ${beverageCost.toFixed(2)}` : "Não selecionada");
     }
 
-    // Soma final (sem taxa de entrega)
+    // 4. Total final (sem taxa de entrega)
     const baseTotal = sizeTotal + borderTotal + beverageCost;
     pedidoInfo.baseTotal = baseTotal;
-
-    // Se houver taxa de entrega, ela é somada; senão zero.
     const deliveryFee = pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0;
     const total = baseTotal + deliveryFee;
     pedidoInfo.total = total;
-
     if (document.getElementById("summary-total")) {
       document.getElementById("summary-total").innerHTML = `<strong>Total: R$ ${total.toFixed(2)}</strong>`;
     }
 
-    // (Opcional) Log para depuração:
+    // Debug: exibe os valores no console
     console.log("SizeTotal:", sizeTotal, "BorderTotal:", borderTotal, "BeverageCost:", beverageCost, "Total:", total);
   }
 
@@ -310,7 +306,7 @@ document.addEventListener('DOMContentLoaded', () => {
       pedidoInfo.tamanho = document.querySelector('input[name="pizza-size"]:checked').value;
       pedidoInfo.crust = document.querySelector('select[name="pizza-crust"]').value;
       pedidoInfo.quantidade = document.getElementById('modal-pizza-quantity').value;
-      // Guarda a distribuição das bordas
+      // Armazena a distribuição das bordas
       const borderContainer = document.getElementById('border-options-container');
       let borderDistribution = {};
       if (borderContainer) {
@@ -336,7 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // -----------------------------
-  // Alternar Informações do Pix conforme método de pagamento
+  // Alterna informações do Pix conforme método de pagamento
   // -----------------------------
   document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
     radio.addEventListener('change', function () {
@@ -369,7 +365,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('bairro').value = data.bairro || '';
         document.getElementById('cidade').value = data.localidade || '';
         document.getElementById('estado').value = data.uf || '';
-
         const cityKey = data.localidade && data.uf ? `${data.localidade} (${data.uf})` : defaultCity;
         const bairro = data.bairro;
         let fee;
@@ -404,7 +399,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function toRad(degrees) {
     return degrees * Math.PI / 180;
   }
-
   function calculateDistance(loc1, loc2) {
     const R = 6371;
     const dLat = toRad(loc2.lat - loc1.lat);
@@ -430,12 +424,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = dataAtual.toLocaleDateString();
       const hora = dataAtual.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const taxaEntrega = pedidoInfo.deliveryFee ? `*Taxa de Entrega:* R$ ${pedidoInfo.deliveryFee}` : '*Taxa de Entrega:* R$ 0,00';
-
       const rua = document.getElementById('rua').value;
       const bairro = document.getElementById('bairro').value;
       const cidade = document.getElementById('cidade').value;
       const numero = document.getElementById('numero').value;
-
       const mensagem = `
 *Pedido de Pizza - Pizza Express*
 ------------------------------------
@@ -462,7 +454,6 @@ ${taxaEntrega}
 
 Agradecemos o seu pedido!
 Pizza Express - Sabor que chega rápido!`.trim();
-
       const whatsappNumber = '5581997333714';
       const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(mensagem)}`;
       closePaymentModal();
@@ -509,7 +500,6 @@ Pizza Express - Sabor que chega rápido!`.trim();
   const dots = document.querySelectorAll('.carousel-dots .dot');
   const carouselInner = document.querySelector('.carousel-inner');
   let currentIndex = 0;
-
   function updateCarousel(index) {
     carouselInner.style.transition = 'transform 0.5s ease-in-out';
     carouselInner.style.transform = `translateX(-${index * 100}%)`;
@@ -517,26 +507,21 @@ Pizza Express - Sabor que chega rápido!`.trim();
     if (dots[index]) dots[index].classList.add('active');
     currentIndex = index;
   }
-
   setInterval(() => {
     updateCarousel((currentIndex + 1) % dots.length);
   }, 4000);
-
   dots.forEach((dot, index) => {
     dot.addEventListener('click', () => {
       updateCarousel(index);
     });
   });
-
   let startX = 0;
   let isDragging = false;
   let currentTranslate = 0;
-
   carouselInner.addEventListener('touchstart', (e) => {
     startX = e.touches[0].clientX;
     isDragging = true;
   });
-
   carouselInner.addEventListener('touchmove', (e) => {
     if (!isDragging) return;
     const diff = e.touches[0].clientX - startX;
@@ -544,7 +529,6 @@ Pizza Express - Sabor que chega rápido!`.trim();
     carouselInner.style.transition = 'none';
     carouselInner.style.transform = `translateX(${currentTranslate}%)`;
   });
-
   carouselInner.addEventListener('touchend', (e) => {
     isDragging = false;
     const endX = e.changedTouches[0].clientX;
@@ -557,13 +541,11 @@ Pizza Express - Sabor que chega rápido!`.trim();
       updateCarousel(currentIndex);
     }
   });
-
   let mouseStartX = 0;
   carouselInner.addEventListener('mousedown', (e) => {
     mouseStartX = e.clientX;
     isDragging = true;
   });
-
   carouselInner.addEventListener('mousemove', (e) => {
     if (!isDragging) return;
     const diff = e.clientX - mouseStartX;
@@ -571,7 +553,6 @@ Pizza Express - Sabor que chega rápido!`.trim();
     carouselInner.style.transition = 'none';
     carouselInner.style.transform = `translateX(${currentTranslate}%)`;
   });
-
   carouselInner.addEventListener('mouseup', (e) => {
     isDragging = false;
     const diff = e.clientX - mouseStartX;
@@ -583,7 +564,6 @@ Pizza Express - Sabor que chega rápido!`.trim();
       updateCarousel(currentIndex);
     }
   });
-
   const carouselViewport = document.querySelector('.carousel-viewport');
   if (carouselViewport) {
     carouselViewport.addEventListener('scroll', () => {
