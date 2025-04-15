@@ -57,9 +57,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (orderForm) {
       orderForm.reset();
     }
-    // Reset das quantidades dos campos de borda e bebidas
+    // Reset dos campos de bordas e bebidas
     document.getElementById('border-cheddar').value = 0;
     document.getElementById('border-catupiry').value = 0;
+    document.getElementById('border-cream-cheese').value = 0;
     document.querySelectorAll('.bebida-quantity').forEach(input => input.value = 0);
     updateOrderSummary();
   }
@@ -120,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Atualização do Resumo do Pedido e Cálculo do Total
   // Regra:
   //  - (Valor do tamanho × Quantidade de pizzas)
-  //  - + (Adicional: Cheddar × quantidade escolhida + Catupiry × quantidade escolhida)
+  //  - + (Adicional: Cheddar × quantidade escolhida + Catupiry × quantidade escolhida + Cream cheese × quantidade escolhida)
   //  - + (Soma de todas as bebidas: (Preço da bebida × Quantidade))
   // -----------------------------
   function updateOrderSummary() {
@@ -132,8 +133,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Para bordas individuais
     const cheddarQuantity = parseInt(document.getElementById('border-cheddar')?.value) || 0;
     const catupiryQuantity = parseInt(document.getElementById('border-catupiry')?.value) || 0;
-    // Validação: se a soma das pizzas com borda ultrapassar o total, limitar
-    const somaBordas = cheddarQuantity + catupiryQuantity;
+    const creamCheeseQuantity = parseInt(document.getElementById('border-cream-cheese')?.value) || 0;
+    
+    // Validação: se a soma das bordas ultrapassar o total de pizzas, limitar
+    const somaBordas = cheddarQuantity + catupiryQuantity + creamCheeseQuantity;
     const semBorda = totalPizzas - (somaBordas > totalPizzas ? totalPizzas : somaBordas);
 
     // Obter preço do tamanho a partir dos dados da pizza
@@ -143,14 +146,18 @@ document.addEventListener('DOMContentLoaded', () => {
       sizePrice = pizzaData.sizes[size] || 0;
     }
 
-    // Preços fixos para bordas (definidos em prices.js)
+    // Preços fixos para bordas (definidos em prices.js ou fixos aqui)
     const cheddarPrice = 5.00;
     const catupiryPrice = 6.00;
+    const creamCheesePrice = 3.50;
 
     // Cálculo de custos:
     // - Pizzas base: (valor do tamanho × total de pizzas)
-    // - Adicional de borda: (cheddarQuantity × cheddarPrice) + (catupiryQuantity × catupiryPrice)
-    const pizzasCost = (sizePrice * totalPizzas) + (cheddarQuantity * cheddarPrice) + (catupiryQuantity * catupiryPrice);
+    // - Adicional de borda: (cheddarQuantity × cheddarPrice) + (catupiryQuantity × catupiryPrice) + (creamCheeseQuantity × creamCheesePrice)
+    const pizzasCost = (sizePrice * totalPizzas) 
+                        + (cheddarQuantity * cheddarPrice) 
+                        + (catupiryQuantity * catupiryPrice)
+                        + (creamCheeseQuantity * creamCheesePrice);
 
     // Cálculo das bebidas
     let beveragesCost = 0;
@@ -179,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('order-summary')) {
       document.getElementById('summary-size').textContent = `Tamanho: ${size} - R$ ${sizePrice.toFixed(2)}`;
       document.getElementById('summary-crust').textContent = `Tipo de Massa: ${crust}`;
-      document.getElementById('summary-border').textContent = `Bordas: Cheddar (${cheddarQuantity} un. × R$ ${cheddarPrice.toFixed(2)}) + Catupiry (${catupiryQuantity} un. × R$ ${catupiryPrice.toFixed(2)})`;
+      document.getElementById('summary-border').textContent = `Bordas: Cheddar (${cheddarQuantity} un. × R$ ${cheddarPrice.toFixed(2)}) + Catupiry (${catupiryQuantity} un. × R$ ${catupiryPrice.toFixed(2)}) + Cream cheese (${creamCheeseQuantity} un. × R$ ${creamCheesePrice.toFixed(2)})`;
       document.getElementById('summary-quantity').textContent = `Quantidade de Pizzas: ${totalPizzas} (Sem borda: ${semBorda})`;
       document.getElementById('summary-beverage').textContent = `Bebidas: ${beveragesSummary.length > 0 ? beveragesSummary.join(', ') : 'Nenhuma selecionada'}`;
       
@@ -197,6 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (quantityInput) quantityInput.addEventListener('input', updateOrderSummary);
   document.getElementById('border-cheddar').addEventListener('input', updateOrderSummary);
   document.getElementById('border-catupiry').addEventListener('input', updateOrderSummary);
+  document.getElementById('border-cream-cheese').addEventListener('input', updateOrderSummary);
   document.querySelectorAll('.bebida-quantity').forEach(input => {
     input.addEventListener('input', updateOrderSummary);
   });
@@ -214,6 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Armazena as quantidades de borda selecionadas
       pedidoInfo.borderCheddar = document.getElementById('border-cheddar').value;
       pedidoInfo.borderCatupiry = document.getElementById('border-catupiry').value;
+      pedidoInfo.borderCreamCheese = document.getElementById('border-cream-cheese').value;
       pedidoInfo.quantidade = document.getElementById('modal-pizza-quantity').value;
       pedidoInfo.adicionais = document.getElementById('modal-additional')?.value || 'Nenhum';
       
@@ -252,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <p><strong>Pizza:</strong> ${pedidoInfo.nome}</p>
       <p><strong>Tamanho:</strong> ${pedidoInfo.tamanho}</p>
       <p><strong>Tipo de Massa:</strong> ${pedidoInfo.crust}</p>
-      <p><strong>Bordas:</strong> Cheddar (${pedidoInfo.borderCheddar} un.) + Catupiry (${pedidoInfo.borderCatupiry} un.)</p>
+      <p><strong>Bordas:</strong> Cheddar (${pedidoInfo.borderCheddar} un.) + Catupiry (${pedidoInfo.borderCatupiry} un.) + Cream cheese (${pedidoInfo.borderCreamCheese} un.)</p>
       <p><strong>Quantidade de Pizzas:</strong> ${pedidoInfo.quantidade}</p>
       <p><strong>Bebida(s):</strong> ${pedidoInfo.bebida}</p>
       <p><strong>Total do Pedido:</strong> R$ ${pedidoInfo.total.toFixed(2)}</p>
@@ -366,7 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
 *Pizza:* ${pedidoInfo.nome}
 *Tamanho:* ${pedidoInfo.tamanho}
 *Tipos de Massa:* ${pedidoInfo.crust}
-*Bordas:* Cheddar (${pedidoInfo.borderCheddar} un.) + Catupiry (${pedidoInfo.borderCatupiry} un.)
+*Bordas:* Cheddar (${pedidoInfo.borderCheddar} un.) + Catupiry (${pedidoInfo.borderCatupiry} un.) + Cream cheese (${pedidoInfo.borderCreamCheese} un.)
 *Quantidade:* ${pedidoInfo.quantidade} unidade(s)
 *Bebida(s):* ${pedidoInfo.bebida}
 *Total do Pedido:* R$ ${pedidoInfo.total.toFixed(2)}
