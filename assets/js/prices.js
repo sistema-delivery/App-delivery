@@ -29,9 +29,9 @@ const storeData = {
     "Pizza Calabresa": {
       description: "Pizza com rodelas de calabresa, cebola, azeitonas e orégano para um sabor marcante.",
       sizes: {
-        "Pequena": 12.00,
-        "Média": 18.00,
-        "Grande": 24.00
+        "Pequena": 12.90,
+        "Média": 18.90,
+        "Grande": 24.90
       },
       borders: {
         "Nenhuma": 0.00,
@@ -43,9 +43,9 @@ const storeData = {
     "Pizza Quatro Queijos": {
       description: "Deliciosa combinação de mussarela, parmesão, gorgonzola e provolone para os amantes de queijo.",
       sizes: {
-        "Pequena": 14.00,
-        "Média": 21.00,
-        "Grande": 28.00
+        "Pequena": 14.90,
+        "Média": 21.90,
+        "Grande": 28.90
       },
       borders: {
         "Nenhuma": 0.00,
@@ -71,9 +71,9 @@ const storeData = {
     "Marguerita Clássica": {
       description: "Variante da clássica marguerita, com ingredientes frescos e um toque especial.",
       sizes: {
-        "Pequena": 18.00,
-        "Média": 25.00,
-        "Grande": 32.00
+        "Pequena": 18.90,
+        "Média": 25.90,
+        "Grande": 32.90
       },
       borders: {
         "Nenhuma": 0.00,
@@ -85,9 +85,9 @@ const storeData = {
     "Pizza Trufada": {
       description: "Pizza com massa premium e cobertura trufada, para quem busca um sabor sofisticado.",
       sizes: {
-        "Pequena": 20.00,
-        "Média": 30.00,
-        "Grande": 40.00
+        "Pequena": 20.90,
+        "Média": 30.90,
+        "Grande": 40.90
       },
       borders: {
         "Nenhuma": 0.00,
@@ -99,9 +99,9 @@ const storeData = {
     "Especial Gourmet": {
       description: "Pizza com ingredientes gourmet e toques inovadores, perfeita para ocasiões especiais.",
       sizes: {
-        "Pequena": 22.00,
-        "Média": 33.00,
-        "Grande": 44.00
+        "Pequena": 22.90,
+        "Média": 33.90,
+        "Grande": 44.90
       },
       borders: {
         "Nenhuma": 0.00,
