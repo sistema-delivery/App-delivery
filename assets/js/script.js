@@ -178,77 +178,85 @@ document.addEventListener('DOMContentLoaded', () => {
   // Regra: (Preço do Tamanho * Quantidade) + (Soma dos preços de borda conforme distribuição) + (Valor da Bebida única)
   // -----------------------------
   function updateOrderSummary() {
-    let pizzaName, size, crust, quantity;
-    let borderTotal = 0;
-    if (document.getElementById('order-modal').style.display === 'block') {
-      pizzaName = document.getElementById('modal-pizza-name')?.textContent.trim() || '';
-      size = document.querySelector('input[name="pizza-size"]:checked')?.value || 'Não selecionado';
-      crust = document.querySelector('select[name="pizza-crust"]').value || 'Não selecionado';
-      quantity = document.getElementById('modal-pizza-quantity')?.value || 1;
-    } else {
-      pizzaName = pedidoInfo.nome || '';
-      size = pedidoInfo.tamanho || 'Não selecionado';
-      crust = pedidoInfo.crust || 'Não selecionado';
-      quantity = pedidoInfo.quantidade || 1;
+  let pizzaName, size, crust, quantity;
+  if (document.getElementById('order-modal').style.display === 'block') {
+    pizzaName = document.getElementById('modal-pizza-name')?.textContent.trim() || '';
+    size = document.querySelector('input[name="pizza-size"]:checked')?.value || 'Não selecionado';
+    crust = document.querySelector('select[name="pizza-crust"]').value || 'Não selecionado';
+    quantity = parseInt(document.getElementById('modal-pizza-quantity')?.value) || 1;
+  } else {
+    pizzaName = pedidoInfo.nome || '';
+    size = pedidoInfo.tamanho || 'Não selecionado';
+    crust = pedidoInfo.crust || 'Não selecionado';
+    quantity = parseInt(pedidoInfo.quantidade) || 1;
+  }
+
+  // Atualiza os dados no DOM de resumo
+  if (document.getElementById('order-summary')) {
+    document.getElementById('summary-size').textContent = `Tamanho: ${size}`;
+    document.getElementById('summary-crust').textContent = `Tipo de Massa: ${crust}`;
+    
+    // Gera o resumo da distribuição de bordas
+    const borderContainer = document.getElementById('border-options-container');
+    let resumoBorda = "";
+    if (borderContainer) {
+      const inputs = borderContainer.querySelectorAll('input[type="number"]');
+      inputs.forEach(input => {
+        const borderOption = input.dataset.border;
+        const qty = parseInt(input.value) || 0;
+        if (qty > 0) {
+          resumoBorda += `${qty} x ${borderOption}; `;
+        }
+      });
     }
+    document.getElementById('summary-border').textContent = `Borda: ${resumoBorda || "Nenhuma"}`;
+    document.getElementById('summary-quantity').textContent = `Quantidade: ${quantity}`;
+    document.getElementById('summary-beverage').textContent =
+      `Bebida: ${selectedBeverage 
+         ? `${selectedBeverage.name} - R$ ${parseFloat(selectedBeverage.price).toFixed(2)}` 
+         : (pedidoInfo.beverageCost ? `R$ ${pedidoInfo.beverageCost.toFixed(2)}` : 'Não selecionada')}`;
+  }
 
-    if (document.getElementById('order-summary')) {
-      document.getElementById('summary-size').textContent = `Tamanho: ${size}`;
-      document.getElementById('summary-crust').textContent = `Tipo de Massa: ${crust}`;
-      
-      // Exibir a distribuição de bordas
-      const borderContainer = document.getElementById('border-options-container');
-      let resumoBorda = "";
-      if (borderContainer) {
-        const inputs = borderContainer.querySelectorAll('input[type="number"]');
-        inputs.forEach(input => {
-          const borderOption = input.dataset.border;
-          const qty = parseInt(input.value) || 0;
-          if (qty > 0) {
-            resumoBorda += `${qty} x ${borderOption}; `;
-          }
-        });
-      }
-      document.getElementById('summary-border').textContent = `Borda: ${resumoBorda || "Nenhuma"}`;
-      document.getElementById('summary-quantity').textContent = `Quantidade: ${quantity}`;
-      document.getElementById('summary-beverage').textContent = 
-        `Bebida: ${selectedBeverage ? `${selectedBeverage.name} - R$ ${parseFloat(selectedBeverage.price).toFixed(2)}` : (pedidoInfo.beverageCost ? `R$ ${pedidoInfo.beverageCost.toFixed(2)}` : 'Não selecionada')}`;
-    }
+  let basePrice = 0;
+  let pizzaData = null;
+  if (pizzaName && window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizzaName]) {
+    pizzaData = window.storeData.pizzas[pizzaName];
+  }
+  // Preço total da pizza (tamanho multiplicado pela quantidade)
+  const sizePrice = pizzaData ? (pizzaData.sizes[size] || 0) : 0;
+  const sizeTotal = sizePrice * quantity;
 
-    let basePrice = 0;
-    let pizzaData = null;
-    if (pizzaName && window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizzaName]) {
-      pizzaData = window.storeData.pizzas[pizzaName];
-    }
-    const sizePrice = pizzaData ? (pizzaData.sizes[size] || 0) : 0;
-    const sizeTotal = sizePrice * parseInt(quantity);
-
-    // Cálculo do custo das bordas conforme a distribuição
-    if (pizzaData) {
-      const borderContainer = document.getElementById('border-options-container');
-      if (borderContainer) {
-        const inputs = borderContainer.querySelectorAll('input[type="number"]');
-        inputs.forEach(input => {
-          const qty = parseInt(input.value) || 0;
-          const borderOption = input.dataset.border;
-          const bordaPrice = pizzaData.borders[borderOption] || 0;
-          borderTotal += bordaPrice * qty;
-        });
-      }
-    }
-
-    const beverageCost = selectedBeverage ? parseFloat(selectedBeverage.price) : (pedidoInfo.beverageCost || 0);
-    const baseTotal = sizeTotal + borderTotal + beverageCost;
-    pedidoInfo.baseTotal = baseTotal;
-
-    const deliveryFee = pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0;
-    const total = baseTotal + deliveryFee;
-    pedidoInfo.total = total;
-
-    if (document.getElementById('summary-total')) {
-      document.getElementById('summary-total').innerHTML = `<strong>Total: R$ ${total.toFixed(2)}</strong>`;
+  // Cálculo do custo das bordas a partir da distribuição definida pelo cliente
+  let borderTotal = 0;
+  if (pizzaData) {
+    const borderContainer = document.getElementById('border-options-container');
+    if (borderContainer) {
+      const inputs = borderContainer.querySelectorAll('input[type="number"]');
+      inputs.forEach(input => {
+        const qty = parseInt(input.value) || 0;
+        const borderOption = input.dataset.border;
+        const bordaPrice = pizzaData.borders[borderOption] || 0;
+        borderTotal += bordaPrice * qty; // Multiplica o preço da borda pela quantidade alocada
+      });
     }
   }
+
+  // O custo da bebida é adicionado uma única vez (se selecionada)
+  const beverageCost = selectedBeverage ? parseFloat(selectedBeverage.price) : (pedidoInfo.beverageCost || 0);
+  
+  // Total do pedido (sem taxa de entrega)
+  const baseTotal = sizeTotal + borderTotal + beverageCost;
+  pedidoInfo.baseTotal = baseTotal;
+
+  // Se houver taxa de entrega, ela será somada
+  const deliveryFee = pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0;
+  const total = baseTotal + deliveryFee;
+  pedidoInfo.total = total;
+
+  if (document.getElementById('summary-total')) {
+    document.getElementById('summary-total').innerHTML = `<strong>Total: R$ ${total.toFixed(2)}</strong>`;
+  }
+}
 
   // Atualiza as opções de borda sempre que a quantidade é alterada
   const quantityInput = document.getElementById('modal-pizza-quantity');
