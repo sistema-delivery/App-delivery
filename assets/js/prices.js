@@ -125,7 +125,7 @@ const storeData = {
    */
   deliveryFees: {
     "Paulista (PE)": {
-      "Janga": 5.00,
+      "Janga": 10.00,
       "Maranguape I": 6.00,
       "Maranguape II": 6.00,
       "Arthur Lundgren I": 7.00,
