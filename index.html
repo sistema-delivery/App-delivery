@@ -182,75 +182,70 @@
   </section>
 
   <!-- Modal de Pedido -->
-  <div id="order-modal" class="modal">
-    <div class="modal-content">
-      <!-- Botão Voltar -->
-      <button type="button" class="back"></button>
-      <span class="close"></span>
-      <h2>Monte seu Pedido</h2>
+<div id="order-modal" class="modal">
+  <div class="modal-content">
+    <!-- Botão Voltar -->
+    <button type="button" class="back"></button>
+    <span class="close"></span>
+    <h2>Monte seu Pedido</h2>
 
-      <form id="modal-order-form">
-        <p><strong>Pizza:</strong> <span id="modal-pizza-name"></span></p>
-        <!-- Linha para descrição -->
-        <p id="modal-pizza-description">Descrição: Adicione os ingredientes que essa pizza tem.</p>
+    <form id="modal-order-form">
+      <p><strong>Pizza:</strong> <span id="modal-pizza-name"></span></p>
+      <!-- Linha para descrição -->
+      <p id="modal-pizza-description">Descrição: Adicione os ingredientes que essa pizza tem.</p>
 
-        <!-- Bloco de Seleção: Tamanho, Tipos de Massa, Borda e Quantidade -->
-        <div class="pizza-options" style="display: flex; flex-direction: column; align-items: flex-start;">
-          <!-- Seleção de Tamanho -->
-          <div class="pizza-sizes">
-            <p class="tamanho-title">Tamanho:</p>
-            <div class="pizza-size-section">
-              <label>
-                <input type="radio" name="pizza-size" value="Pequena" required>
-                <img src="assets/images/tamanho-pequena.png" alt="Pizza Pequena">
-                <div class="price-size">10.00</div>
-                <div>Pequena</div>
-              </label>
-              <label>
-                <input type="radio" name="pizza-size" value="Média">
-                <img src="assets/images/tamanho-media.png" alt="Pizza Média">
-                <div class="price-size">15.00</div>
-                <div>Média</div>
-              </label>
-              <label>
-                <input type="radio" name="pizza-size" value="Grande">
-                <img src="assets/images/tamanho-grande.png" alt="Pizza Grande">
-                <div class="price-size">20.00</div>
-                <div>Grande</div>
-              </label>
-            </div>
-          </div>
-
-          <!-- Seção: Tipos de Massa -->
-          <div class="pizza-crust" style="margin-top: 20px; text-align: left;">
-            <p class="crust-title"><strong>Tipos de Massa:</strong></p>
-            <select name="pizza-crust" required>
-              <option value="">Selecione</option>
-              <option value="Massa Fina">Massa Fina</option>
-              <option value="Massa Tradicional">Massa Tradicional</option>
-            </select>
-          </div>
-
-          <!-- Seção: Borda -->
-          <div class="pizza-border" style="margin-top: 20px; text-align: left;">
-            <p class="border-title"><strong>Borda:</strong></p>
-            <select name="pizza-border" required>
-              <option value="">Selecione</option>
-              <option value="Nenhuma">Nenhuma</option>
-              <option value="Catupiry R$ 6,00">Catupiry R$ 6,00</option>
-              <option value="Cheddar R$ 5,00">Cheddar R$ 5,00</option>
-              <option value="Cream cheese R$ 3,50">Cream cheese R$ 3,50</option>
-            </select>
-          </div>
-
-          <!-- Seção: Quantidade -->
-          <div class="pizza-quantity" style="margin-top: 20px; text-align: left;">
-            <label for="modal-pizza-quantity"><strong>Quantidade:</strong></label>
-            <input type="number" id="modal-pizza-quantity" value="1" min="1" required>
+      <!-- Bloco de Seleção: Tamanho, Quantidade, Tipo de Massa, Borda e Bebida -->
+      <div class="pizza-options" style="display: flex; flex-direction: column; align-items: flex-start;">
+        <!-- Seleção de Tamanho -->
+        <div class="pizza-sizes">
+          <p class="tamanho-title">Tamanho:</p>
+          <div class="pizza-size-section">
+            <label>
+              <input type="radio" name="pizza-size" value="Pequena" required>
+              <img src="assets/images/tamanho-pequena.png" alt="Pizza Pequena">
+              <div class="price-size">10.00</div>
+              <div>Pequena</div>
+            </label>
+            <label>
+              <input type="radio" name="pizza-size" value="Média">
+              <img src="assets/images/tamanho-media.png" alt="Pizza Média">
+              <div class="price-size">15.00</div>
+              <div>Média</div>
+            </label>
+            <label>
+              <input type="radio" name="pizza-size" value="Grande">
+              <img src="assets/images/tamanho-grande.png" alt="Pizza Grande">
+              <div class="price-size">20.00</div>
+              <div>Grande</div>
+            </label>
           </div>
         </div>
 
-        <!-- Nova Seção: Bebidas -->
+        <!-- Quantidade -->
+        <div class="pizza-quantity" style="margin-top: 20px; text-align: left;">
+          <label for="modal-pizza-quantity"><strong>Quantidade:</strong></label>
+          <input type="number" id="modal-pizza-quantity" value="1" min="1" required>
+        </div>
+
+        <!-- Tipo de Massa -->
+        <div class="pizza-crust" style="margin-top: 20px; text-align: left;">
+          <p class="crust-title"><strong>Tipo de Massa:</strong></p>
+          <select name="pizza-crust" required>
+            <option value="">Selecione</option>
+            <option value="Massa Fina">Massa Fina</option>
+            <option value="Massa Tradicional">Massa Tradicional</option>
+          </select>
+        </div>
+
+        <!-- Borda: Opção Dinâmica -->
+        <div class="pizza-border" style="margin-top: 20px; text-align: left;">
+          <p class="border-title"><strong>Borda:</strong></p>
+          <div id="border-options-container">
+            <!-- As opções de borda serão geradas dinamicamente com base na quantidade -->
+          </div>
+        </div>
+
+        <!-- Bebida -->
         <div class="bebidas-section" style="margin-top: 20px; text-align: left;">
           <p class="bebidas-title"><strong>Bebidas:</strong></p>
           <div class="horizontal-scroll bebidas-scroll">
@@ -271,24 +266,25 @@
             </div>
           </div>
         </div>
+      </div>
 
-        <label for="modal-additional">Observações:</label>
-        <input type="text" id="modal-additional" placeholder="Ex: sem cebola, extra queijo...">
+      <label for="modal-additional">Observações:</label>
+      <input type="text" id="modal-additional" placeholder="Ex: sem cebola, extra queijo...">
 
-        <!-- Resumo do Pedido -->
-        <div id="order-summary">
-          <h4>Resumo do Pedido:</h4>
-          <p id="summary-size"></p>
-          <p id="summary-crust"></p>
-          <p id="summary-border"></p>
-          <p id="summary-quantity"></p>
-          <p id="summary-beverage"></p>
-        </div>
+      <!-- Resumo do Pedido -->
+      <div id="order-summary">
+        <h4>Resumo do Pedido:</h4>
+        <p id="summary-size"></p>
+        <p id="summary-crust"></p>
+        <p id="summary-border"></p>
+        <p id="summary-quantity"></p>
+        <p id="summary-beverage"></p>
+      </div>
 
-        <button type="submit" class="btn">Confirmar Pedido</button>
-      </form>
-    </div>
+      <button type="submit" class="btn">Confirmar Pedido</button>
+    </form>
   </div>
+</div>
   
   <!-- Modal de Pagamento -->
   <div id="payment-modal" class="modal">
