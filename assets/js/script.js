@@ -66,7 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function closeOrderModal() {
-    // Reseta o formulário do modal de pedido e fecha-o
     document.getElementById('order-modal').style.display = 'none';
     const orderForm = document.getElementById('modal-order-form');
     if (orderForm) {
@@ -122,13 +121,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.querySelectorAll('.horizontal-scroll .item').forEach(item => {
     item.addEventListener('click', function () {
-      // Abre o modal de pedido com o nome da pizza clicada
       const pizzaName = item.querySelector('p').textContent;
       openOrderModal(pizzaName);
     });
   });
 
-  // Atualização do Resumo do Pedido e Cálculo do Total (usado para exibir resumo no modal)
+  // Atualização do Resumo do Pedido e Cálculo do Total (para o modal de pedido)
   function updateOrderSummary() {
     const pizzaName = document.getElementById('modal-pizza-name')?.textContent.trim() || '';
     const size = document.querySelector('input[name="pizza-size"]:checked')?.value || 'Não selecionado';
@@ -187,7 +185,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Eventos que atualizam o resumo do pedido
   document.querySelectorAll('input[name="pizza-size"]').forEach(el => el.addEventListener('change', updateOrderSummary));
   const crustSelect = document.querySelector('select[name="pizza-crust"]');
   if (crustSelect) crustSelect.addEventListener('change', updateOrderSummary);
@@ -200,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
     input.addEventListener('input', updateOrderSummary);
   });
 
-  // Processamento do formulário de pedido original (antes, finalizava transição para pagamento)
+  // Processamento do formulário de pedido (submit) – a versão original redirecionava para o modal de pagamento
   const orderForm = document.getElementById('modal-order-form');
   if (orderForm) {
     orderForm.addEventListener('submit', function (e) {
@@ -221,11 +218,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const bebidaPrice = parsePrice(priceText);
         const bebidaQuantity = parseInt(item.querySelector('.bebida-quantity').value) || 0;
         if (bebidaQuantity > 0) {
-          bebidas.push(`${bebidaName} x${bebidaQuantity} - R$ ${(bebidaPrice * bebidaQuantity).toFixed(2)}`);
+          bebidas.push({
+            name: bebidaName,
+            price: bebidaPrice,
+            quantity: bebidaQuantity
+          });
         }
       });
-      pedidoInfo.bebida = bebidas.length > 0 ? bebidas.join(', ') : 'Nenhuma';
-
+      pedidoInfo.bebida = bebidas.length > 0 ? bebidas : [];
+      
       updateOrderSummary();
       closeOrderModal();
       openPaymentModal();
@@ -246,8 +247,8 @@ document.addEventListener('DOMContentLoaded', () => {
       <p><strong>Tamanho:</strong> ${pedidoInfo.tamanho}</p>
       <p><strong>Tipo de Massa:</strong> ${pedidoInfo.crust}</p>
       <p><strong>Bordas:</strong> Cheddar (${pedidoInfo.borderCheddar} un.) + Catupiry (${pedidoInfo.borderCatupiry} un.) + Cream cheese (${pedidoInfo.borderCreamCheese} un.)</p>
-      <p><strong>Quantidade de Pizzas:</strong> ${pedidoInfo.quantidade}</p>
-      <p><strong>Bebida(s):</strong> ${pedidoInfo.bebida}</p>
+      <p><strong>Quantidade:</strong> ${pedidoInfo.quantidade}</p>
+      <p><strong>Bebida(s):</strong> ${pedidoInfo.bebida.length > 0 ? pedidoInfo.bebida.map(b => `${b.name} x${b.quantity} - R$ ${(b.price * b.quantity).toFixed(2)}`).join(', ') : 'Nenhuma'}</p>
       <p><strong>Total do Pedido:</strong> R$ ${pedidoInfo.total.toFixed(2)}</p>
     `;
   }
@@ -351,7 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
 *Tipos de Massa:* ${pedidoInfo.crust}
 *Bordas:* Cheddar (${pedidoInfo.borderCheddar} un.) + Catupiry (${pedidoInfo.borderCatupiry} un.) + Cream cheese (${pedidoInfo.borderCreamCheese} un.)
 *Quantidade:* ${pedidoInfo.quantidade} unidade(s)
-*Bebida(s):* ${pedidoInfo.bebida}
+*Bebida(s):* ${pedidoInfo.bebida.length > 0 ? pedidoInfo.bebida.map(b => `${b.name} x${b.quantity} - R$ ${(b.price*b.quantity).toFixed(2)}`).join(', ') : 'Nenhuma'}
 *Total do Pedido:* R$ ${pedidoInfo.total.toFixed(2)}
 ------------------------------------
 *Status do Pagamento:* ${status}
@@ -485,10 +486,10 @@ Pizza Express - Sabor que chega rápido!`.trim();
     });
   }
 
-  // ================================
+  // ================================================
   // IMPLEMENTAÇÃO DO CARRINHO DE COMPRAS COM LOCALSTORAGE
-  // ================================
-
+  // ================================================
+  
   // Inicializa o carrinho a partir do localStorage (ou cria um array vazio)
   let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
 
@@ -510,13 +511,30 @@ Pizza Express - Sabor que chega rápido!`.trim();
       alert("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
+    
+    // Coleta as bebidas selecionadas
+    const bebidas = [];
+    document.querySelectorAll('.bebida-item').forEach(item => {
+      const bebidaName = item.querySelector('p').textContent;
+      const priceText = item.querySelector('.price').textContent.replace('R$', '').trim();
+      const bebidaPrice = parsePrice(priceText);
+      const bebidaQuantity = parseInt(item.querySelector('.bebida-quantity').value) || 0;
+      if(bebidaQuantity > 0){
+        bebidas.push({
+          name: bebidaName,
+          price: bebidaPrice,
+          quantity: bebidaQuantity
+        });
+      }
+    });
 
     const pizza = {
       nome: document.getElementById('modal-pizza-name').textContent.trim(),
       tamanho,
       massa,
       quantidade,
-      bordas: { cheddar, catupiry, cream }
+      bordas: { cheddar, catupiry, cream },
+      bebidas  // guarda as bebidas selecionadas
     };
 
     carrinho.push(pizza);
@@ -534,15 +552,19 @@ Pizza Express - Sabor que chega rápido!`.trim();
     let total = 0;
 
     carrinho.forEach((pizza) => {
-      const item = document.createElement("li");
-      // Exemplo de cálculo com preços fixos; substitua conforme necessário ou use dados do storeData
       const precoTamanho = pizza.tamanho === "Pequena" ? 10 : pizza.tamanho === "Média" ? 15 : 20;
       const precoBordas = (pizza.bordas.cheddar * 5) +
-                           (pizza.bordas.catupiry * 6) +
-                           (pizza.bordas.cream * 3.5);
-      const subtotal = (precoTamanho * pizza.quantidade) + precoBordas;
+                          (pizza.bordas.catupiry * 6) +
+                          (pizza.bordas.cream * 3.5);
+      const precoBebidas = pizza.bebidas ? pizza.bebidas.reduce((acc, bev) => acc + (bev.price * bev.quantity), 0) : 0;
+      const subtotal = (precoTamanho * pizza.quantidade) + precoBordas + precoBebidas;
       total += subtotal;
-      item.innerText = `Pizza: ${pizza.nome} - ${pizza.tamanho}, ${pizza.massa}, Qtde: ${pizza.quantidade}, Bordas: C:${pizza.bordas.cheddar}, Ct:${pizza.bordas.catupiry}, Cr:${pizza.bordas.cream} - R$ ${subtotal.toFixed(2)}`;
+      let bebidaText = "";
+      if(pizza.bebidas && pizza.bebidas.length > 0){
+        bebidaText = " - Bebidas: " + pizza.bebidas.map(b => `${b.name} x${b.quantity}`).join(', ');
+      }
+      const item = document.createElement("li");
+      item.innerText = `Pizza: ${pizza.nome} - ${pizza.tamanho}, ${pizza.massa}, Qtde: ${pizza.quantidade}${bebidaText} - R$ ${subtotal.toFixed(2)}`;
       lista.appendChild(item);
     });
 
@@ -558,20 +580,46 @@ Pizza Express - Sabor que chega rápido!`.trim();
     document.getElementById("cart").style.display = "none";
   };
 
+  // Função para atualizar o resumo do pagamento usando os itens do carrinho
+  function updatePaymentSummaryCart() {
+    let paymentSummaryElement = document.getElementById('payment-summary');
+    if (!paymentSummaryElement) {
+      paymentSummaryElement = document.createElement('div');
+      paymentSummaryElement.id = 'payment-summary';
+      const deliveryFeeElement = document.getElementById('delivery-fee');
+      deliveryFeeElement.parentNode.insertBefore(paymentSummaryElement, deliveryFeeElement.nextSibling);
+    }
+    let summaryText = '';
+    let total = 0;
+
+    carrinho.forEach((pizza, index) => {
+      const precoTamanho = pizza.tamanho === "Pequena" ? 10 : pizza.tamanho === "Média" ? 15 : 20;
+      const precoBordas = (pizza.bordas.cheddar * 5) +
+                          (pizza.bordas.catupiry * 6) +
+                          (pizza.bordas.cream * 3.5);
+      const precoBebidas = pizza.bebidas ? pizza.bebidas.reduce((acc, bev) => acc + (bev.price * bev.quantity), 0) : 0;
+      const subtotal = (precoTamanho * pizza.quantidade) + precoBordas + precoBebidas;
+      total += subtotal;
+      let bebidaText = "";
+      if(pizza.bebidas && pizza.bebidas.length > 0){
+        bebidaText = ` - Bebidas: ${pizza.bebidas.map(b => `${b.name} x${b.quantity} - R$ ${(b.price*b.quantity).toFixed(2)}`).join(', ')}`;
+      }
+      summaryText += `<p><strong>Pizza ${index+1}:</strong> ${pizza.nome} - ${pizza.tamanho}, ${pizza.massa}, Qtde: ${pizza.quantidade}${bebidaText} - R$ ${subtotal.toFixed(2)}</p>`;
+    });
+    summaryText += `<p><strong>Total do Pedido:</strong> R$ ${total.toFixed(2)}</p>`;
+    paymentSummaryElement.innerHTML = summaryText;
+  }
+
+  // Ao clicar em "Finalizar Pedido" no carrinho, abre o modal de pagamento para finalizar o pedido
   window.finalizarPedido = function() {
     if (carrinho.length === 0) {
       alert("Seu carrinho está vazio!");
       return;
     }
-
-    // Aqui você pode adicionar a lógica para enviar os dados do pedido para um backend
-    alert("Pedido finalizado! Em breve entraremos em contato.");
-    carrinho = [];
-    atualizarLocalStorage();
-    atualizarCarrinhoUI();
-    fecharCarrinho();
+    updatePaymentSummaryCart();
+    openPaymentModal();
   };
 
-  // No carregamento da página, atualiza a interface do carrinho a partir do localStorage
+  // Atualiza a interface do carrinho no carregamento
   atualizarCarrinhoUI();
 });
