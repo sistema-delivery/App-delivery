@@ -32,6 +32,8 @@
         <span class="bar"></span>
         <span class="bar"></span>
       </div>
+      <!-- Botão para visualizar o carrinho -->
+      <button class="btn" onclick="abrirCarrinho()">Ver Carrinho</button>
     </nav>
   </header>
 
@@ -63,7 +65,6 @@
         </a>
       </div>
     </div>
-    <!-- Indicadores (pontos) do carrossel -->
     <div class="carousel-dots">
       <span class="dot active"></span>
       <span class="dot"></span>
@@ -101,7 +102,7 @@
               <span>R$37,90</span>
             </p>
           </div>
-          <!-- Duplicação dos cards para o looping infinito -->
+          <!-- Duplicação para looping infinito -->
           <div class="item card-fire" onclick="openOrderModal('Pizza Marguerita')">
             <img src="assets/images/pizza1.jpg" alt="Pizza Marguerita">
             <p>Pizza Marguerita</p>
@@ -184,93 +185,86 @@
   <!-- Modal de Pedido -->
   <div id="order-modal" class="modal">
     <div class="modal-content">
-      <!-- Botão Voltar -->
+      <!-- Botão Voltar e Fechar -->
       <button type="button" class="back"></button>
       <span class="close"></span>
       <h2>Monte seu Pedido</h2>
 
       <form id="modal-order-form">
         <p><strong>Pizza:</strong> <span id="modal-pizza-name"></span></p>
-        <!-- Linha para descrição -->
         <p id="modal-pizza-description">Descrição: Adicione os ingredientes que essa pizza tem.</p>
 
         <!-- Bloco de Seleção: Tamanho, Tipos de Massa, Quantidade e Bordas -->
-<div class="pizza-options" style="display: flex; flex-direction: column; align-items: flex-start;">
-  <!-- Seleção de Tamanho -->
-  <div class="pizza-sizes">
-    <p class="tamanho-title">Tamanho:</p>
-    <div class="pizza-size-section">
-      <label>
-        <input type="radio" name="pizza-size" value="Pequena" required>
-        <img src="assets/images/tamanho-pequena.png" alt="Pizza Pequena">
-        <div class="price-size">10.00</div>
-        <div>Pequena</div>
-      </label>
-      <label>
-        <input type="radio" name="pizza-size" value="Média">
-        <img src="assets/images/tamanho-media.png" alt="Pizza Média">
-        <div class="price-size">15.00</div>
-        <div>Média</div>
-      </label>
-      <label>
-        <input type="radio" name="pizza-size" value="Grande">
-        <img src="assets/images/tamanho-grande.png" alt="Pizza Grande">
-        <div class="price-size">20.00</div>
-        <div>Grande</div>
-      </label>
-    </div>
-  </div>
+        <div class="pizza-options" style="display: flex; flex-direction: column; align-items: flex-start;">
+          <!-- Seleção de Tamanho -->
+          <div class="pizza-sizes">
+            <p class="tamanho-title">Tamanho:</p>
+            <div class="pizza-size-section">
+              <label>
+                <input type="radio" name="pizza-size" value="Pequena" required>
+                <img src="assets/images/tamanho-pequena.png" alt="Pizza Pequena">
+                <div class="price-size">10.00</div>
+                <div>Pequena</div>
+              </label>
+              <label>
+                <input type="radio" name="pizza-size" value="Média">
+                <img src="assets/images/tamanho-media.png" alt="Pizza Média">
+                <div class="price-size">15.00</div>
+                <div>Média</div>
+              </label>
+              <label>
+                <input type="radio" name="pizza-size" value="Grande">
+                <img src="assets/images/tamanho-grande.png" alt="Pizza Grande">
+                <div class="price-size">20.00</div>
+                <div>Grande</div>
+              </label>
+            </div>
+          </div>
 
-  <!-- Seção: Tipos de Massa -->
-  <div class="pizza-crust" style="margin-top: 20px; text-align: left;">
-    <p class="crust-title"><strong>Tipos de Massa:</strong></p>
-    <select name="pizza-crust" required>
-      <option value="">Selecione</option>
-      <option value="Massa Fina">Massa Fina</option>
-      <option value="Massa Tradicional">Massa Tradicional</option>
-    </select>
-  </div>
+          <!-- Seção: Tipos de Massa -->
+          <div class="pizza-crust" style="margin-top: 20px; text-align: left;">
+            <p class="crust-title"><strong>Tipos de Massa:</strong></p>
+            <select name="pizza-crust" required>
+              <option value="">Selecione</option>
+              <option value="Massa Fina">Massa Fina</option>
+              <option value="Massa Tradicional">Massa Tradicional</option>
+            </select>
+          </div>
 
-  <!-- Seção: Quantidade Total de Pizzas (movida para cima, antes das bordas) -->
-  <div class="pizza-quantity" style="margin-top: 20px; text-align: left;">
-    <label for="modal-pizza-quantity"><strong>Quantidade:</strong></label>
-    <input type="number" id="modal-pizza-quantity" value="1" min="1" required>
-  </div>
-  
-  <!-- Seção: Bordas individuais -->
-  <div class="pizza-border" style="margin-top: 20px; text-align: left;">
-    <p class="border-title"><strong>Selecione bordas para cada pizza:</strong></p>
-    <p>
-      Cheddar (R$ 5,00): 
-      <span class="input-group">
-        <input type="number" id="border-cheddar" value="0" min="0" style="width: 80px;">
-        <button type="button" class="btn-plus" onclick="incrementField('border-cheddar')">+</button>
-      </span>
-    </p>
-    <p>
-      Catupiry (R$ 6,00): 
-      <span class="input-group">
-        <input type="number" id="border-catupiry" value="0" min="0" style="width: 80px;">
-        <button type="button" class="btn-plus" onclick="incrementField('border-catupiry')">+</button>
-      </span>
-    </p>
-    <p>
-      Cream cheese (R$ 3,50): 
-      <span class="input-group">
-        <input type="number" id="border-cream-cheese" value="0" min="0" style="width: 80px;">
-        <button type="button" class="btn-plus" onclick="incrementField('border-cream-cheese')">+</button>
-      </span>
-    </p>
-  </div>
-          
-          <!-- Seção: Quantidade Total de Pizzas -->
+          <!-- Seção: Quantidade (movida para antes das bordas) -->
           <div class="pizza-quantity" style="margin-top: 20px; text-align: left;">
             <label for="modal-pizza-quantity"><strong>Quantidade:</strong></label>
             <input type="number" id="modal-pizza-quantity" value="1" min="1" required>
           </div>
+          
+          <!-- Seção: Bordas individuais -->
+          <div class="pizza-border" style="margin-top: 20px; text-align: left;">
+            <p class="border-title"><strong>Selecione bordas para cada pizza:</strong></p>
+            <p>
+              Cheddar (R$ 5,00): 
+              <span class="input-group">
+                <input type="number" id="border-cheddar" value="0" min="0" style="width: 80px;">
+                <button type="button" class="btn-plus" onclick="incrementField('border-cheddar')">+</button>
+              </span>
+            </p>
+            <p>
+              Catupiry (R$ 6,00): 
+              <span class="input-group">
+                <input type="number" id="border-catupiry" value="0" min="0" style="width: 80px;">
+                <button type="button" class="btn-plus" onclick="incrementField('border-catupiry')">+</button>
+              </span>
+            </p>
+            <p>
+              Cream cheese (R$ 3,50): 
+              <span class="input-group">
+                <input type="number" id="border-cream-cheese" value="0" min="0" style="width: 80px;">
+                <button type="button" class="btn-plus" onclick="incrementField('border-cream-cheese')">+</button>
+              </span>
+            </p>
+          </div>
         </div>
 
-        <!-- Nova Seção: Bebidas -->
+        <!-- Seção: Bebidas -->
         <div class="bebidas-section" style="margin-top: 20px; text-align: left;">
           <p class="bebidas-title"><strong>Bebidas:</strong></p>
           <div class="horizontal-scroll bebidas-scroll">
@@ -315,11 +309,12 @@
           <p id="summary-total"></p>
         </div>
 
-        <button type="submit" class="btn">Confirmar Pedido</button>
+        <!-- Botão para adicionar o pedido ao carrinho -->
+        <button type="button" class="btn" onclick="adicionarAoCarrinho()">Adicionar ao Carrinho</button>
       </form>
     </div>
   </div>
-  
+
   <!-- Modal de Pagamento -->
   <div id="payment-modal" class="modal">
     <div class="modal-content">
@@ -331,21 +326,16 @@
         <div class="delivery-location" style="margin:40px 0 20px 0; text-align: left;">
           <label for="cep"><strong>Digite seu CEP para calcular a taxa de entrega:</strong></label>
           <input type="text" id="cep" name="cep" placeholder="Ex: 01001-000" required style="width: 100%; padding: 10px; margin-top: 5px;">
-          
-          <!-- Endereço automático preenchido -->
           <div id="address-fields" style="margin-top: 10px;">
             <input type="text" id="rua" name="rua" placeholder="Rua" readonly style="width: 100%; padding: 8px; margin-top: 5px;">
             <input type="text" id="bairro" name="bairro" placeholder="Bairro" readonly style="width: 100%; padding: 8px; margin-top: 5px;">
             <input type="text" id="cidade" name="cidade" placeholder="Cidade" readonly style="width: 100%; padding: 8px; margin-top: 5px;">
             <input type="text" id="estado" name="estado" placeholder="Estado" readonly style="width: 100%; padding: 8px; margin-top: 5px;">
           </div>
-
-          <!-- Novo campo: Número da Casa -->
           <div style="margin-top: 10px;">
             <label for="numero" style="font-weight: bold;">Número:</label>
             <input type="text" id="numero" name="numero" placeholder="Digite o número da sua casa" style="width: 100%; padding: 10px; margin-top: 5px;">
           </div>
-
           <div id="delivery-fee" style="margin-top: 10px; font-weight: bold;">Taxa de Entrega: R$ 0,00</div>
         </div>
 
@@ -383,6 +373,15 @@
         <button type="submit" class="btn">Finalizar Pedido</button>
       </form>
     </div>
+  </div>
+
+  <!-- Carrinho de Compras -->
+  <div id="cart" class="cart">
+    <h2>Seu Carrinho</h2>
+    <ul id="cart-items"></ul>
+    <p>Total: R$ <span id="cart-total">0.00</span></p>
+    <button class="btn" onclick="finalizarPedido()">Finalizar Pedido</button>
+    <button class="btn" onclick="fecharCarrinho()">Fechar Carrinho</button>
   </div>
 
   <!-- Footer -->
