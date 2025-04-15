@@ -57,9 +57,9 @@ const storeData = {
     "Pizza Portuguesa": {
       description: "Pizza com molho de tomate, mussarela e orégano, ideal para os amantes da tradição.",
       sizes: {
-        "Pequena": 16.00,
-        "Média": 22.00,
-        "Grande": 28.00
+        "Pequena": 24.90,
+        "Média": 32.90,
+        "Grande": 44.90
       },
       borders: {
         "Nenhuma": 0.00,
@@ -113,9 +113,9 @@ const storeData = {
   },
 
   beverages: {
-    "Coca-Cola 1,5L": 5.00,
-    "Guaraná 1L": 4.50,
-    "Guaraná 2L": 3.00
+    "Coca-Cola 1,5L": 11.50,
+    "Guaraná 1L": 7.00,
+    "Guaraná 2L": 13.00
   },
 
   /**
