@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('border-catupiry').value = 0;
     document.getElementById('border-cream-cheese').value = 0;
     document.querySelectorAll('.bebida-quantity').forEach(input => input.value = 0);
-    // Não chamamos updateOrderSummary aqui, pois os campos já foram resetados
+    // Não atualizamos os valores pois já temos os dados armazenados em pedidoInfo
   }
 
   function openPaymentModal() {
@@ -152,8 +152,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const creamCheesePrice = 3.50;
 
     // Cálculo de custos:
-    // - Pizzas base: (valor do tamanho × total de pizzas)
-    // - Adicional de borda: (cheddarQuantity × cheddarPrice) + (catupiryQuantity × catupiryPrice) + (creamCheeseQuantity × creamCheesePrice)
     const pizzasCost = (sizePrice * totalPizzas) 
                         + (cheddarQuantity * cheddarPrice) 
                         + (catupiryQuantity * catupiryPrice)
@@ -177,12 +175,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const baseTotal = pizzasCost + beveragesCost;
     pedidoInfo.baseTotal = baseTotal;
 
-    // Taxa de entrega (se houver)
+    // Taxa de entrega (se houver) e total
     const deliveryFee = pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0;
     const total = baseTotal + deliveryFee;
     pedidoInfo.total = total;
 
-    // Atualiza o resumo na tela
+    // Atualiza o resumo na tela (se os campos ainda estiverem disponíveis)
     if (document.getElementById('order-summary')) {
       document.getElementById('summary-size').textContent = `Tamanho: ${size} - R$ ${sizePrice.toFixed(2)}`;
       document.getElementById('summary-crust').textContent = `Tipo de Massa: ${crust}`;
@@ -216,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (orderForm) {
     orderForm.addEventListener('submit', function (e) {
       e.preventDefault();
-      // Coleta os valores dos campos antes de resetar o formulário
+      // Coleta os dados do pedido e armazena em pedidoInfo
       pedidoInfo.nome = document.getElementById('modal-pizza-name').textContent;
       pedidoInfo.tamanho = document.querySelector('input[name="pizza-size"]:checked').value;
       pedidoInfo.crust = document.querySelector('select[name="pizza-crust"]').value;
@@ -239,19 +237,18 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       pedidoInfo.bebida = bebidas.length > 0 ? bebidas.join(', ') : 'Nenhuma';
 
-      // Calcula os valores com base nos dados atuais
+      // Calcula e armazena o total com base nos dados atuais
       updateOrderSummary();
-      // Fecha o modal de pedido e reseta o formulário
+      // Fecha o modal de pedido (mantendo os dados em pedidoInfo) e abre o modal de pagamento
       closeOrderModal();
       openPaymentModal();
-      // Atualiza o resumo no modal de pagamento usando o valor calculado previamente
       updatePaymentSummary();
     });
   }
 
   // -----------------------------
   // Atualização do Resumo no Modal de Pagamento
-  // Agora, NÃO chamamos updateOrderSummary() aqui para evitar recalcular com campos resetados.
+  // Utiliza os dados já armazenados em pedidoInfo para exibir o total correto.
   // -----------------------------
   function updatePaymentSummary() {
     let paymentSummaryElement = document.getElementById('payment-summary');
@@ -324,7 +321,10 @@ document.addEventListener('DOMContentLoaded', () => {
           document.getElementById('delivery-fee').textContent = "Bairro fora da área de entrega.";
           pedidoInfo.deliveryFee = null;
         }
-        updateOrderSummary();
+        // Atualiza o total utilizando o valor previamente calculado em pedidoInfo.baseTotal
+        if (pedidoInfo.baseTotal !== undefined) {
+          pedidoInfo.total = pedidoInfo.baseTotal + (pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0);
+        }
         if (document.getElementById('payment-modal').style.display === 'block'){
           updatePaymentSummary();
         }
