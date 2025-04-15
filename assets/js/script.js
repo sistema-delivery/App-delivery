@@ -457,7 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Chamada ao endpoint do backend para gerar pagamento via Pix
-        fetch('https://SEU_BACKEND_URL/mp-pix', { // SUBSTITUA pela URL real do seu backend
+        fetch('https://meu-app-sooty.vercel.app/mp-pix', { // URL atualizada com a sua URL do Vercel
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
