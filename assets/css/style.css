@@ -926,9 +926,7 @@ footer {
 }
 
 /* Exemplo de estilo para inputs numéricos para padronizar */
-input[type="number"] {
-  padding: 4px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+.input-group {
+  display: inline-flex;
+  align-items: center;
 }
