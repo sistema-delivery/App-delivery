@@ -243,10 +243,8 @@ document.addEventListener('DOMContentLoaded', () => {
     deliveryFeeElement.parentNode.insertBefore(paymentSummaryElement, deliveryFeeElement.nextSibling);
   }
   let summaryText = '';
-  let total = 0;
-
+  
   carrinho.forEach((pizza, index) => {
-    // Recupera o preço do tamanho a partir do storeData (ou usa valores padrão)
     let sizePrice = 0;
     if (window.storeData && window.storeData.pizzas &&
         window.storeData.pizzas[pizza.nome] &&
@@ -255,31 +253,29 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       sizePrice = pizza.tamanho === "Pequena" ? 10 : pizza.tamanho === "Média" ? 15 : 20;
     }
-
     const cheddarPrice = 5.00;
     const catupiryPrice = 6.00;
     const creamCheesePrice = 3.50;
-
-    const bordasCost = 
-      (pizza.bordas.cheddar * cheddarPrice) +
-      (pizza.bordas.catupiry * catupiryPrice) +
-      (pizza.bordas.cream * creamCheesePrice);
-
+    
+    const bordasCost = (pizza.bordas.cheddar * cheddarPrice) +
+                        (pizza.bordas.catupiry * catupiryPrice) +
+                        (pizza.bordas.cream * creamCheesePrice);
     const bebidasCost = pizza.bebidas 
       ? pizza.bebidas.reduce((acc, bev) => acc + (bev.price * bev.quantity), 0)
       : 0;
-
-    // Subtotal de cada pizza: (tamanho x qtde) + bordas + bebidas
     const subtotal = (sizePrice * pizza.quantidade) + bordasCost + bebidasCost;
-    total += subtotal;
-
+    
     let bebidaText = "";
     if (pizza.bebidas && pizza.bebidas.length > 0) {
-      bebidaText = ` - Bebidas: ${pizza.bebidas.map(b => `${b.name} x${b.quantity} - R$ ${(b.price * b.quantity).toFixed(2)}`).join(', ')}`;
+      bebidaText = ` - Bebidas: ${pizza.bebidas.map(b => `${b.name} x${b.quantity} (R$ ${(b.price * b.quantity).toFixed(2)})`).join(', ')}`;
     }
     summaryText += `<p><strong>Pizza ${index + 1}:</strong> ${pizza.nome} - ${pizza.tamanho}, ${pizza.massa}, Qtde: ${pizza.quantidade}${bebidaText} - R$ ${subtotal.toFixed(2)}</p>`;
   });
+  
+  // Calcula o total com a mesma função auxiliar
+  let total = calcularTotalPedido();
   summaryText += `<p><strong>Total do Pedido:</strong> R$ ${total.toFixed(2)}</p>`;
+  
   paymentSummaryElement.innerHTML = summaryText;
 }
 
