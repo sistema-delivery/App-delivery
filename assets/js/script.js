@@ -710,36 +710,62 @@ Pizza Express - Sabor que chega rápido!`.trim();
       }
       let pizzaData = (window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizza.nome])
                         ? window.storeData.pizzas[pizza.nome]
-                        : null;
-      const cheddarPrice = pizzaData ? pizzaData.borders["Cheddar"] : 5.00;
-      const catupiryPrice = pizzaData ? pizzaData.borders["Catupiry"] : 6.00;
-      const creamCheesePrice = pizzaData ? pizzaData.borders["Cream cheese"] : 3.50;
-      
-      const bordasCost = (pizza.bordas.cheddar * cheddarPrice) +
-                          (pizza.bordas.catupiry * catupiryPrice) +
-                          (pizza.bordas.cream * creamCheesePrice);
-      const bebidasCost = pizza.bebidas
-        ? pizza.bebidas.reduce((acc, bev) => acc + (bev.price * bev.quantity), 0)
-        : 0;
-      const subtotal = (sizePrice * pizza.quantidade) + bordasCost + bebidasCost;
-      
-      let bebidaText = "";
-      if (pizza.bebidas && pizza.bebidas.length > 0) {
-        bebidaText = " - Bebidas: " + pizza.bebidas.map(b => `${b.name} x${b.quantity}`).join(', ');
-      }
-      
-      const item = document.createElement("li");
-      item.innerText = `Pizza: ${pizza.nome} - ${pizza.tamanho}, ${pizza.massa}, Qtde: ${pizza.quantidade}${bebidaText} - R$ ${subtotal.toFixed(2)}`;
-      lista.appendChild(item);
-    });
+// Função que atualiza a interface do carrinho (lista de itens e total) e atualiza a contagem do badge
+function atualizarCarrinhoUI() {
+  const lista = document.getElementById("cart-items");
+  const totalEl = document.getElementById("cart-total");
+  lista.innerHTML = "";
+  
+  // Calcula a soma total de pizzas no carrinho (considerando a propriedade "quantidade" de cada item)
+  let totalItens = 0;
+  
+  carrinho.forEach((pizza) => {
+    let sizePrice = 0;
+    if (
+      window.storeData &&
+      window.storeData.pizzas &&
+      window.storeData.pizzas[pizza.nome] &&
+      window.storeData.pizzas[pizza.nome].sizes
+    ) {
+      sizePrice = window.storeData.pizzas[pizza.nome].sizes[pizza.tamanho] || 0;
+    } else {
+      sizePrice = pizza.tamanho === "Pequena" ? 10 : pizza.tamanho === "Média" ? 15 : 20;
+    }
+    let pizzaData = (window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizza.nome])
+                      ? window.storeData.pizzas[pizza.nome]
+                      : null;
+    const cheddarPrice = pizzaData ? pizzaData.borders["Cheddar"] : 5.00;
+    const catupiryPrice = pizzaData ? pizzaData.borders["Catupiry"] : 6.00;
+    const creamCheesePrice = pizzaData ? pizzaData.borders["Cream cheese"] : 3.50;
     
-    totalEl.innerText = calcularTotalPedido().toFixed(2);
-  }
+    const bordasCost = (pizza.bordas.cheddar * cheddarPrice) +
+                        (pizza.bordas.catupiry * catupiryPrice) +
+                        (pizza.bordas.cream * creamCheesePrice);
+    const bebidasCost = pizza.bebidas
+      ? pizza.bebidas.reduce((acc, bev) => acc + (bev.price * bev.quantity), 0)
+      : 0;
+    const subtotal = (sizePrice * pizza.quantidade) + bordasCost + bebidasCost;
+    
+    totalItens += parseInt(pizza.quantidade) || 1;
+    
+    let bebidaText = "";
+    if (pizza.bebidas && pizza.bebidas.length > 0) {
+      bebidaText = " - Bebidas: " + pizza.bebidas.map(b => `${b.name} x${b.quantity}`).join(', ');
+    }
+    
+    const item = document.createElement("li");
+    item.innerText = `Pizza: ${pizza.nome} - ${pizza.tamanho}, ${pizza.massa}, Qtde: ${pizza.quantidade}${bebidaText} - R$ ${subtotal.toFixed(2)}`;
+    lista.appendChild(item);
+  });
+  
+  totalEl.innerText = calcularTotalPedido().toFixed(2);
+  // Atualiza o badge do carrinho com a contagem total de itens
+  document.getElementById("cart-count").innerText = totalItens;
+}
 
-  window.abrirCarrinho = function() {
-    document.getElementById("cart").style.display = "block";
-    atualizarCarrinhoUI();
-  };
+// Sempre que o carrinho for atualizado, essa função é chamada.
+// Também, ao carregar a página, chamamos atualizarCarrinhoUI();
+atualizarCarrinhoUI();
 
   window.fecharCarrinho = function() {
     document.getElementById("cart").style.display = "none";
