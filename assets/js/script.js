@@ -1,7 +1,7 @@
 // Declaração global do carrinho para que todas as funções possam acessá-lo
 let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
 
-// Função centralizada para calcular o total do pedido
+// Função centralizada para calcular o total dos itens do pedido (sem a taxa de entrega)
 function calcularTotalPedido() {
   let total = 0;
   carrinho.forEach((pizza) => {
@@ -275,7 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Atualiza o resumo de pagamento do modal utilizando a função centralizada para calcular o total
+  // Atualiza o resumo de pagamento do modal, agora incluindo a taxa de entrega
   function updatePaymentSummaryCart() {
     let paymentSummaryElement = document.getElementById('payment-summary');
     if (!paymentSummaryElement) {
@@ -317,7 +317,13 @@ document.addEventListener('DOMContentLoaded', () => {
       summaryText += `<p><strong>Pizza ${index + 1}:</strong> ${pizza.nome} - ${pizza.tamanho}, ${pizza.massa}, Qtde: ${pizza.quantidade}${bebidaText} - R$ ${subtotal.toFixed(2)}</p>`;
     });
     
-    summaryText += `<p><strong>Total do Pedido:</strong> R$ ${calcularTotalPedido().toFixed(2)}</p>`;
+    // Calcula o total dos itens e adiciona a taxa de entrega
+    const itensTotal = calcularTotalPedido();
+    const deliveryFee = pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0;
+    const totalComEntrega = itensTotal + deliveryFee;
+    
+    summaryText += `<p><strong>Taxa de Entrega:</strong> R$ ${deliveryFee.toFixed(2)}</p>`;
+    summaryText += `<p><strong>Total do Pedido:</strong> R$ ${totalComEntrega.toFixed(2)}</p>`;
     
     paymentSummaryElement.innerHTML = summaryText;
   }
