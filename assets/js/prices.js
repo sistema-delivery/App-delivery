@@ -13,7 +13,8 @@
 const storeData = {
   pizzas: {
     "Pizza Marguerita": {
-      description: "A clássica Marguerita com molho de tomate fresco, mussarela, manjericão e um toque de azeite extra virgem.",
+      description:
+        "A clássica Marguerita com molho de tomate fresco, mussarela, manjericão e um toque de azeite extra virgem.",
       sizes: {
         "Pequena": 23.90,
         "Média": 34.90,
@@ -27,7 +28,8 @@ const storeData = {
       }
     },
     "Pizza Calabresa": {
-      description: "Pizza com rodelas de calabresa, cebola, azeitonas e orégano para um sabor marcante.",
+      description:
+        "Pizza com rodelas de calabresa, cebola, azeitonas e orégano para um sabor marcante.",
       sizes: {
         "Pequena": 12.90,
         "Média": 18.90,
@@ -41,7 +43,8 @@ const storeData = {
       }
     },
     "Pizza Quatro Queijos": {
-      description: "Deliciosa combinação de mussarela, parmesão, gorgonzola e provolone para os amantes de queijo.",
+      description:
+        "Deliciosa combinação de mussarela, parmesão, gorgonzola e provolone para os amantes de queijo.",
       sizes: {
         "Pequena": 14.90,
         "Média": 21.90,
@@ -55,7 +58,8 @@ const storeData = {
       }
     },
     "Pizza Portuguesa": {
-      description: "Pizza com molho de tomate, mussarela e orégano, ideal para os amantes da tradição.",
+      description:
+        "Pizza com molho de tomate, mussarela e orégano, ideal para os amantes da tradição.",
       sizes: {
         "Pequena": 24.90,
         "Média": 32.90,
@@ -69,7 +73,8 @@ const storeData = {
       }
     },
     "Marguerita Clássica": {
-      description: "Variante da clássica marguerita, com ingredientes frescos e um toque especial.",
+      description:
+        "Variante da clássica marguerita, com ingredientes frescos e um toque especial.",
       sizes: {
         "Pequena": 18.90,
         "Média": 25.90,
@@ -83,7 +88,8 @@ const storeData = {
       }
     },
     "Pizza Trufada": {
-      description: "Pizza com massa premium e cobertura trufada, para quem busca um sabor sofisticado.",
+      description:
+        "Pizza com massa premium e cobertura trufada, para quem busca um sabor sofisticado.",
       sizes: {
         "Pequena": 20.90,
         "Média": 30.90,
@@ -97,7 +103,8 @@ const storeData = {
       }
     },
     "Especial Gourmet": {
-      description: "Pizza com ingredientes gourmet e toques inovadores, perfeita para ocasiões especiais.",
+      description:
+        "Pizza com ingredientes gourmet e toques inovadores, perfeita para ocasiões especiais.",
       sizes: {
         "Pequena": 22.90,
         "Média": 33.90,
@@ -145,7 +152,6 @@ const storeData = {
       "Loteamento Conceição": 5.50
     },
 
-    // Exemplo para outras regiões (futuras implementações)
     "São Paulo (SP)": {
       "Centro": 4.00,
       "Jardim Paulista": 5.50,
