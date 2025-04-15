@@ -9,9 +9,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // -----------------------------
   const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
   const navMenu = document.querySelector('.nav-menu');
-  mobileMenuToggle.addEventListener('click', () => {
-    navMenu.classList.toggle('active');
-  });
+  if(mobileMenuToggle && navMenu){
+    mobileMenuToggle.addEventListener('click', () => {
+      navMenu.classList.toggle('active');
+    });
+  }
 
   // -----------------------------
   // Dados de Localização da Loja
@@ -19,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const storeLocation = { lat: -7.950346, lon: -34.902970 };
   const defaultCity = "Paulista (PE)";
 
-  // Variável para armazenar a bebida selecionada (temporária)
+  // Variável para armazenar a bebida selecionada
   let selectedBeverage = null;
 
   // Objeto global para armazenar os dados do pedido
@@ -30,11 +32,24 @@ document.addEventListener('DOMContentLoaded', () => {
   // -----------------------------
   function generateBorderOptions() {
     const quantityInput = document.getElementById('modal-pizza-quantity');
+    if (!quantityInput) {
+      console.error('Elemento "modal-pizza-quantity" não encontrado.');
+      return;
+    }
     const quantity = parseInt(quantityInput.value);
     const borderContainer = document.getElementById('border-options-container');
+    if (!borderContainer) {
+      console.error('Elemento "border-options-container" não encontrado.');
+      return;
+    }
     borderContainer.innerHTML = ""; // Limpa opções anteriores
 
-    const pizzaName = document.getElementById('modal-pizza-name').textContent.trim();
+    const modalPizzaName = document.getElementById('modal-pizza-name');
+    if (!modalPizzaName) {
+      console.error('Elemento "modal-pizza-name" não encontrado.');
+      return;
+    }
+    const pizzaName = modalPizzaName.textContent.trim();
     if (!(window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizzaName])) {
       borderContainer.innerHTML = "<p>Opções de borda indisponíveis.</p>";
       return;
@@ -65,10 +80,18 @@ document.addEventListener('DOMContentLoaded', () => {
   // Funções de Modais (abrir/fechar)
   // -----------------------------
   function openOrderModal(pizzaName) {
-    const modalPizzaName = document.getElementById('modal-pizza-name');
-    if (modalPizzaName) {
-      modalPizzaName.textContent = pizzaName;
+    const modal = document.getElementById('order-modal');
+    if(!modal){
+      console.error('Elemento "order-modal" não encontrado.');
+      return;
     }
+    const modalPizzaName = document.getElementById('modal-pizza-name');
+    if(modalPizzaName){
+      modalPizzaName.textContent = pizzaName;
+    } else {
+      console.error('Elemento "modal-pizza-name" não encontrado.');
+    }
+
     if (window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizzaName]) {
       const pizzaData = window.storeData.pizzas[pizzaName];
       const modalDescription = document.getElementById('modal-pizza-description');
@@ -86,36 +109,35 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
     }
-    document.getElementById('order-modal').style.display = 'block';
-    // Gere as opções de borda assim que o modal abrir
-    generateBorderOptions();
+    modal.style.display = 'block';
+    generateBorderOptions(); // Gere opções de borda ao abrir
   }
 
   function closeOrderModal() {
-    document.getElementById('order-modal').style.display = 'none';
+    const modal = document.getElementById('order-modal');
+    if(modal) modal.style.display = 'none';
     const orderForm = document.getElementById('modal-order-form');
-    if (orderForm) {
-      orderForm.reset();
-    }
+    if (orderForm) orderForm.reset();
     selectedBeverage = null;
     document.querySelectorAll('.bebida-item').forEach(item => item.classList.remove('selected-bebida'));
     updateOrderSummary();
   }
 
   function openPaymentModal() {
-    document.getElementById('payment-modal').style.display = 'block';
+    const modal = document.getElementById('payment-modal');
+    if(modal) modal.style.display = 'block';
   }
 
   function closePaymentModal() {
-    document.getElementById('payment-modal').style.display = 'none';
+    const modal = document.getElementById('payment-modal');
+    if(modal) modal.style.display = 'none';
     const paymentForm = document.getElementById('modal-payment-form');
-    if (paymentForm) {
-      paymentForm.reset();
-    }
-    document.getElementById('pix-info').style.display = 'none';
+    if (paymentForm) paymentForm.reset();
+    const pixInfo = document.getElementById('pix-info');
+    if(pixInfo) pixInfo.style.display = 'none';
   }
 
-  // Fechar modais ao clicar fora do conteúdo
+  // Fechar modais ao clicar fora
   window.addEventListener('click', function(event) {
     const orderModal = document.getElementById('order-modal');
     const paymentModal = document.getElementById('payment-modal');
@@ -129,7 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
       closePaymentModal();
     });
   });
-
   document.querySelectorAll('.modal .back').forEach(backBtn => {
     backBtn.addEventListener('click', () => {
       const modal = backBtn.closest('.modal');
@@ -174,7 +195,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('order-summary')) {
       document.getElementById('summary-size').textContent = `Tamanho: ${size}`;
       document.getElementById('summary-crust').textContent = `Tipo de Massa: ${crust}`;
-      // Para o resumo da borda, mostraremos a distribuição (se houver)
+      
+      // Exibir a distribuição de bordas
       const borderContainer = document.getElementById('border-options-container');
       let resumoBorda = "";
       if (borderContainer) {
@@ -201,28 +223,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const sizePrice = pizzaData ? (pizzaData.sizes[size] || 0) : 0;
     const sizeTotal = sizePrice * parseInt(quantity);
 
-    // Cálculo do custo das bordas a partir da distribuição
+    // Cálculo do custo das bordas conforme a distribuição
     if (pizzaData) {
       const borderContainer = document.getElementById('border-options-container');
-      let allocated = 0;
       if (borderContainer) {
         const inputs = borderContainer.querySelectorAll('input[type="number"]');
         inputs.forEach(input => {
-          let qty = parseInt(input.value) || 0;
-          allocated += qty;
+          const qty = parseInt(input.value) || 0;
           const borderOption = input.dataset.border;
           const bordaPrice = pizzaData.borders[borderOption] || 0;
           borderTotal += bordaPrice * qty;
         });
-        // Se o total alocado for menor que a quantidade total, considere o restante como "Nenhuma"
-        const remaining = parseInt(quantity) - allocated;
-        if (remaining > 0 && pizzaData.borders["Nenhuma"] !== undefined) {
-          borderTotal += pizzaData.borders["Nenhuma"] * remaining;
-        }
       }
     }
 
-    // Total do pedido
     const beverageCost = selectedBeverage ? parseFloat(selectedBeverage.price) : (pedidoInfo.beverageCost || 0);
     const baseTotal = sizeTotal + borderTotal + beverageCost;
     pedidoInfo.baseTotal = baseTotal;
@@ -236,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Atualiza a geração das opções de borda sempre que a quantidade for alterada
+  // Atualiza as opções de borda sempre que a quantidade é alterada
   const quantityInput = document.getElementById('modal-pizza-quantity');
   if (quantityInput) {
     quantityInput.addEventListener('input', () => {
@@ -293,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
       pedidoInfo.tamanho = document.querySelector('input[name="pizza-size"]:checked').value;
       pedidoInfo.crust = document.querySelector('select[name="pizza-crust"]').value;
       pedidoInfo.quantidade = document.getElementById('modal-pizza-quantity').value;
-      // Para borda, armazenamos a distribuição recuperando os valores dos inputs
+      // Armazena a distribuição das bordas
       const borderContainer = document.getElementById('border-options-container');
       let borderDistribution = {};
       if (borderContainer) {
