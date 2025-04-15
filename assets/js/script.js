@@ -191,12 +191,11 @@ document.addEventListener('DOMContentLoaded', () => {
     quantity = parseInt(pedidoInfo.quantidade) || 1;
   }
 
-  // Atualiza os dados no DOM de resumo
+  // Atualiza os dados no DOM do resumo
   if (document.getElementById('order-summary')) {
     document.getElementById('summary-size').textContent = `Tamanho: ${size}`;
     document.getElementById('summary-crust').textContent = `Tipo de Massa: ${crust}`;
-    
-    // Gera o resumo da distribuição de bordas
+    // Resumo da distribuição de bordas
     const borderContainer = document.getElementById('border-options-container');
     let resumoBorda = "";
     if (borderContainer) {
@@ -212,9 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('summary-border').textContent = `Borda: ${resumoBorda || "Nenhuma"}`;
     document.getElementById('summary-quantity').textContent = `Quantidade: ${quantity}`;
     document.getElementById('summary-beverage').textContent =
-      `Bebida: ${selectedBeverage 
-         ? `${selectedBeverage.name} - R$ ${parseFloat(selectedBeverage.price).toFixed(2)}` 
-         : (pedidoInfo.beverageCost ? `R$ ${pedidoInfo.beverageCost.toFixed(2)}` : 'Não selecionada')}`;
+      `Bebida: ${selectedBeverage ? `${selectedBeverage.name} - R$ ${parseFloat(selectedBeverage.price).toFixed(2)}` : (pedidoInfo.beverageCost ? `R$ ${pedidoInfo.beverageCost.toFixed(2)}` : 'Não selecionada')}`;
   }
 
   let basePrice = 0;
@@ -222,11 +219,12 @@ document.addEventListener('DOMContentLoaded', () => {
   if (pizzaName && window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizzaName]) {
     pizzaData = window.storeData.pizzas[pizzaName];
   }
-  // Preço total da pizza (tamanho multiplicado pela quantidade)
+  // Cálculo do total do tamanho da pizza
   const sizePrice = pizzaData ? (pizzaData.sizes[size] || 0) : 0;
   const sizeTotal = sizePrice * quantity;
+  console.log("SizeTotal (preço do tamanho x quantidade):", sizeTotal);
 
-  // Cálculo do custo das bordas a partir da distribuição definida pelo cliente
+  // Cálculo do custo das bordas com base na distribuição informada
   let borderTotal = 0;
   if (pizzaData) {
     const borderContainer = document.getElementById('border-options-container');
@@ -236,22 +234,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const qty = parseInt(input.value) || 0;
         const borderOption = input.dataset.border;
         const bordaPrice = pizzaData.borders[borderOption] || 0;
-        borderTotal += bordaPrice * qty; // Multiplica o preço da borda pela quantidade alocada
+        borderTotal += bordaPrice * qty;
       });
     }
   }
+  console.log("BorderTotal (soma das bordas):", borderTotal);
 
-  // O custo da bebida é adicionado uma única vez (se selecionada)
+  // Valor da bebida (cobrada uma vez)
   const beverageCost = selectedBeverage ? parseFloat(selectedBeverage.price) : (pedidoInfo.beverageCost || 0);
-  
-  // Total do pedido (sem taxa de entrega)
+  console.log("BeverageCost:", beverageCost);
+
+  // Total base (antes de taxa de entrega)
   const baseTotal = sizeTotal + borderTotal + beverageCost;
   pedidoInfo.baseTotal = baseTotal;
 
-  // Se houver taxa de entrega, ela será somada
   const deliveryFee = pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0;
   const total = baseTotal + deliveryFee;
   pedidoInfo.total = total;
+
+  console.log("Total do pedido:", total);
 
   if (document.getElementById('summary-total')) {
     document.getElementById('summary-total').innerHTML = `<strong>Total: R$ ${total.toFixed(2)}</strong>`;
