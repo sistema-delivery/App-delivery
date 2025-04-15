@@ -151,7 +151,7 @@ header {
 /* CAROUSEL - Banner */
 .carousel {
   width: 100%;
-  aspect-ratio: 3780 / 1890; /* Equivalente a 2:1 */
+  aspect-ratio: 3780 / 1890;
   overflow: hidden;
   position: relative;
 }
@@ -176,24 +176,12 @@ header {
 }
 
 @keyframes slide {
-  0% {
-    transform: translateX(0%);
-  }
-  30% {
-    transform: translateX(0%);
-  }
-  35% {
-    transform: translateX(-100%);
-  }
-  65% {
-    transform: translateX(-100%);
-  }
-  70% {
-    transform: translateX(-200%);
-  }
-  100% {
-    transform: translateX(-200%);
-  }
+  0% { transform: translateX(0%); }
+  30% { transform: translateX(0%); }
+  35% { transform: translateX(-100%); }
+  65% { transform: translateX(-100%); }
+  70% { transform: translateX(-200%); }
+  100% { transform: translateX(-200%); }
 }
 
 /* Seções Horizontais para Categorias de Pizzas */
@@ -291,9 +279,7 @@ footer {
     font-size: 1.4rem;
     text-align: center;
   }
-  .hero p {
-    font-size: 16px;
-  }
+  .hero p { font-size: 16px; }
   .nav-menu {
     display: none;
     flex-direction: column;
@@ -302,18 +288,10 @@ footer {
     text-align: center;
     margin-top: 10px;
   }
-  .nav-menu.active {
-    display: flex;
-  }
-  .mobile-menu-toggle {
-    display: flex;
-  }
-  .horizontal-scroll .item {
-    width: 200px;
-  }
-  .horizontal-scroll .item img {
-    height: 150px;
-  }
+  .nav-menu.active { display: flex; }
+  .mobile-menu-toggle { display: flex; }
+  .horizontal-scroll .item { width: 200px; }
+  .horizontal-scroll .item img { height: 150px; }
 }
 
 /* Estilo para os preços das pizzas */
@@ -337,10 +315,8 @@ footer {
   display: none;
   position: fixed;
   z-index: 2000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
   overflow: auto;
   background-color: rgba(0,0,0,0.6);
 }
@@ -356,33 +332,24 @@ footer {
   text-align: center;
 }
 
-.modal-content h2 {
-  margin-bottom: 20px;
-}
-
-.modal-content p {
-  font-size: 1.2rem;
-  margin-bottom: 10px;
-}
-
+.modal-content h2 { margin-bottom: 20px; }
+.modal-content p { font-size: 1.2rem; margin-bottom: 10px; }
 .modal-order-form label {
   display: block;
   margin: 10px 0 5px;
 }
 
-/* Botões de voltar e fechar nos modais */
+/* Botões de voltar e fechar */
 .modal .back,
 .modal .close {
   position: absolute;
   top: 10px;
-  width: 40px;
-  height: 40px;
-  background: rgba(255, 255, 255, 0.8);
+  width: 40px; height: 40px;
+  background: rgba(255,255,255,0.8);
   border: 2px solid #ff3c00;
   border-radius: 50%;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: center; justify-content: center;
   cursor: pointer;
   transition: background 0.3s, transform 0.2s;
   z-index: 2;
@@ -390,12 +357,8 @@ footer {
   overflow: hidden;
 }
 
-.modal .back {
-  left: 10px;
-}
-.modal .close {
-  right: 10px;
-}
+.modal .back { left: 10px; }
+.modal .close { right: 10px; }
 
 .modal .back::before,
 .modal .close::before {
@@ -405,15 +368,8 @@ footer {
   transition: color 0.3s;
 }
 
-.modal .back::before {
-  content: "<";
-  color: #ff3c00;
-}
-
-.modal .close::before {
-  content: "×";
-  color: #ff3c00;
-}
+.modal .back::before { content: "<"; color: #ff3c00; }
+.modal .close::before { content: "×"; color: #ff3c00; }
 
 .modal .back:hover,
 .modal .close:hover {
@@ -422,19 +378,14 @@ footer {
 }
 
 .modal .back:hover::before,
-.modal .close:hover::before {
-  color: #fff;
-}
+.modal .close:hover::before { color: #fff; }
 
 /* Resumo do Pedido no modal */
 #order-summary {
   background-color: #f9f9f9;
   border-left: 5px solid #ff3c00;
-  padding: 15px;
-  border-radius: 8px;
-  margin-top: 20px;
-  font-size: 1rem;
-  line-height: 1.5;
+  padding: 15px; border-radius: 8px;
+  margin-top: 20px; font-size: 1rem; line-height: 1.5;
 }
 
 #order-summary h4 {
@@ -445,17 +396,12 @@ footer {
   padding-bottom: 5px;
 }
 
-#order-summary p {
-  margin: 5px 0;
-  color: #333;
-}
+#order-summary p { margin: 5px 0; color: #333; }
 
 /* Botões dos modais */
 #modal-order-form .btn,
 #payment-form .btn {
-  width: 100%;
-  margin-top: 20px;
-  font-size: 1.1rem;
+  width: 100%; margin-top: 20px; font-size: 1.1rem;
 }
 
 /* Estilo para inputs numéricos */
@@ -471,11 +417,9 @@ footer {
   right: 20px;
   top: 80px;
   background: #fff;
-  padding: 20px;
-  border-radius: 16px;
+  padding: 20px; border-radius: 16px;
   box-shadow: 0 0 20px rgba(0,0,0,0.2);
-  z-index: 2000;
-  width: 300px;
+  z-index: 2000; width: 300px;
 }
 
 #cart-items {
@@ -484,9 +428,4 @@ footer {
   margin: 10px 0;
 }
 
-#cart-items li {
-  margin-bottom: 10px;
-  font-size: 0.95rem;
-}
-
-/* Outras regras permanecem inalteradas... */
+#cart-items li { margin-bottom: 10px; font-size: 0.95rem; }
