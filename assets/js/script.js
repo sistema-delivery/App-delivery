@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('border-catupiry').value = 0;
     document.getElementById('border-cream-cheese').value = 0;
     document.querySelectorAll('.bebida-quantity').forEach(input => input.value = 0);
-    updateOrderSummary();
+    // Não chamamos updateOrderSummary aqui, pois os campos já foram resetados
   }
 
   function openPaymentModal() {
@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
       sizePrice = pizzaData.sizes[size] || 0;
     }
 
-    // Preços fixos para bordas (definidos em prices.js ou fixos aqui)
+    // Preços fixos para bordas
     const cheddarPrice = 5.00;
     const catupiryPrice = 6.00;
     const creamCheesePrice = 3.50;
@@ -216,10 +216,10 @@ document.addEventListener('DOMContentLoaded', () => {
   if (orderForm) {
     orderForm.addEventListener('submit', function (e) {
       e.preventDefault();
+      // Coleta os valores dos campos antes de resetar o formulário
       pedidoInfo.nome = document.getElementById('modal-pizza-name').textContent;
       pedidoInfo.tamanho = document.querySelector('input[name="pizza-size"]:checked').value;
       pedidoInfo.crust = document.querySelector('select[name="pizza-crust"]').value;
-      // Armazena as quantidades de borda selecionadas
       pedidoInfo.borderCheddar = document.getElementById('border-cheddar').value;
       pedidoInfo.borderCatupiry = document.getElementById('border-catupiry').value;
       pedidoInfo.borderCreamCheese = document.getElementById('border-cream-cheese').value;
@@ -239,19 +239,21 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       pedidoInfo.bebida = bebidas.length > 0 ? bebidas.join(', ') : 'Nenhuma';
 
+      // Calcula os valores com base nos dados atuais
       updateOrderSummary();
+      // Fecha o modal de pedido e reseta o formulário
       closeOrderModal();
       openPaymentModal();
+      // Atualiza o resumo no modal de pagamento usando o valor calculado previamente
       updatePaymentSummary();
     });
   }
 
   // -----------------------------
   // Atualização do Resumo no Modal de Pagamento
+  // Agora, NÃO chamamos updateOrderSummary() aqui para evitar recalcular com campos resetados.
   // -----------------------------
   function updatePaymentSummary() {
-    // Garanta que o total atualizado seja calculado antes de mostrar
-    updateOrderSummary();
     let paymentSummaryElement = document.getElementById('payment-summary');
     if (!paymentSummaryElement) {
       paymentSummaryElement = document.createElement('div');
