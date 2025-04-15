@@ -232,25 +232,31 @@
           </div>
 
           <!-- Seção: Bordas individuais -->
-          <div class="pizza-border" style="margin-top: 20px; text-align: left;">
-            <p class="border-title"><strong>Selecione bordas para cada pizza:</strong></p>
-            <p>
-              Cheddar (R$ 5,00): 
-              <input type="number" id="border-cheddar" value="0" min="0" style="width: 80px;">
-              <button type="button" class="btn-plus" onclick="incrementField('border-cheddar')">+</button>
-            </p>
-            <p>
-              Catupiry (R$ 6,00): 
-              <input type="number" id="border-catupiry" value="0" min="0" style="width: 80px;">
-              <button type="button" class="btn-plus" onclick="incrementField('border-catupiry')">+</button>
-            </p>
-            <p>
-              Cream cheese (R$ 3,50): 
-              <input type="number" id="border-cream-cheese" value="0" min="0" style="width: 80px;">
-              <button type="button" class="btn-plus" onclick="incrementField('border-cream-cheese')">+</button>
-            </p>
-          </div>
-
+<div class="pizza-border" style="margin-top: 20px; text-align: left;">
+  <p class="border-title"><strong>Selecione bordas para cada pizza:</strong></p>
+  <p>
+    Cheddar (R$ 5,00): 
+    <span class="input-group">
+      <input type="number" id="border-cheddar" value="0" min="0" style="width: 80px;">
+      <button type="button" class="btn-plus" onclick="incrementField('border-cheddar')">+</button>
+    </span>
+  </p>
+  <p>
+    Catupiry (R$ 6,00): 
+    <span class="input-group">
+      <input type="number" id="border-catupiry" value="0" min="0" style="width: 80px;">
+      <button type="button" class="btn-plus" onclick="incrementField('border-catupiry')">+</button>
+    </span>
+  </p>
+  <p>
+    Cream cheese (R$ 3,50): 
+    <span class="input-group">
+      <input type="number" id="border-cream-cheese" value="0" min="0" style="width: 80px;">
+      <button type="button" class="btn-plus" onclick="incrementField('border-cream-cheese')">+</button>
+    </span>
+  </p>
+</div>
+          
           <!-- Seção: Quantidade Total de Pizzas -->
           <div class="pizza-quantity" style="margin-top: 20px; text-align: left;">
             <label for="modal-pizza-quantity"><strong>Quantidade:</strong></label>
