@@ -21,9 +21,9 @@ const storeData = {
       },
       borders: {
         "Nenhuma": 0.00,
-        "Catupiry": 6.00,
-        "Cheddar": 5.00,
-        "Cream cheese": 3.50
+        "Catupiry": 6.90,
+        "Cheddar": 5.90,
+        "Cream cheese": 3.90
       }
     },
     "Pizza Calabresa": {
@@ -35,9 +35,9 @@ const storeData = {
       },
       borders: {
         "Nenhuma": 0.00,
-        "Catupiry": 6.00,
-        "Cheddar": 5.00,
-        "Cream cheese": 3.50
+        "Catupiry": 6.90,
+        "Cheddar": 5.90,
+        "Cream cheese": 3.90
       }
     },
     "Pizza Quatro Queijos": {
@@ -49,9 +49,9 @@ const storeData = {
       },
       borders: {
         "Nenhuma": 0.00,
-        "Catupiry": 6.00,
-        "Cheddar": 5.00,
-        "Cream cheese": 3.50
+        "Catupiry": 6.90,
+        "Cheddar": 5.90,
+        "Cream cheese": 3.90
       }
     },
     "Pizza Portuguesa": {
@@ -63,9 +63,9 @@ const storeData = {
       },
       borders: {
         "Nenhuma": 0.00,
-        "Catupiry": 6.00,
-        "Cheddar": 5.00,
-        "Cream cheese": 3.50
+        "Catupiry": 6.90,
+        "Cheddar": 5.90,
+        "Cream cheese": 3.90
       }
     },
     "Marguerita Clássica": {
@@ -77,9 +77,9 @@ const storeData = {
       },
       borders: {
         "Nenhuma": 0.00,
-        "Catupiry": 6.00,
-        "Cheddar": 5.00,
-        "Cream cheese": 3.50
+        "Catupiry": 6.90,
+        "Cheddar": 5.90,
+        "Cream cheese": 3.90
       }
     },
     "Pizza Trufada": {
@@ -91,9 +91,9 @@ const storeData = {
       },
       borders: {
         "Nenhuma": 0.00,
-        "Catupiry": 6.00,
-        "Cheddar": 5.00,
-        "Cream cheese": 3.50
+        "Catupiry": 6.90,
+        "Cheddar": 5.90,
+        "Cream cheese": 3.90
       }
     },
     "Especial Gourmet": {
@@ -105,9 +105,9 @@ const storeData = {
       },
       borders: {
         "Nenhuma": 0.00,
-        "Catupiry": 6.00,
-        "Cheddar": 5.00,
-        "Cream cheese": 3.50
+        "Catupiry": 6.90,
+        "Cheddar": 5.90,
+        "Cream cheese": 3.90
       }
     }
   },
