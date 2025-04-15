@@ -5,6 +5,7 @@ let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
 function calcularTotalPedido() {
   let total = 0;
   carrinho.forEach((pizza) => {
+    // Preço do tamanho
     let sizePrice = 0;
     if (
       window.storeData &&
@@ -20,16 +21,28 @@ function calcularTotalPedido() {
           ? 15
           : 20;
     }
+    // Para as bordas, se houver dados no storeData, usa os preços definidos
+    let pizzaData = (window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizza.nome])
+                      ? window.storeData.pizzas[pizza.nome]
+                      : null;
+    const cheddarPrice = pizzaData ? pizzaData.borders["Cheddar"] : 5.00;
+    const catupiryPrice = pizzaData ? pizzaData.borders["Catupiry"] : 6.00;
+    const creamCheesePrice = pizzaData ? pizzaData.borders["Cream cheese"] : 3.50;
 
-    const cheddarPrice = 5.00;
-    const catupiryPrice = 6.00;
-    const creamCheesePrice = 3.50;
     const bordasCost = (pizza.bordas.cheddar * cheddarPrice) +
                        (pizza.bordas.catupiry * catupiryPrice) +
                        (pizza.bordas.cream * creamCheesePrice);
 
+    // Bebidas: tenta usar os valores do storeData.beverages se disponíveis
     const bebidasCost = pizza.bebidas
-      ? pizza.bebidas.reduce((acc, bev) => acc + (bev.price * bev.quantity), 0)
+      ? pizza.bebidas.reduce((acc, bev) => {
+          const priceFromStore = (window.storeData &&
+                                  window.storeData.beverages &&
+                                  window.storeData.beverages[bev.name] !== undefined)
+                                  ? window.storeData.beverages[bev.name]
+                                  : bev.price;
+          return acc + (priceFromStore * bev.quantity);
+        }, 0)
       : 0;
 
     const subtotal = (sizePrice * pizza.quantidade) + bordasCost + bebidasCost;
@@ -44,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return parseFloat(str.replace(",", "."));
   }
 
-  // Função para incrementar o valor de um input por seu ID (usado para bordas)
+  // Incrementa o valor de um input (bordas)
   window.incrementField = function(fieldId) {
     const input = document.getElementById(fieldId);
     if (input) {
@@ -54,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // Função para incrementar o valor do input imediatamente anterior ao botão (usado para bebidas)
+  // Incrementa o valor do input imediatamente anterior (bebidas)
   window.incrementSibling = function(button) {
     const input = button.previousElementSibling;
     if (input && input.tagName === 'INPUT') {
@@ -71,14 +84,13 @@ document.addEventListener('DOMContentLoaded', () => {
     navMenu.classList.toggle('active');
   });
 
-  // Dados de Localização da Loja (exemplo para cálculo de distância futuro)
   const storeLocation = { lat: -7.950346, lon: -34.902970 };
   const defaultCity = "Paulista (PE)";
+  let pedidoInfo = {}; // Armazena o pedido atual
 
-  // Objeto global para armazenar os dados do pedido atual (usado no modal de pedido)
-  let pedidoInfo = {};
-
+  // ============================
   // Funções de Modais
+  // ============================
   function openOrderModal(pizzaName) {
     const modalPizzaName = document.getElementById('modal-pizza-name');
     if (modalPizzaName) {
@@ -111,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (orderForm) {
       orderForm.reset();
     }
-    // Reset dos campos de bordas e bebidas
+    // Reset dos inputs de bordas e bebidas
     document.getElementById('border-cheddar').value = 0;
     document.getElementById('border-catupiry').value = 0;
     document.getElementById('border-cream-cheese').value = 0;
@@ -166,7 +178,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Atualização do Resumo do Pedido e Cálculo do Total (para o modal de pedido)
+  // ====================================
+  // Atualiza o Resumo do Pedido (Modal)
+  // ====================================
   function updateOrderSummary() {
     const pizzaName = document.getElementById('modal-pizza-name')?.textContent.trim() || '';
     const size = document.querySelector('input[name="pizza-size"]:checked')?.value || 'Não selecionado';
@@ -178,27 +192,34 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const somaBordas = cheddarQuantity + catupiryQuantity + creamCheeseQuantity;
     const semBorda = totalPizzas - (somaBordas > totalPizzas ? totalPizzas : somaBordas);
+    
     let sizePrice = 0;
+    let pizzaData = null;
     if (pizzaName && window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizzaName]) {
-      const pizzaData = window.storeData.pizzas[pizzaName];
+      pizzaData = window.storeData.pizzas[pizzaName];
       sizePrice = pizzaData.sizes[size] || 0;
     }
 
-    const cheddarPrice = 5.00;
-    const catupiryPrice = 6.00;
-    const creamCheesePrice = 3.50;
+    // Usa os preços definidos no storeData, se disponíveis; caso contrário, valores padrão
+    const cheddarPrice = pizzaData ? pizzaData.borders["Cheddar"] : 5.00;
+    const catupiryPrice = pizzaData ? pizzaData.borders["Catupiry"] : 6.00;
+    const creamCheesePrice = pizzaData ? pizzaData.borders["Cream cheese"] : 3.50;
 
-    const pizzasCost = (sizePrice * totalPizzas) 
-                        + (cheddarQuantity * cheddarPrice) 
-                        + (catupiryQuantity * catupiryPrice)
-                        + (creamCheeseQuantity * creamCheesePrice);
+    const pizzasCost = (sizePrice * totalPizzas) +
+                        (cheddarQuantity * cheddarPrice) +
+                        (catupiryQuantity * catupiryPrice) +
+                        (creamCheeseQuantity * creamCheesePrice);
 
     let beveragesCost = 0;
     const beveragesSummary = [];
     document.querySelectorAll('.bebida-item').forEach(item => {
       const bebidaName = item.querySelector('p').textContent;
       const priceText = item.querySelector('.price').textContent.replace('R$', '').trim();
-      const bebidaPrice = parsePrice(priceText);
+      let bebidaPrice = parsePrice(priceText);
+      // Se houver valor definido no storeData, usa-o
+      if (window.storeData && window.storeData.beverages && window.storeData.beverages[bebidaName] !== undefined) {
+        bebidaPrice = window.storeData.beverages[bebidaName];
+      }
       const bebidaQuantity = parseInt(item.querySelector('.bebida-quantity').value) || 0;
       if (bebidaQuantity > 0) {
         beveragesCost += bebidaPrice * bebidaQuantity;
@@ -238,7 +259,9 @@ document.addEventListener('DOMContentLoaded', () => {
     input.addEventListener('input', updateOrderSummary);
   });
 
-  // Processamento do formulário de pedido – redireciona para o modal de pagamento
+  // ========================================
+  // Processamento do formulário de pedido
+  // ========================================
   const orderForm = document.getElementById('modal-order-form');
   if (orderForm) {
     orderForm.addEventListener('submit', function (e) {
@@ -256,7 +279,10 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.bebida-item').forEach(item => {
         const bebidaName = item.querySelector('p').textContent;
         const priceText = item.querySelector('.price').textContent.replace('R$', '').trim();
-        const bebidaPrice = parsePrice(priceText);
+        let bebidaPrice = parsePrice(priceText);
+        if (window.storeData && window.storeData.beverages && window.storeData.beverages[bebidaName] !== undefined) {
+          bebidaPrice = window.storeData.beverages[bebidaName];
+        }
         const bebidaQuantity = parseInt(item.querySelector('.bebida-quantity').value) || 0;
         if (bebidaQuantity > 0) {
           bebidas.push({
@@ -275,7 +301,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Atualiza o resumo de pagamento do modal, agora incluindo a taxa de entrega
+  // ========================================
+  // Atualiza o resumo de pagamento do modal, incluindo a taxa de entrega
+  // ========================================
   function updatePaymentSummaryCart() {
     let paymentSummaryElement = document.getElementById('payment-summary');
     if (!paymentSummaryElement) {
@@ -298,9 +326,11 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         sizePrice = pizza.tamanho === "Pequena" ? 10 : pizza.tamanho === "Média" ? 15 : 20;
       }
-      const cheddarPrice = 5.00;
-      const catupiryPrice = 6.00;
-      const creamCheesePrice = 3.50;
+      let pizzaData = (window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizza.nome])
+                        ? window.storeData.pizzas[pizza.nome] : null;
+      const cheddarPrice = pizzaData ? pizzaData.borders["Cheddar"] : 5.00;
+      const catupiryPrice = pizzaData ? pizzaData.borders["Catupiry"] : 6.00;
+      const creamCheesePrice = pizzaData ? pizzaData.borders["Cream cheese"] : 3.50;
       
       const bordasCost = (pizza.bordas.cheddar * cheddarPrice) +
                          (pizza.bordas.catupiry * catupiryPrice) +
@@ -317,7 +347,6 @@ document.addEventListener('DOMContentLoaded', () => {
       summaryText += `<p><strong>Pizza ${index + 1}:</strong> ${pizza.nome} - ${pizza.tamanho}, ${pizza.massa}, Qtde: ${pizza.quantidade}${bebidaText} - R$ ${subtotal.toFixed(2)}</p>`;
     });
     
-    // Calcula o total dos itens e adiciona a taxa de entrega
     const itensTotal = calcularTotalPedido();
     const deliveryFee = pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0;
     const totalComEntrega = itensTotal + deliveryFee;
@@ -328,7 +357,9 @@ document.addEventListener('DOMContentLoaded', () => {
     paymentSummaryElement.innerHTML = summaryText;
   }
 
-  // Evento para alterar a visualização das informações do Pix conforme o método de pagamento selecionado
+  // ========================================
+  // Eventos para método de pagamento e CEP
+  // ========================================
   document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
     radio.addEventListener('change', function () {
       const pixInfo = document.getElementById('pix-info');
@@ -403,6 +434,9 @@ document.addEventListener('DOMContentLoaded', () => {
     return R * c;
   }
 
+  // ========================================
+  // Processamento do formulário de pagamento
+  // ========================================
   const paymentForm = document.getElementById('modal-payment-form');
   if (paymentForm) {
     paymentForm.addEventListener('submit', function (e) {
@@ -468,7 +502,9 @@ Pizza Express - Sabor que chega rápido!`.trim();
     });
   }
 
+  // ========================================
   // Scroll horizontal infinito para a seção "As Mais Vendidas"
+  // ========================================
   const scrollContainer = document.querySelector('.horizontal-scroll.vendidas');
   if (scrollContainer) {
     const scrollTrack = scrollContainer.querySelector('.horizontal-scroll-track');
@@ -485,7 +521,9 @@ Pizza Express - Sabor que chega rápido!`.trim();
     scrollContainer.addEventListener('touchstart', pauseAnimation);
   }
 
+  // ========================================
   // Carousel dos banners
+  // ========================================
   const dots = document.querySelectorAll('.carousel-dots .dot');
   const carouselInner = document.querySelector('.carousel-inner');
   let currentIndex = 0;
@@ -562,10 +600,9 @@ Pizza Express - Sabor que chega rápido!`.trim();
     });
   }
 
-  // ================================================
-  // IMPLEMENTAÇÃO DO CARRINHO DE COMPRAS COM LOCALSTORAGE
-  // ================================================
-  
+  // ========================================
+  // Carrinho de Compras com LocalStorage
+  // ========================================
   function atualizarLocalStorage() {
     localStorage.setItem('carrinho', JSON.stringify(carrinho));
   }
@@ -590,7 +627,10 @@ Pizza Express - Sabor que chega rápido!`.trim();
     document.querySelectorAll('.bebida-item').forEach(item => {
       const bebidaName = item.querySelector('p').textContent;
       const priceText = item.querySelector('.price').textContent.replace('R$', '').trim();
-      const bebidaPrice = parsePrice(priceText);
+      let bebidaPrice = parsePrice(priceText);
+      if (window.storeData && window.storeData.beverages && window.storeData.beverages[bebidaName] !== undefined) {
+        bebidaPrice = window.storeData.beverages[bebidaName];
+      }
       const bebidaQuantity = parseInt(item.querySelector('.bebida-quantity').value) || 0;
       if(bebidaQuantity > 0){
         bebidas.push({
@@ -607,7 +647,7 @@ Pizza Express - Sabor que chega rápido!`.trim();
       massa,
       quantidade,
       bordas: { cheddar, catupiry, cream },
-      bebidas  // guarda as bebidas selecionadas
+      bebidas  // Guarda as bebidas selecionadas
     };
 
     carrinho.push(pizza);
@@ -617,7 +657,7 @@ Pizza Express - Sabor que chega rápido!`.trim();
     atualizarCarrinhoUI();
   };
 
-  // Função para atualizar a interface do carrinho (lista de itens e total)
+  // Atualiza a interface do carrinho (lista de itens e total)
   function atualizarCarrinhoUI() {
     const lista = document.getElementById("cart-items");
     const totalEl = document.getElementById("cart-total");
@@ -635,9 +675,12 @@ Pizza Express - Sabor que chega rápido!`.trim();
       } else {
         sizePrice = pizza.tamanho === "Pequena" ? 10 : pizza.tamanho === "Média" ? 15 : 20;
       }
-      const cheddarPrice = 5.00;
-      const catupiryPrice = 6.00;
-      const creamCheesePrice = 3.50;
+      let pizzaData = (window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizza.nome])
+                        ? window.storeData.pizzas[pizza.nome]
+                        : null;
+      const cheddarPrice = pizzaData ? pizzaData.borders["Cheddar"] : 5.00;
+      const catupiryPrice = pizzaData ? pizzaData.borders["Catupiry"] : 6.00;
+      const creamCheesePrice = pizzaData ? pizzaData.borders["Cream cheese"] : 3.50;
       
       const bordasCost = (pizza.bordas.cheddar * cheddarPrice) +
                           (pizza.bordas.catupiry * catupiryPrice) +
@@ -669,13 +712,13 @@ Pizza Express - Sabor que chega rápido!`.trim();
     document.getElementById("cart").style.display = "none";
   };
 
-  // Ao clicar em "Finalizar Pedido" no carrinho, abre o modal de pagamento para finalizar o pedido
+  // Ao clicar em "Finalizar Pedido" no carrinho, abre o modal de pagamento
   window.finalizarPedido = function() {
     if (carrinho.length === 0) {
       alert("Seu carrinho está vazio!");
       return;
     }
-    updatePaymentSummaryCart();  // Usa a função unificada para atualizar o resumo do pagamento
+    updatePaymentSummaryCart();  // Atualiza o resumo do pagamento unificando os cálculos
     openPaymentModal();
   };
 
