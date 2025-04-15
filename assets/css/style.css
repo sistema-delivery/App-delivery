@@ -930,3 +930,27 @@ footer {
   display: inline-flex;
   align-items: center;
 }
+
+.cart {
+  display: none;
+  position: fixed;
+  right: 20px;
+  top: 80px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.2);
+  z-index: 2000;
+  width: 300px;
+}
+
+#cart-items {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+#cart-items li {
+  margin-bottom: 10px;
+  font-size: 0.95rem;
+}
