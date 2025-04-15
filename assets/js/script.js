@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Dados de Localização da Loja (exemplo para cálculo de distância futuro)
   const storeLocation = { lat: -7.950346, lon: -34.902970 };
   const defaultCity = "Paulista (PE)";
+
   // Objeto global para armazenar os dados do pedido
   let pedidoInfo = {};
 
