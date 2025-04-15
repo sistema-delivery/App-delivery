@@ -6,7 +6,6 @@
  * - Dados das Pizzas: descrição, preços por tamanho e borda.
  * - Dados das Bebidas: preços fixos.
  * - Taxas de Entrega: Estruturadas por cidade, permitindo escalabilidade para múltiplas regiões.
- * - Promoções e Descontos: Definições de descontos (porcentagem ou valor fixo) para produtos e taxa de entrega.
  *
  * Futuramente, ao vender o site/app para outras regiões do Brasil, basta adicionar novas cidades e seus bairros.
  */
@@ -14,7 +13,8 @@
 const storeData = {
   pizzas: {
     "Pizza Marguerita": {
-      description: "A clássica Marguerita com molho de tomate fresco, mussarela, manjericão e um toque de azeite extra virgem.",
+      description:
+        "A clássica Marguerita com molho de tomate fresco, mussarela, manjericão e um toque de azeite extra virgem.",
       sizes: {
         "Pequena": 23.90,
         "Média": 34.90,
@@ -28,7 +28,8 @@ const storeData = {
       }
     },
     "Pizza Calabresa": {
-      description: "Pizza com rodelas de calabresa, cebola, azeitonas e orégano para um sabor marcante.",
+      description:
+        "Pizza com rodelas de calabresa, cebola, azeitonas e orégano para um sabor marcante.",
       sizes: {
         "Pequena": 12.90,
         "Média": 18.90,
@@ -42,7 +43,8 @@ const storeData = {
       }
     },
     "Pizza Quatro Queijos": {
-      description: "Deliciosa combinação de mussarela, parmesão, gorgonzola e provolone para os amantes de queijo.",
+      description:
+        "Deliciosa combinação de mussarela, parmesão, gorgonzola e provolone para os amantes de queijo.",
       sizes: {
         "Pequena": 14.90,
         "Média": 21.90,
@@ -56,7 +58,8 @@ const storeData = {
       }
     },
     "Pizza Portuguesa": {
-      description: "Pizza com molho de tomate, mussarela e orégano, ideal para os amantes da tradição.",
+      description:
+        "Pizza com molho de tomate, mussarela e orégano, ideal para os amantes da tradição.",
       sizes: {
         "Pequena": 24.90,
         "Média": 32.90,
@@ -70,7 +73,8 @@ const storeData = {
       }
     },
     "Marguerita Clássica": {
-      description: "Variante da clássica marguerita, com ingredientes frescos e um toque especial.",
+      description:
+        "Variante da clássica marguerita, com ingredientes frescos e um toque especial.",
       sizes: {
         "Pequena": 18.90,
         "Média": 25.90,
@@ -84,7 +88,8 @@ const storeData = {
       }
     },
     "Pizza Trufada": {
-      description: "Pizza com massa premium e cobertura trufada, para quem busca um sabor sofisticado.",
+      description:
+        "Pizza com massa premium e cobertura trufada, para quem busca um sabor sofisticado.",
       sizes: {
         "Pequena": 20.90,
         "Média": 30.90,
@@ -98,7 +103,8 @@ const storeData = {
       }
     },
     "Especial Gourmet": {
-      description: "Pizza com ingredientes gourmet e toques inovadores, perfeita para ocasiões especiais.",
+      description:
+        "Pizza com ingredientes gourmet e toques inovadores, perfeita para ocasiões especiais.",
       sizes: {
         "Pequena": 22.90,
         "Média": 33.90,
@@ -176,43 +182,6 @@ const storeData = {
       "Leblon": 6.50,
       "Botafogo": 5.50,
       "Barra da Tijuca": 7.00
-    }
-  },
-
-  /**
-   * Promoções e Descontos:
-   * Cada categoria (pizzas, beverages e delivery) pode ter promoções ativas.
-   * - type: "percentage" para desconto percentual ou "fixed" para desconto fixo.
-   * - discount: valor da promoção.
-   * - description: descrição da promoção, que pode ser exibida para o cliente.
-   */
-  promotions: {
-    pizzas: {
-      "Pizza Marguerita": {
-        type: "percentage",
-        discount: 10, // 10% de desconto
-        description: "10% OFF para pedidos online da Pizza Marguerita!"
-      },
-      "Pizza Calabresa": {
-        type: "fixed",
-        discount: 3, // R$3 de desconto
-        description: "R$3 OFF na Pizza Calabresa."
-      }
-      // Adicione promoções para outras pizzas conforme necessário
-    },
-    beverages: {
-      "Coca-Cola 1,5L": {
-        type: "percentage",
-        discount: 15, // 15% de desconto
-        description: "15% OFF em Coca-Cola 1,5L."
-      }
-      // Outras bebidas podem ter promoções definidas aqui
-    },
-    delivery: {
-      // Se desejar aplicar promoções na taxa de entrega, defina aqui.
-      type: "none",
-      discount: 0,
-      description: ""
     }
   }
 };
