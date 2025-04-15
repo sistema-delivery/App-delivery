@@ -15,7 +15,11 @@ function calcularTotalPedido() {
     ) {
       sizePrice = window.storeData.pizzas[pizza.nome].sizes[pizza.tamanho] || 0;
     } else {
-      sizePrice = pizza.tamanho === "Pequena" ? 10 : pizza.tamanho === "Média" ? 15 : 20;
+      sizePrice = pizza.tamanho === "Pequena"
+        ? 10
+        : pizza.tamanho === "Média"
+          ? 15
+          : 20;
     }
     // Para as bordas, se houver dados no storeData, usa os preços definidos
     let pizzaData = (window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizza.nome])
@@ -48,30 +52,30 @@ function calcularTotalPedido() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-
   // Função auxiliar para converter strings de preço ("6,00") para formato numérico ("6.00")
   function parsePrice(str) {
     return parseFloat(str.replace(",", "."));
   }
 
-  // Funções para incrementar inputs (bordas e bebidas)
-  function incrementField(fieldId) {
+  // Incrementa o valor de um input (bordas)
+  window.incrementField = function(fieldId) {
     const input = document.getElementById(fieldId);
     if (input) {
       let current = parseInt(input.value) || 0;
       input.value = current + 1;
       input.dispatchEvent(new Event('input'));
     }
-  }
+  };
 
-  function incrementSibling(button) {
+  // Incrementa o valor do input imediatamente anterior (bebidas)
+  window.incrementSibling = function(button) {
     const input = button.previousElementSibling;
     if (input && input.tagName === 'INPUT') {
       let current = parseInt(input.value) || 0;
       input.value = current + 1;
       input.dispatchEvent(new Event('input'));
     }
-  }
+  };
 
   // Mobile Menu Toggle
   const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
@@ -80,6 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
     navMenu.classList.toggle('active');
   });
 
+  const storeLocation = { lat: -7.950346, lon: -34.902970 };
   const defaultCity = "Paulista (PE)";
   let pedidoInfo = {}; // Armazena o pedido atual
 
@@ -134,9 +139,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const paymentForm = document.getElementById('modal-payment-form');
     if (paymentForm) {
       paymentForm.reset();
-      // Reativa o botão de submit, caso tenha sido desabilitado na integração Pix
-      const submitBtn = paymentForm.querySelector('button[type="submit"]');
-      if (submitBtn) submitBtn.disabled = false;
     }
     document.getElementById('pix-info').style.display = 'none';
   }
@@ -198,6 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
       sizePrice = pizzaData.sizes[size] || 0;
     }
 
+    // Usa os preços definidos no storeData, se disponíveis; caso contrário, valores padrão
     const cheddarPrice = pizzaData ? pizzaData.borders["Cheddar"] : 5.00;
     const catupiryPrice = pizzaData ? pizzaData.borders["Catupiry"] : 6.00;
     const creamCheesePrice = pizzaData ? pizzaData.borders["Cream cheese"] : 3.50;
@@ -213,6 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const bebidaName = item.querySelector('p').textContent;
       const priceText = item.querySelector('.price').textContent.replace('R$', '').trim();
       let bebidaPrice = parsePrice(priceText);
+      // Se houver valor definido no storeData, usa-o
       if (window.storeData && window.storeData.beverages && window.storeData.beverages[bebidaName] !== undefined) {
         bebidaPrice = window.storeData.beverages[bebidaName];
       }
@@ -242,6 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Eventos para atualizar o resumo conforme as escolhas do usuário
   document.querySelectorAll('input[name="pizza-size"]').forEach(el => el.addEventListener('change', updateOrderSummary));
   const crustSelect = document.querySelector('select[name="pizza-crust"]');
   if (crustSelect) crustSelect.addEventListener('change', updateOrderSummary);
@@ -279,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
           bebidaPrice = window.storeData.beverages[bebidaName];
         }
         const bebidaQuantity = parseInt(item.querySelector('.bebida-quantity').value) || 0;
-        if(bebidaQuantity > 0){
+        if (bebidaQuantity > 0) {
           bebidas.push({
             name: bebidaName,
             price: bebidaPrice,
@@ -328,8 +333,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const creamCheesePrice = pizzaData ? pizzaData.borders["Cream cheese"] : 3.50;
       
       const bordasCost = (pizza.bordas.cheddar * cheddarPrice) +
-                          (pizza.bordas.catupiry * catupiryPrice) +
-                          (pizza.bordas.cream * creamCheesePrice);
+                         (pizza.bordas.catupiry * catupiryPrice) +
+                         (pizza.bordas.cream * creamCheesePrice);
       const bebidasCost = pizza.bebidas
         ? pizza.bebidas.reduce((acc, bev) => acc + (bev.price * bev.quantity), 0)
         : 0;
@@ -430,65 +435,26 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ========================================
-  // Processamento do formulário de pagamento (único listener)
+  // Processamento do formulário de pagamento
   // ========================================
   const paymentForm = document.getElementById('modal-payment-form');
   if (paymentForm) {
     paymentForm.addEventListener('submit', function (e) {
       e.preventDefault();
       const metodo = document.querySelector('input[name="payment-method"]:checked').value;
-      
-      if (metodo === 'Pix') {
-        // Solicita nome e email para integração Pix (ou, idealmente, adicione campos no modal)
-        const nomePix = prompt("Informe seu nome para o pagamento via Pix:");
-        const emailPix = prompt("Informe seu email para o pagamento via Pix:");
-      
-        if (!nomePix || !emailPix) {
-          alert("Nome e email são obrigatórios para pagamento via Pix.");
-          return;
-        }
+      const status = metodo === 'Pix' ? 'Aguardando Comprovante' : 'Pagamento na entrega';
+      const chavePix = '708.276.084-11';
+      const dataAtual = new Date();
+      const data = dataAtual.toLocaleDateString();
+      const hora = dataAtual.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const taxaEntrega = pedidoInfo.deliveryFee ? `*Taxa de Entrega:* R$ ${pedidoInfo.deliveryFee}` : '*Taxa de Entrega:* R$ 0,00';
 
-        // Chamada ao endpoint do backend para gerar pagamento via Pix
-        fetch('https://meu-app-sooty.vercel.app/mp-pix', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            valor: pedidoInfo.total,
-            nome: nomePix,
-            email: emailPix
-          })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.pix && data.pix.transaction_data && data.pix.transaction_data.qr_code_base64) {
-            const pixInfoDiv = document.getElementById('pix-info');
-            pixInfoDiv.innerHTML = `
-              <p style="font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">Pagamento via Pix Gerado com Sucesso!</p>
-              <p style="margin-bottom: 10px;">Utilize o QR Code abaixo para efetuar o pagamento no valor de R$ ${pedidoInfo.total.toFixed(2)}</p>
-              <img src="data:image/png;base64,${data.pix.transaction_data.qr_code_base64}" alt="QR Code Pix" style="max-width: 200px; display: block; margin: 0 auto 10px;">
-              <p style="font-size: 0.9rem; color: #555;">Após escanear o QR Code, aguarde a confirmação do pagamento.</p>
-            `;
-            pixInfoDiv.style.display = 'block';
-            // Desabilita o botão de submit para evitar múltiplas requisições
-            paymentForm.querySelector('button[type="submit"]').disabled = true;
-          } else {
-            alert("Não foi possível gerar o pagamento via Pix. Tente novamente.");
-          }
-        })
-        .catch(err => {
-          console.error("Erro ao processar pagamento via Pix:", err);
-          alert("Erro ao criar pagamento via Pix. Tente novamente.");
-        });
-      } else {
-        // Fluxo para métodos Cartão ou Dinheiro (mantendo a lógica original)
-        const status = metodo === 'Pix' ? 'Aguardando Comprovante' : 'Pagamento na entrega';
-        const chavePix = '708.276.084-11';
-        const dataAtual = new Date();
-        const data = dataAtual.toLocaleDateString();
-        const hora = dataAtual.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const taxaEntrega = pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0;
-        pedidoInfo.total = pedidoInfo.baseTotal + taxaEntrega;
-        const mensagem = `
+      const rua = document.getElementById('rua').value;
+      const bairro = document.getElementById('bairro').value;
+      const cidade = document.getElementById('cidade').value;
+      const numero = document.getElementById('numero').value;
+
+      const mensagem = `
 *Pedido de Pizza - Pizza Express*
 ------------------------------------
 *Pizza:* ${pedidoInfo.nome}
@@ -496,29 +462,141 @@ document.addEventListener('DOMContentLoaded', () => {
 *Tipos de Massa:* ${pedidoInfo.crust}
 *Bordas:* Cheddar (${pedidoInfo.borderCheddar} un.) + Catupiry (${pedidoInfo.borderCatupiry} un.) + Cream cheese (${pedidoInfo.borderCreamCheese} un.)
 *Quantidade:* ${pedidoInfo.quantidade} unidade(s)
-*Bebida(s):* ${pedidoInfo.bebida.length > 0 ? pedidoInfo.bebida.map(b => \`\${b.name} x\${b.quantity} - R$ \${(b.price * b.quantity).toFixed(2)}\`).join(', ') : 'Nenhuma'}
+*Bebida(s):* ${pedidoInfo.bebida.length > 0 ? pedidoInfo.bebida.map(b => `${b.name} x${b.quantity} - R$ ${(b.price*b.quantity).toFixed(2)}`).join(', ') : 'Nenhuma'}
 *Total do Pedido:* R$ ${pedidoInfo.total.toFixed(2)}
 ------------------------------------
 *Status do Pagamento:* ${status}
-*Forma de Pagamento:* ${metodo}${metodo === 'Pix' ? \` (Chave: \${chavePix})\` : ''}
-*Taxa de Entrega:* R$ ${taxaEntrega.toFixed(2)}
+*Forma de Pagamento:* ${metodo}${metodo === 'Pix' ? ` (Chave: ${chavePix})` : ''}
+${taxaEntrega}
 ------------------------------------
 *Endereço de Entrega:*
-*Rua:* ${document.getElementById('rua').value}
-*Bairro:* ${document.getElementById('bairro').value}
-*Cidade:* ${document.getElementById('cidade').value}
-*Número:* ${document.getElementById('numero').value}
+*Rua:* ${rua}
+*Bairro:* ${bairro}
+*Cidade:* ${cidade}
+*Número:* ${numero}
 
 *Data do Pedido:* ${data}
 *Hora:* ${hora}
 
 Agradecemos o seu pedido!
 Pizza Express - Sabor que chega rápido!`.trim();
-        const whatsappNumber = '5581997333714';
-        const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(mensagem)}`;
-        closePaymentModal();
-        window.open(whatsappURL, '_blank');
-      }
+
+      const whatsappNumber = '5581997333714';
+      const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(mensagem)}`;
+      closePaymentModal();
+      window.open(whatsappURL, '_blank');
+    });
+  }
+
+  const copyButton = document.getElementById('copy-button');
+  if (copyButton) {
+    copyButton.addEventListener('click', () => {
+      const pixKey = document.getElementById('pix-key-text').textContent;
+      navigator.clipboard.writeText(pixKey)
+        .then(() => {
+          alert('Chave Pix copiada!');
+        })
+        .catch(err => {
+          console.error('Erro ao copiar a chave Pix:', err);
+        });
+    });
+  }
+
+  // ========================================
+  // Scroll horizontal infinito para a seção "As Mais Vendidas"
+  // ========================================
+  const scrollContainer = document.querySelector('.horizontal-scroll.vendidas');
+  if (scrollContainer) {
+    const scrollTrack = scrollContainer.querySelector('.horizontal-scroll-track');
+    let animationTimeout;
+    function pauseAnimation() {
+      scrollTrack.style.animationPlayState = 'paused';
+      clearTimeout(animationTimeout);
+      animationTimeout = setTimeout(() => {
+        scrollTrack.style.animationPlayState = 'running';
+      }, 2000);
+    }
+    scrollContainer.addEventListener('scroll', pauseAnimation);
+    scrollContainer.addEventListener('mouseenter', pauseAnimation);
+    scrollContainer.addEventListener('touchstart', pauseAnimation);
+  }
+
+  // ========================================
+  // Carousel dos banners
+  // ========================================
+  const dots = document.querySelectorAll('.carousel-dots .dot');
+  const carouselInner = document.querySelector('.carousel-inner');
+  let currentIndex = 0;
+  function updateCarousel(index) {
+    carouselInner.style.transition = 'transform 0.5s ease-in-out';
+    carouselInner.style.transform = `translateX(-${index * 100}%)`;
+    dots.forEach(dot => dot.classList.remove('active'));
+    if (dots[index]) dots[index].classList.add('active');
+    currentIndex = index;
+  }
+  setInterval(() => {
+    updateCarousel((currentIndex + 1) % dots.length);
+  }, 4000);
+  dots.forEach((dot, index) => {
+    dot.addEventListener('click', () => {
+      updateCarousel(index);
+    });
+  });
+  let startX = 0;
+  let isDragging = false;
+  let currentTranslate = 0;
+  carouselInner.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].clientX;
+    isDragging = true;
+  });
+  carouselInner.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+    const diff = e.touches[0].clientX - startX;
+    currentTranslate = -currentIndex * 100 + (diff / window.innerWidth) * 100;
+    carouselInner.style.transition = 'none';
+    carouselInner.style.transform = `translateX(${currentTranslate}%)`;
+  });
+  carouselInner.addEventListener('touchend', (e) => {
+    isDragging = false;
+    const endX = e.changedTouches[0].clientX;
+    const diff = endX - startX;
+    if (diff > 50 && currentIndex > 0) {
+      updateCarousel(currentIndex - 1);
+    } else if (diff < -50 && currentIndex < dots.length - 1) {
+      updateCarousel(currentIndex + 1);
+    } else {
+      updateCarousel(currentIndex);
+    }
+  });
+  let mouseStartX = 0;
+  carouselInner.addEventListener('mousedown', (e) => {
+    mouseStartX = e.clientX;
+    isDragging = true;
+  });
+  carouselInner.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    const diff = e.clientX - mouseStartX;
+    currentTranslate = -currentIndex * 100 + (diff / window.innerWidth) * 100;
+    carouselInner.style.transition = 'none';
+    carouselInner.style.transform = `translateX(${currentTranslate}%)`;
+  });
+  carouselInner.addEventListener('mouseup', (e) => {
+    isDragging = false;
+    const diff = e.clientX - mouseStartX;
+    if (diff > 50 && currentIndex > 0) {
+      updateCarousel(currentIndex - 1);
+    } else if (diff < -50 && currentIndex < dots.length - 1) {
+      updateCarousel(currentIndex + 1);
+    } else {
+      updateCarousel(currentIndex);
+    }
+  });
+  const carouselViewport = document.querySelector('.carousel-viewport');
+  if (carouselViewport) {
+    carouselViewport.addEventListener('scroll', () => {
+      const index = Math.round(carouselViewport.scrollLeft / carouselViewport.offsetWidth);
+      dots.forEach(dot => dot.classList.remove('active'));
+      if (dots[index]) dots[index].classList.add('active');
     });
   }
 
@@ -530,7 +608,7 @@ Pizza Express - Sabor que chega rápido!`.trim();
   }
 
   // Adiciona o pedido atual ao carrinho e persiste os dados
-  function adicionarAoCarrinho() {
+  window.adicionarAoCarrinho = function() {
     const tamanho = document.querySelector('input[name="pizza-size"]:checked')?.value;
     const massa = document.querySelector('select[name="pizza-crust"]').value;
     const quantidade = parseInt(document.getElementById("modal-pizza-quantity").value);
@@ -577,7 +655,7 @@ Pizza Express - Sabor que chega rápido!`.trim();
     alert("Pizza adicionada ao carrinho!");
     closeOrderModal();
     atualizarCarrinhoUI();
-  }
+  };
 
   // Atualiza a interface do carrinho (lista de itens e total)
   function atualizarCarrinhoUI() {
@@ -625,38 +703,25 @@ Pizza Express - Sabor que chega rápido!`.trim();
     totalEl.innerText = calcularTotalPedido().toFixed(2);
   }
 
-  function abrirCarrinho() {
+  window.abrirCarrinho = function() {
     document.getElementById("cart").style.display = "block";
     atualizarCarrinhoUI();
-  }
+  };
 
-  function fecharCarrinho() {
+  window.fecharCarrinho = function() {
     document.getElementById("cart").style.display = "none";
-  }
+  };
 
   // Ao clicar em "Finalizar Pedido" no carrinho, abre o modal de pagamento
-  function finalizarPedido() {
+  window.finalizarPedido = function() {
     if (carrinho.length === 0) {
       alert("Seu carrinho está vazio!");
       return;
     }
     updatePaymentSummaryCart();  // Atualiza o resumo do pagamento unificando os cálculos
     openPaymentModal();
-  }
+  };
 
   // Atualiza a interface do carrinho ao carregar a página
   atualizarCarrinhoUI();
-
-  // Expondo as funções globais necessárias para o HTML
-  window.openOrderModal = openOrderModal;
-  window.closeOrderModal = closeOrderModal;
-  window.openPaymentModal = openPaymentModal;
-  window.closePaymentModal = closePaymentModal;
-  window.incrementField = incrementField;
-  window.incrementSibling = incrementSibling;
-  window.adicionarAoCarrinho = adicionarAoCarrinho;
-  window.abrirCarrinho = abrirCarrinho;
-  window.fecharCarrinho = fecharCarrinho;
-  window.finalizarPedido = finalizarPedido;
-
 });
