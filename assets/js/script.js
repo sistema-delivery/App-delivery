@@ -582,15 +582,12 @@ function atualizarCarrinhoUI() {
   let total = 0;
   
   carrinho.forEach((pizza) => {
-    // Busca o preço do tamanho a partir dos dados da pizza no storeData.
     let sizePrice = 0;
-    if (window.storeData &&
-        window.storeData.pizzas &&
+    if (window.storeData && window.storeData.pizzas &&
         window.storeData.pizzas[pizza.nome] &&
         window.storeData.pizzas[pizza.nome].sizes) {
       sizePrice = window.storeData.pizzas[pizza.nome].sizes[pizza.tamanho] || 0;
     } else {
-      // Fallback: se não encontrar no storeData, usa valores fixos (opcional)
       sizePrice = pizza.tamanho === "Pequena" ? 10 : pizza.tamanho === "Média" ? 15 : 20;
     }
 
@@ -598,18 +595,10 @@ function atualizarCarrinhoUI() {
     const catupiryPrice = 6.00;
     const creamCheesePrice = 3.50;
     
-    // Calcula o custo das bordas conforme a quantidade escolhida
-    const bordasCost = 
-      (pizza.bordas.cheddar * cheddarPrice) +
-      (pizza.bordas.catupiry * catupiryPrice) +
-      (pizza.bordas.cream * creamCheesePrice);
-
-    // Calcula o custo total das bebidas, se houver
-    const bebidasCost = pizza.bebidas 
-      ? pizza.bebidas.reduce((acc, bev) => acc + (bev.price * bev.quantity), 0)
-      : 0;
-
-    // Subtotal da pizza: preço do tamanho vezes quantidade, mais bordas e bebidas
+    const bordasCost = (pizza.bordas.cheddar * cheddarPrice) +
+                        (pizza.bordas.catupiry * catupiryPrice) +
+                        (pizza.bordas.cream * creamCheesePrice);
+    const bebidasCost = pizza.bebidas ? pizza.bebidas.reduce((acc, bev) => acc + (bev.price * bev.quantity), 0) : 0;
     const subtotal = (sizePrice * pizza.quantidade) + bordasCost + bebidasCost;
     total += subtotal;
     
@@ -678,3 +667,36 @@ function atualizarCarrinhoUI() {
   // Atualiza a interface do carrinho no carregamento
   atualizarCarrinhoUI();
 });
+
+function calcularTotalPedido() {
+  let total = 0;
+  carrinho.forEach((pizza) => {
+    // Obtém o preço do tamanho da pizza a partir do storeData (ou usa um valor padrão se não encontrar)
+    let sizePrice = 0;
+    if (window.storeData && window.storeData.pizzas &&
+        window.storeData.pizzas[pizza.nome] &&
+        window.storeData.pizzas[pizza.nome].sizes) {
+      sizePrice = window.storeData.pizzas[pizza.nome].sizes[pizza.tamanho] || 0;
+    } else {
+      sizePrice = pizza.tamanho === "Pequena" ? 10 : pizza.tamanho === "Média" ? 15 : 20;
+    }
+
+    const cheddarPrice = 5.00;
+    const catupiryPrice = 6.00;
+    const creamCheesePrice = 3.50;
+
+    // Custo das bordas
+    const bordasCost = (pizza.bordas.cheddar * cheddarPrice) +
+                       (pizza.bordas.catupiry * catupiryPrice) +
+                       (pizza.bordas.cream * creamCheesePrice);
+
+    // Custo das bebidas (se houver)
+    const bebidasCost = pizza.bebidas 
+      ? pizza.bebidas.reduce((acc, bev) => acc + (bev.price * bev.quantity), 0)
+      : 0;
+
+    const subtotal = (sizePrice * pizza.quantidade) + bordasCost + bebidasCost;
+    total += subtotal;
+  });
+  return total;
+}
