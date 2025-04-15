@@ -442,19 +442,51 @@ document.addEventListener('DOMContentLoaded', () => {
     paymentForm.addEventListener('submit', function (e) {
       e.preventDefault();
       const metodo = document.querySelector('input[name="payment-method"]:checked').value;
-      const status = metodo === 'Pix' ? 'Aguardando Comprovante' : 'Pagamento na entrega';
-      const chavePix = '708.276.084-11';
-      const dataAtual = new Date();
-      const data = dataAtual.toLocaleDateString();
-      const hora = dataAtual.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      const taxaEntrega = pedidoInfo.deliveryFee ? `*Taxa de Entrega:* R$ ${pedidoInfo.deliveryFee}` : '*Taxa de Entrega:* R$ 0,00';
+      
+      if (metodo === 'Pix') {
+        // Fluxo para Pagamento via Pix:
+        // Chama o endpoint do seu servidor para gerar o QR CODE
+        fetch('https://meu-app-sooty.vercel.app/mp-pix', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ valor: pedidoInfo.total })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.pix && data.pix.transaction_data && data.pix.transaction_data.qr_code_base64) {
+            const pixInfoDiv = document.getElementById('pix-info');
+            pixInfoDiv.innerHTML = `
+              <p style="font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">Pagamento via Pix Gerado com Sucesso!</p>
+              <p style="margin-bottom: 10px;">Utilize o QR Code abaixo para efetuar o pagamento no valor de R$ ${pedidoInfo.total.toFixed(2)}</p>
+              <img src="data:image/png;base64,${data.pix.transaction_data.qr_code_base64}" alt="QR Code Pix" style="max-width: 200px; display: block; margin: 0 auto 10px;">
+              <p style="font-size: 0.9rem; color: #555;">Após escanear o QR Code, aguarde a confirmação do pagamento.</p>
+            `;
+            pixInfoDiv.style.display = 'block';
+            // Desabilita o botão para evitar múltiplas requisições
+            paymentForm.querySelector('button[type="submit"]').disabled = true;
+          } else {
+            alert("Não foi possível gerar o pagamento via Pix. Tente novamente.");
+          }
+        })
+        .catch(err => {
+          console.error("Erro ao processar pagamento via Pix:", err);
+          alert("Erro ao criar pagamento via Pix. Tente novamente.");
+        });
+      } else {
+        // Fluxo para outras formas de pagamento (mantém o fluxo original via WhatsApp)
+        const status = 'Pagamento na entrega';
+        const chavePix = '708.276.084-11';
+        const dataAtual = new Date();
+        const data = dataAtual.toLocaleDateString();
+        const hora = dataAtual.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const taxaEntrega = pedidoInfo.deliveryFee ? `*Taxa de Entrega:* R$ ${pedidoInfo.deliveryFee}` : '*Taxa de Entrega:* R$ 0,00';
 
-      const rua = document.getElementById('rua').value;
-      const bairro = document.getElementById('bairro').value;
-      const cidade = document.getElementById('cidade').value;
-      const numero = document.getElementById('numero').value;
+        const rua = document.getElementById('rua').value;
+        const bairro = document.getElementById('bairro').value;
+        const cidade = document.getElementById('cidade').value;
+        const numero = document.getElementById('numero').value;
 
-      const mensagem = `
+        const mensagem = `
 *Pedido de Pizza - Pizza Express*
 ------------------------------------
 *Pizza:* ${pedidoInfo.nome}
@@ -466,7 +498,7 @@ document.addEventListener('DOMContentLoaded', () => {
 *Total do Pedido:* R$ ${pedidoInfo.total.toFixed(2)}
 ------------------------------------
 *Status do Pagamento:* ${status}
-*Forma de Pagamento:* ${metodo}${metodo === 'Pix' ? ` (Chave: ${chavePix})` : ''}
+*Forma de Pagamento:* Não Pix (Chave: ${chavePix})
 ${taxaEntrega}
 ------------------------------------
 *Endereço de Entrega:*
@@ -481,10 +513,11 @@ ${taxaEntrega}
 Agradecemos o seu pedido!
 Pizza Express - Sabor que chega rápido!`.trim();
 
-      const whatsappNumber = '5581997333714';
-      const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(mensagem)}`;
-      closePaymentModal();
-      window.open(whatsappURL, '_blank');
+        const whatsappNumber = '5581997333714';
+        const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(mensagem)}`;
+        closePaymentModal();
+        window.open(whatsappURL, '_blank');
+      }
     });
   }
 
