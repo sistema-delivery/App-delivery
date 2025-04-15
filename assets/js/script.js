@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return parseFloat(str.replace(",", "."));
   }
 
-  // Incrementa o valor de um input (bordas)
+  // Funções para incrementar inputs (bordas e bebidas)
   window.incrementField = function(fieldId) {
     const input = document.getElementById(fieldId);
     if (input) {
@@ -63,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // Incrementa o valor do input imediatamente anterior (bebidas)
   window.incrementSibling = function(button) {
     const input = button.previousElementSibling;
     if (input && input.tagName === 'INPUT') {
@@ -80,7 +79,6 @@ document.addEventListener('DOMContentLoaded', () => {
     navMenu.classList.toggle('active');
   });
 
-  const storeLocation = { lat: -7.950346, lon: -34.902970 };
   const defaultCity = "Paulista (PE)";
   let pedidoInfo = {}; // Armazena o pedido atual
 
@@ -440,7 +438,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const metodo = document.querySelector('input[name="payment-method"]:checked').value;
       
       if (metodo === 'Pix') {
-        // Solicita nome e email para integração Pix (ou adicione campos na interface conforme necessário)
+        // Solicita nome e email para integração Pix (ou, idealmente, adicione campos no modal)
         const nomePix = prompt("Informe seu nome para o pagamento via Pix:");
         const emailPix = prompt("Informe seu email para o pagamento via Pix:");
       
@@ -481,7 +479,7 @@ document.addEventListener('DOMContentLoaded', () => {
           alert("Erro ao criar pagamento via Pix. Tente novamente.");
         });
       } else {
-        // Fluxo para métodos Cartão ou Dinheiro
+        // Fluxo para métodos Cartão ou Dinheiro (mantendo a lógica original)
         const status = metodo === 'Pix' ? 'Aguardando Comprovante' : 'Pagamento na entrega';
         const chavePix = '708.276.084-11';
         const dataAtual = new Date();
@@ -641,7 +639,7 @@ Pizza Express - Sabor que chega rápido!`.trim();
       alert("Seu carrinho está vazio!");
       return;
     }
-    updatePaymentSummaryCart();
+    updatePaymentSummaryCart();  // Atualiza o resumo do pagamento unificando os cálculos
     openPaymentModal();
   };
 
