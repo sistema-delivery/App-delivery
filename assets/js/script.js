@@ -15,11 +15,7 @@ function calcularTotalPedido() {
     ) {
       sizePrice = window.storeData.pizzas[pizza.nome].sizes[pizza.tamanho] || 0;
     } else {
-      sizePrice = pizza.tamanho === "Pequena"
-        ? 10
-        : pizza.tamanho === "Média"
-          ? 15
-          : 20;
+      sizePrice = pizza.tamanho === "Pequena" ? 10 : pizza.tamanho === "Média" ? 15 : 20;
     }
     // Para as bordas, se houver dados no storeData, usa os preços definidos
     let pizzaData = (window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizza.nome])
@@ -203,7 +199,6 @@ document.addEventListener('DOMContentLoaded', () => {
       sizePrice = pizzaData.sizes[size] || 0;
     }
 
-    // Usa os preços definidos no storeData, se disponíveis; caso contrário, valores padrão
     const cheddarPrice = pizzaData ? pizzaData.borders["Cheddar"] : 5.00;
     const catupiryPrice = pizzaData ? pizzaData.borders["Catupiry"] : 6.00;
     const creamCheesePrice = pizzaData ? pizzaData.borders["Cream cheese"] : 3.50;
@@ -219,7 +214,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const bebidaName = item.querySelector('p').textContent;
       const priceText = item.querySelector('.price').textContent.replace('R$', '').trim();
       let bebidaPrice = parsePrice(priceText);
-      // Se houver valor definido no storeData, usa-o
       if (window.storeData && window.storeData.beverages && window.storeData.beverages[bebidaName] !== undefined) {
         bebidaPrice = window.storeData.beverages[bebidaName];
       }
@@ -249,7 +243,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Eventos para atualizar o resumo conforme as escolhas do usuário
   document.querySelectorAll('input[name="pizza-size"]').forEach(el => el.addEventListener('change', updateOrderSummary));
   const crustSelect = document.querySelector('select[name="pizza-crust"]');
   if (crustSelect) crustSelect.addEventListener('change', updateOrderSummary);
@@ -438,7 +431,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ========================================
-  // Processamento do formulário de pagamento
+  // Processamento do formulário de pagamento (único listener)
   // ========================================
   const paymentForm = document.getElementById('modal-payment-form');
   if (paymentForm) {
@@ -457,7 +450,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Chamada ao endpoint do backend para gerar pagamento via Pix
-        fetch('https://meu-app-sooty.vercel.app/mp-pix', { // URL atualizada com a sua URL do Vercel
+        fetch('https://meu-app-sooty.vercel.app/mp-pix', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -488,7 +481,7 @@ document.addEventListener('DOMContentLoaded', () => {
           alert("Erro ao criar pagamento via Pix. Tente novamente.");
         });
       } else {
-        // Fluxo para métodos Cartão ou Dinheiro (mantendo a lógica atual)
+        // Fluxo para métodos Cartão ou Dinheiro
         const status = metodo === 'Pix' ? 'Aguardando Comprovante' : 'Pagamento na entrega';
         const chavePix = '708.276.084-11';
         const dataAtual = new Date();
@@ -648,7 +641,7 @@ Pizza Express - Sabor que chega rápido!`.trim();
       alert("Seu carrinho está vazio!");
       return;
     }
-    updatePaymentSummaryCart();  // Atualiza o resumo do pagamento unificando os cálculos
+    updatePaymentSummaryCart();
     openPaymentModal();
   };
 
