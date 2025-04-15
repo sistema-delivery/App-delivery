@@ -4,27 +4,40 @@ document.addEventListener('DOMContentLoaded', () => {
     return parseFloat(str.replace(",", "."));
   }
 
-  // -----------------------------
+  // Função para incrementar o valor de um input por seu ID (usado para bordas)
+  window.incrementField = function(fieldId) {
+    const input = document.getElementById(fieldId);
+    if (input) {
+      let current = parseInt(input.value) || 0;
+      input.value = current + 1;
+      input.dispatchEvent(new Event('input'));
+    }
+  };
+
+  // Função para incrementar o valor do input imediatamente anterior ao botão (usado para bebidas)
+  window.incrementSibling = function(button) {
+    const input = button.previousElementSibling;
+    if (input && input.tagName === 'INPUT') {
+      let current = parseInt(input.value) || 0;
+      input.value = current + 1;
+      input.dispatchEvent(new Event('input'));
+    }
+  };
+
   // Mobile Menu Toggle
-  // -----------------------------
   const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
   const navMenu = document.querySelector('.nav-menu');
   mobileMenuToggle.addEventListener('click', () => {
     navMenu.classList.toggle('active');
   });
 
-  // -----------------------------
   // Dados de Localização da Loja (exemplo para cálculo de distância futuro)
-  // -----------------------------
   const storeLocation = { lat: -7.950346, lon: -34.902970 };
   const defaultCity = "Paulista (PE)";
-
   // Objeto global para armazenar os dados do pedido
   let pedidoInfo = {};
 
-  // -----------------------------
   // Funções de Modais
-  // -----------------------------
   function openOrderModal(pizzaName) {
     const modalPizzaName = document.getElementById('modal-pizza-name');
     if (modalPizzaName) {
@@ -62,7 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('border-catupiry').value = 0;
     document.getElementById('border-cream-cheese').value = 0;
     document.querySelectorAll('.bebida-quantity').forEach(input => input.value = 0);
-    // Não atualizamos os valores pois já temos os dados armazenados em pedidoInfo
   }
 
   function openPaymentModal() {
@@ -78,7 +90,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('pix-info').style.display = 'none';
   }
 
-  // Fechar modais ao clicar fora do conteúdo
   window.addEventListener('click', function(event) {
     const orderModal = document.getElementById('order-modal');
     const paymentModal = document.getElementById('payment-modal');
@@ -86,7 +97,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (event.target === paymentModal) closePaymentModal();
   });
 
-  // Botões de fechar (X)
   document.querySelectorAll('.modal .close').forEach(closeBtn => {
     closeBtn.addEventListener('click', () => {
       closeOrderModal();
@@ -94,7 +104,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Botão "Voltar"
   document.querySelectorAll('.modal .back').forEach(backBtn => {
     backBtn.addEventListener('click', () => {
       const modal = backBtn.closest('.modal');
@@ -109,7 +118,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Abertura do Modal de Pedido ao clicar em um item
   document.querySelectorAll('.horizontal-scroll .item').forEach(item => {
     item.addEventListener('click', function () {
       const pizzaName = item.querySelector('p').textContent;
@@ -117,47 +125,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // -----------------------------
   // Atualização do Resumo do Pedido e Cálculo do Total
-  // Regra:
-  //  - (Valor do tamanho × Quantidade de pizzas)
-  //  - + (Adicional: Cheddar × quantidade escolhida + Catupiry × quantidade escolhida + Cream cheese × quantidade escolhida)
-  //  - + (Soma de todas as bebidas: (Preço da bebida × Quantidade))
-  // -----------------------------
   function updateOrderSummary() {
-    // Coleta dados do modal
     const pizzaName = document.getElementById('modal-pizza-name')?.textContent.trim() || '';
     const size = document.querySelector('input[name="pizza-size"]:checked')?.value || 'Não selecionado';
     const crust = document.querySelector('select[name="pizza-crust"]').value || 'Não selecionado';
     const totalPizzas = parseInt(document.getElementById('modal-pizza-quantity')?.value) || 1;
-    // Para bordas individuais
     const cheddarQuantity = parseInt(document.getElementById('border-cheddar')?.value) || 0;
     const catupiryQuantity = parseInt(document.getElementById('border-catupiry')?.value) || 0;
     const creamCheeseQuantity = parseInt(document.getElementById('border-cream-cheese')?.value) || 0;
     
-    // Validação: se a soma das bordas ultrapassar o total de pizzas, limitar
     const somaBordas = cheddarQuantity + catupiryQuantity + creamCheeseQuantity;
     const semBorda = totalPizzas - (somaBordas > totalPizzas ? totalPizzas : somaBordas);
-
-    // Obter preço do tamanho a partir dos dados da pizza
     let sizePrice = 0;
     if (pizzaName && window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizzaName]) {
       const pizzaData = window.storeData.pizzas[pizzaName];
       sizePrice = pizzaData.sizes[size] || 0;
     }
 
-    // Preços fixos para bordas
     const cheddarPrice = 5.00;
     const catupiryPrice = 6.00;
     const creamCheesePrice = 3.50;
 
-    // Cálculo de custos:
     const pizzasCost = (sizePrice * totalPizzas) 
                         + (cheddarQuantity * cheddarPrice) 
                         + (catupiryQuantity * catupiryPrice)
                         + (creamCheeseQuantity * creamCheesePrice);
 
-    // Cálculo das bebidas
     let beveragesCost = 0;
     const beveragesSummary = [];
     document.querySelectorAll('.bebida-item').forEach(item => {
@@ -171,16 +165,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Total base (sem taxa de entrega)
     const baseTotal = pizzasCost + beveragesCost;
     pedidoInfo.baseTotal = baseTotal;
 
-    // Taxa de entrega (se houver) e total
     const deliveryFee = pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0;
-    const total = baseTotal + deliveryFee;
-    pedidoInfo.total = total;
+    pedidoInfo.total = baseTotal + deliveryFee;
 
-    // Atualiza o resumo na tela (se os campos ainda estiverem disponíveis)
     if (document.getElementById('order-summary')) {
       document.getElementById('summary-size').textContent = `Tamanho: ${size} - R$ ${sizePrice.toFixed(2)}`;
       document.getElementById('summary-crust').textContent = `Tipo de Massa: ${crust}`;
@@ -189,12 +179,11 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('summary-beverage').textContent = `Bebidas: ${beveragesSummary.length > 0 ? beveragesSummary.join(', ') : 'Nenhuma selecionada'}`;
       
       if (document.getElementById('summary-total')) {
-        document.getElementById('summary-total').innerHTML = `<strong>Total: R$ ${total.toFixed(2)}</strong>`;
+        document.getElementById('summary-total').innerHTML = `<strong>Total: R$ ${pedidoInfo.total.toFixed(2)}</strong>`;
       }
     }
   }
 
-  // Ouvintes para atualização dos campos
   document.querySelectorAll('input[name="pizza-size"]').forEach(el => el.addEventListener('change', updateOrderSummary));
   const crustSelect = document.querySelector('select[name="pizza-crust"]');
   if (crustSelect) crustSelect.addEventListener('change', updateOrderSummary);
@@ -207,14 +196,10 @@ document.addEventListener('DOMContentLoaded', () => {
     input.addEventListener('input', updateOrderSummary);
   });
 
-  // -----------------------------
-  // Envio do Formulário de Pedido (Modal de Pedido)
-  // -----------------------------
   const orderForm = document.getElementById('modal-order-form');
   if (orderForm) {
     orderForm.addEventListener('submit', function (e) {
       e.preventDefault();
-      // Coleta os dados do pedido e armazena em pedidoInfo
       pedidoInfo.nome = document.getElementById('modal-pizza-name').textContent;
       pedidoInfo.tamanho = document.querySelector('input[name="pizza-size"]:checked').value;
       pedidoInfo.crust = document.querySelector('select[name="pizza-crust"]').value;
@@ -224,7 +209,6 @@ document.addEventListener('DOMContentLoaded', () => {
       pedidoInfo.quantidade = document.getElementById('modal-pizza-quantity').value;
       pedidoInfo.adicionais = document.getElementById('modal-additional')?.value || 'Nenhum';
       
-      // Coleta dados das bebidas
       const bebidas = [];
       document.querySelectorAll('.bebida-item').forEach(item => {
         const bebidaName = item.querySelector('p').textContent;
@@ -237,19 +221,13 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       pedidoInfo.bebida = bebidas.length > 0 ? bebidas.join(', ') : 'Nenhuma';
 
-      // Calcula e armazena o total com base nos dados atuais
       updateOrderSummary();
-      // Fecha o modal de pedido (mantendo os dados em pedidoInfo) e abre o modal de pagamento
       closeOrderModal();
       openPaymentModal();
       updatePaymentSummary();
     });
   }
 
-  // -----------------------------
-  // Atualização do Resumo no Modal de Pagamento
-  // Utiliza os dados já armazenados em pedidoInfo para exibir o total correto.
-  // -----------------------------
   function updatePaymentSummary() {
     let paymentSummaryElement = document.getElementById('payment-summary');
     if (!paymentSummaryElement) {
@@ -269,9 +247,6 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
   }
 
-  // -----------------------------
-  // Alternar Informações do Pix conforme método de pagamento
-  // -----------------------------
   document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
     radio.addEventListener('change', function () {
       const pixInfo = document.getElementById('pix-info');
@@ -279,9 +254,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // -----------------------------
-  // CEP e Endereço Automático
-  // -----------------------------
   document.getElementById('cep').addEventListener('blur', function() {
     const cep = this.value.replace(/\D/g, '');
     if (cep.length !== 8) {
@@ -321,7 +293,6 @@ document.addEventListener('DOMContentLoaded', () => {
           document.getElementById('delivery-fee').textContent = "Bairro fora da área de entrega.";
           pedidoInfo.deliveryFee = null;
         }
-        // Atualiza o total utilizando o valor previamente calculado em pedidoInfo.baseTotal
         if (pedidoInfo.baseTotal !== undefined) {
           pedidoInfo.total = pedidoInfo.baseTotal + (pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0);
         }
@@ -335,9 +306,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
 
-  // -----------------------------
-  // Conversão de Graus para Radianos (Cálculo de Distância)
-  // -----------------------------
   function toRad(degrees) {
     return degrees * Math.PI / 180;
   }
@@ -353,9 +321,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return R * c;
   }
 
-  // -----------------------------
-  // Envio do Formulário de Pagamento (Modal de Pagamento)
-  // -----------------------------
   const paymentForm = document.getElementById('modal-payment-form');
   if (paymentForm) {
     paymentForm.addEventListener('submit', function (e) {
@@ -407,9 +372,6 @@ Pizza Express - Sabor que chega rápido!`.trim();
     });
   }
 
-  // -----------------------------
-  // Botão Copiar Chave Pix
-  // -----------------------------
   const copyButton = document.getElementById('copy-button');
   if (copyButton) {
     copyButton.addEventListener('click', () => {
@@ -424,9 +386,6 @@ Pizza Express - Sabor que chega rápido!`.trim();
     });
   }
 
-  // -----------------------------
-  // Carousel de Vendas e Carrossel Geral
-  // -----------------------------
   const scrollContainer = document.querySelector('.horizontal-scroll.vendidas');
   if (scrollContainer) {
     const scrollTrack = scrollContainer.querySelector('.horizontal-scroll-track');
@@ -443,7 +402,6 @@ Pizza Express - Sabor que chega rápido!`.trim();
     scrollContainer.addEventListener('touchstart', pauseAnimation);
   }
 
-  // Carousel do Banner
   const dots = document.querySelectorAll('.carousel-dots .dot');
   const carouselInner = document.querySelector('.carousel-inner');
   let currentIndex = 0;
