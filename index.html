@@ -101,7 +101,7 @@
               <span>R$37,90</span>
             </p>
           </div>
-          <!-- Duplicação dos cards para possibilitar o looping infinito -->
+          <!-- Duplicação dos cards para o looping infinito -->
           <div class="item card-fire" onclick="openOrderModal('Pizza Marguerita')">
             <img src="assets/images/pizza1.jpg" alt="Pizza Marguerita">
             <p>Pizza Marguerita</p>
@@ -237,10 +237,13 @@
             <select name="pizza-border" required>
               <option value="">Selecione</option>
               <option value="Nenhuma">Nenhuma</option>
-              <option value="Catupiry R$ 6,00">Catupiry R$ 6,00</option>
-              <option value="Cheddar R$ 5,00">Cheddar R$ 5,00</option>
-              <option value="Cream cheese R$ 3,50">Cream cheese R$ 3,50</option>
+              <option value="Catupiry">Catupiry R$ 6,00</option>
+              <option value="Cheddar">Cheddar R$ 5,00</option>
+              <option value="Cream cheese">Cream cheese R$ 3,50</option>
             </select>
+            <!-- Novo campo para quantidade de pizzas com borda -->
+            <label for="modal-border-quantity">Quantidade com borda:</label>
+            <input type="number" id="modal-border-quantity" value="0" min="0" style="width: 80px;">
           </div>
 
           <!-- Seção: Quantidade -->
@@ -254,20 +257,26 @@
         <div class="bebidas-section" style="margin-top: 20px; text-align: left;">
           <p class="bebidas-title"><strong>Bebidas:</strong></p>
           <div class="horizontal-scroll bebidas-scroll">
+            <!-- Bebida 1 -->
             <div class="bebida-item">
               <img src="assets/images/bebida1.jpg" alt="Coca-Cola 1,5L">
               <p>Coca-Cola 1,5L</p>
               <p class="price">R$ 5,00</p>
+              <input type="number" class="bebida-quantity" value="0" min="0" style="width: 50px;">
             </div>
+            <!-- Bebida 2 -->
             <div class="bebida-item">
               <img src="assets/images/bebida2.jpg" alt="Guaraná 1L">
               <p>Guaraná 1L</p>
               <p class="price">R$ 4,50</p>
+              <input type="number" class="bebida-quantity" value="0" min="0" style="width: 50px;">
             </div>
+            <!-- Bebida 3 -->
             <div class="bebida-item">
               <img src="assets/images/bebida3.jpg" alt="Guaraná 2L">
               <p>Guaraná 2L</p>
               <p class="price">R$ 3,00</p>
+              <input type="number" class="bebida-quantity" value="0" min="0" style="width: 50px;">
             </div>
           </div>
         </div>
@@ -283,6 +292,7 @@
           <p id="summary-border"></p>
           <p id="summary-quantity"></p>
           <p id="summary-beverage"></p>
+          <p id="summary-total"></p>
         </div>
 
         <button type="submit" class="btn">Confirmar Pedido</button>
@@ -298,7 +308,6 @@
       <span class="close"></span>
       <form id="modal-payment-form">
         <!-- Bloco: CEP e Endereço -->
-        <!-- Alteramos o margin-top para 40px para afastar o conteúdo da seta de voltar -->
         <div class="delivery-location" style="margin:40px 0 20px 0; text-align: left;">
           <label for="cep"><strong>Digite seu CEP para calcular a taxa de entrega:</strong></label>
           <input type="text" id="cep" name="cep" placeholder="Ex: 01001-000" required style="width: 100%; padding: 10px; margin-top: 5px;">
@@ -324,19 +333,16 @@
         <div class="payment-methods-section" style="margin:20px 0; text-align: center;">
           <h2 style="margin-bottom: 15px;">Escolha a forma de pagamento</h2>
           <div class="payment-methods">
-            <!-- Opção Pix -->
             <label class="payment-option">
               <input type="radio" name="payment-method" value="Pix" required>
               <img src="assets/images/icon-pix.png" alt="Pix">
               <span>Pix</span>
             </label>
-            <!-- Opção Cartão -->
             <label class="payment-option">
               <input type="radio" name="payment-method" value="Cartão">
               <img src="assets/images/icon-card.png" alt="Cartão">
               <span>Cartão</span>
             </label>
-            <!-- Opção Dinheiro -->
             <label class="payment-option">
               <input type="radio" name="payment-method" value="Dinheiro">
               <img src="assets/images/icon-cash.png" alt="Dinheiro">
