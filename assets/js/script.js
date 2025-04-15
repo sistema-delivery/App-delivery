@@ -234,24 +234,54 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function updatePaymentSummary() {
-    let paymentSummaryElement = document.getElementById('payment-summary');
-    if (!paymentSummaryElement) {
-      paymentSummaryElement = document.createElement('div');
-      paymentSummaryElement.id = 'payment-summary';
-      const deliveryFeeElement = document.getElementById('delivery-fee');
-      deliveryFeeElement.parentNode.insertBefore(paymentSummaryElement, deliveryFeeElement.nextSibling);
-    }
-    paymentSummaryElement.innerHTML = `
-      <p><strong>Pizza:</strong> ${pedidoInfo.nome}</p>
-      <p><strong>Tamanho:</strong> ${pedidoInfo.tamanho}</p>
-      <p><strong>Tipo de Massa:</strong> ${pedidoInfo.crust}</p>
-      <p><strong>Bordas:</strong> Cheddar (${pedidoInfo.borderCheddar} un.) + Catupiry (${pedidoInfo.borderCatupiry} un.) + Cream cheese (${pedidoInfo.borderCreamCheese} un.)</p>
-      <p><strong>Quantidade:</strong> ${pedidoInfo.quantidade}</p>
-      <p><strong>Bebida(s):</strong> ${pedidoInfo.bebida.length > 0 ? pedidoInfo.bebida.map(b => `${b.name} x${b.quantity} - R$ ${(b.price * b.quantity).toFixed(2)}`).join(', ') : 'Nenhuma'}</p>
-      <p><strong>Total do Pedido:</strong> R$ ${pedidoInfo.total.toFixed(2)}</p>
-    `;
+  function updatePaymentSummaryCart() {
+  let paymentSummaryElement = document.getElementById('payment-summary');
+  if (!paymentSummaryElement) {
+    paymentSummaryElement = document.createElement('div');
+    paymentSummaryElement.id = 'payment-summary';
+    const deliveryFeeElement = document.getElementById('delivery-fee');
+    deliveryFeeElement.parentNode.insertBefore(paymentSummaryElement, deliveryFeeElement.nextSibling);
   }
+  let summaryText = '';
+  let total = 0;
+
+  carrinho.forEach((pizza, index) => {
+    // Recupera o preço do tamanho a partir do storeData (ou usa valores padrão)
+    let sizePrice = 0;
+    if (window.storeData && window.storeData.pizzas &&
+        window.storeData.pizzas[pizza.nome] &&
+        window.storeData.pizzas[pizza.nome].sizes) {
+      sizePrice = window.storeData.pizzas[pizza.nome].sizes[pizza.tamanho] || 0;
+    } else {
+      sizePrice = pizza.tamanho === "Pequena" ? 10 : pizza.tamanho === "Média" ? 15 : 20;
+    }
+
+    const cheddarPrice = 5.00;
+    const catupiryPrice = 6.00;
+    const creamCheesePrice = 3.50;
+
+    const bordasCost = 
+      (pizza.bordas.cheddar * cheddarPrice) +
+      (pizza.bordas.catupiry * catupiryPrice) +
+      (pizza.bordas.cream * creamCheesePrice);
+
+    const bebidasCost = pizza.bebidas 
+      ? pizza.bebidas.reduce((acc, bev) => acc + (bev.price * bev.quantity), 0)
+      : 0;
+
+    // Subtotal de cada pizza: (tamanho x qtde) + bordas + bebidas
+    const subtotal = (sizePrice * pizza.quantidade) + bordasCost + bebidasCost;
+    total += subtotal;
+
+    let bebidaText = "";
+    if (pizza.bebidas && pizza.bebidas.length > 0) {
+      bebidaText = ` - Bebidas: ${pizza.bebidas.map(b => `${b.name} x${b.quantity} - R$ ${(b.price * b.quantity).toFixed(2)}`).join(', ')}`;
+    }
+    summaryText += `<p><strong>Pizza ${index + 1}:</strong> ${pizza.nome} - ${pizza.tamanho}, ${pizza.massa}, Qtde: ${pizza.quantidade}${bebidaText} - R$ ${subtotal.toFixed(2)}</p>`;
+  });
+  summaryText += `<p><strong>Total do Pedido:</strong> R$ ${total.toFixed(2)}</p>`;
+  paymentSummaryElement.innerHTML = summaryText;
+}
 
   document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
     radio.addEventListener('change', function () {
