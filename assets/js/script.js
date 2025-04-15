@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const storeLocation = { lat: -7.950346, lon: -34.902970 };
   const defaultCity = "Paulista (PE)";
 
-  // Objeto global para armazenar os dados do pedido
+  // Objeto global para armazenar os dados do pedido atual (usado no modal de pedido)
   let pedidoInfo = {};
 
   // Funções de Modais
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (modalDescription) {
         modalDescription.textContent = pizzaData.description;
       }
-      // Atualiza os preços por tamanho conforme dados da pizza
+      // Atualiza os preços por tamanho conforme os dados da pizza
       const sizeLabels = document.querySelectorAll('.pizza-size-section label');
       sizeLabels.forEach(label => {
         const radio = label.querySelector('input[type="radio"]');
@@ -66,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function closeOrderModal() {
+    // Reseta o formulário do modal de pedido e fecha-o
     document.getElementById('order-modal').style.display = 'none';
     const orderForm = document.getElementById('modal-order-form');
     if (orderForm) {
@@ -121,12 +122,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.querySelectorAll('.horizontal-scroll .item').forEach(item => {
     item.addEventListener('click', function () {
+      // Abre o modal de pedido com o nome da pizza clicada
       const pizzaName = item.querySelector('p').textContent;
       openOrderModal(pizzaName);
     });
   });
 
-  // Atualização do Resumo do Pedido e Cálculo do Total
+  // Atualização do Resumo do Pedido e Cálculo do Total (usado para exibir resumo no modal)
   function updateOrderSummary() {
     const pizzaName = document.getElementById('modal-pizza-name')?.textContent.trim() || '';
     const size = document.querySelector('input[name="pizza-size"]:checked')?.value || 'Não selecionado';
@@ -158,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.bebida-item').forEach(item => {
       const bebidaName = item.querySelector('p').textContent;
       const priceText = item.querySelector('.price').textContent.replace('R$', '').trim();
-      const bebidaPrice = parseFloat(priceText.replace(",", "."));
+      const bebidaPrice = parsePrice(priceText);
       const bebidaQuantity = parseInt(item.querySelector('.bebida-quantity').value) || 0;
       if (bebidaQuantity > 0) {
         beveragesCost += bebidaPrice * bebidaQuantity;
@@ -185,6 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Eventos que atualizam o resumo do pedido
   document.querySelectorAll('input[name="pizza-size"]').forEach(el => el.addEventListener('change', updateOrderSummary));
   const crustSelect = document.querySelector('select[name="pizza-crust"]');
   if (crustSelect) crustSelect.addEventListener('change', updateOrderSummary);
@@ -197,6 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
     input.addEventListener('input', updateOrderSummary);
   });
 
+  // Processamento do formulário de pedido original (antes, finalizava transição para pagamento)
   const orderForm = document.getElementById('modal-order-form');
   if (orderForm) {
     orderForm.addEventListener('submit', function (e) {
@@ -214,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.bebida-item').forEach(item => {
         const bebidaName = item.querySelector('p').textContent;
         const priceText = item.querySelector('.price').textContent.replace('R$', '').trim();
-        const bebidaPrice = parseFloat(priceText.replace(",", "."));
+        const bebidaPrice = parsePrice(priceText);
         const bebidaQuantity = parseInt(item.querySelector('.bebida-quantity').value) || 0;
         if (bebidaQuantity > 0) {
           bebidas.push(`${bebidaName} x${bebidaQuantity} - R$ ${(bebidaPrice * bebidaQuantity).toFixed(2)}`);
@@ -387,6 +391,7 @@ Pizza Express - Sabor que chega rápido!`.trim();
     });
   }
 
+  // Scroll horizontal infinito para a seção "As Mais Vendidas"
   const scrollContainer = document.querySelector('.horizontal-scroll.vendidas');
   if (scrollContainer) {
     const scrollTrack = scrollContainer.querySelector('.horizontal-scroll-track');
@@ -403,6 +408,7 @@ Pizza Express - Sabor que chega rápido!`.trim();
     scrollContainer.addEventListener('touchstart', pauseAnimation);
   }
 
+  // Carousel dos banners
   const dots = document.querySelectorAll('.carousel-dots .dot');
   const carouselInner = document.querySelector('.carousel-inner');
   let currentIndex = 0;
@@ -478,4 +484,94 @@ Pizza Express - Sabor que chega rápido!`.trim();
       if (dots[index]) dots[index].classList.add('active');
     });
   }
+
+  // ================================
+  // IMPLEMENTAÇÃO DO CARRINHO DE COMPRAS COM LOCALSTORAGE
+  // ================================
+
+  // Inicializa o carrinho a partir do localStorage (ou cria um array vazio)
+  let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+
+  function atualizarLocalStorage() {
+    localStorage.setItem('carrinho', JSON.stringify(carrinho));
+  }
+
+  // Adiciona o pedido atual ao carrinho e persiste os dados
+  window.adicionarAoCarrinho = function() {
+    const tamanho = document.querySelector('input[name="pizza-size"]:checked')?.value;
+    const massa = document.querySelector('select[name="pizza-crust"]').value;
+    const quantidade = parseInt(document.getElementById("modal-pizza-quantity").value);
+
+    const cheddar = parseInt(document.getElementById("border-cheddar").value);
+    const catupiry = parseInt(document.getElementById("border-catupiry").value);
+    const cream = parseInt(document.getElementById("border-cream-cheese").value);
+
+    if (!tamanho || !massa || quantidade < 1) {
+      alert("Por favor, preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    const pizza = {
+      nome: document.getElementById('modal-pizza-name').textContent.trim(),
+      tamanho,
+      massa,
+      quantidade,
+      bordas: { cheddar, catupiry, cream }
+    };
+
+    carrinho.push(pizza);
+    atualizarLocalStorage();
+    alert("Pizza adicionada ao carrinho!");
+    closeOrderModal();
+    atualizarCarrinhoUI();
+  };
+
+  // Atualiza a interface do carrinho (lista de itens e total)
+  function atualizarCarrinhoUI() {
+    const lista = document.getElementById("cart-items");
+    const totalEl = document.getElementById("cart-total");
+    lista.innerHTML = "";
+    let total = 0;
+
+    carrinho.forEach((pizza) => {
+      const item = document.createElement("li");
+      // Exemplo de cálculo com preços fixos; substitua conforme necessário ou use dados do storeData
+      const precoTamanho = pizza.tamanho === "Pequena" ? 10 : pizza.tamanho === "Média" ? 15 : 20;
+      const precoBordas = (pizza.bordas.cheddar * 5) +
+                           (pizza.bordas.catupiry * 6) +
+                           (pizza.bordas.cream * 3.5);
+      const subtotal = (precoTamanho * pizza.quantidade) + precoBordas;
+      total += subtotal;
+      item.innerText = `Pizza: ${pizza.nome} - ${pizza.tamanho}, ${pizza.massa}, Qtde: ${pizza.quantidade}, Bordas: C:${pizza.bordas.cheddar}, Ct:${pizza.bordas.catupiry}, Cr:${pizza.bordas.cream} - R$ ${subtotal.toFixed(2)}`;
+      lista.appendChild(item);
+    });
+
+    totalEl.innerText = total.toFixed(2);
+  }
+
+  window.abrirCarrinho = function() {
+    document.getElementById("cart").style.display = "block";
+    atualizarCarrinhoUI();
+  };
+
+  window.fecharCarrinho = function() {
+    document.getElementById("cart").style.display = "none";
+  };
+
+  window.finalizarPedido = function() {
+    if (carrinho.length === 0) {
+      alert("Seu carrinho está vazio!");
+      return;
+    }
+
+    // Aqui você pode adicionar a lógica para enviar os dados do pedido para um backend
+    alert("Pedido finalizado! Em breve entraremos em contato.");
+    carrinho = [];
+    atualizarLocalStorage();
+    atualizarCarrinhoUI();
+    fecharCarrinho();
+  };
+
+  // No carregamento da página, atualiza a interface do carrinho a partir do localStorage
+  atualizarCarrinhoUI();
 });
