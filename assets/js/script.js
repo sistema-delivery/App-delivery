@@ -250,6 +250,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Atualização do Resumo no Modal de Pagamento
   // -----------------------------
   function updatePaymentSummary() {
+    // Garanta que o total atualizado seja calculado antes de mostrar
+    updateOrderSummary();
     let paymentSummaryElement = document.getElementById('payment-summary');
     if (!paymentSummaryElement) {
       paymentSummaryElement = document.createElement('div');
