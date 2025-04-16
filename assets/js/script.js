@@ -336,7 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ? pizza.bebidas.reduce((acc, bev) => acc + bev.price * bev.quantity, 0)
         : 0;
       const subtotal = sizePrice * pizza.quantidade + bordasCost + bebidasCost;
-
+      
       let bebidaText = "";
       if (pizza.bebidas && pizza.bebidas.length > 0) {
         bebidaText = ` - Bebidas: ${pizza.bebidas.map(b => `${b.name} x${b.quantity} - R$ ${(b.price * b.quantity).toFixed(2)}`).join(', ')}`;
@@ -432,7 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ========================================
-  // Processamento do formulário de pagamento (Integração PIX)
+  // Processamento do formulário de pagamento (Atualizado para a API PIX)
   // ========================================
   const paymentForm = document.getElementById('modal-payment-form');
   if (paymentForm) {
@@ -460,26 +460,19 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(data => {
           console.log("Resposta da API PIX:", data);
-          const transactionData = data.pix.transaction_data;
-          if (transactionData && transactionData.qr_code_base64 && transactionData.qr_code) {
+          let transactionData = (data.pix && data.pix.transaction_data)
+            ? data.pix.transaction_data
+            : data.transaction_data;
+          if (transactionData && transactionData.qr_code_base64) {
             const pixInfoDiv = document.getElementById('pix-info');
             pixInfoDiv.innerHTML = `
               <p style="font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">Pagamento via Pix Gerado com Sucesso!</p>
-              <img src="data:image/png;base64,${transactionData.qr_code_base64}" alt="QR Code Pix" style="max-width: 200px; margin-bottom: 10px; display: block; margin: 0 auto;">
-              <p style="margin-bottom: 10px;">Copie o código Pix abaixo para efetuar o pagamento de R$ ${recalculatedTotal.toFixed(2)}</p>
-              <textarea id="pix-copy-code" style="width: 100%; max-width: 400px; height: 100px; margin: 0 auto; display: block;" readonly>${transactionData.qr_code}</textarea>
-              <button id="copy-code-button" class="btn" style="margin-top: 10px;">Copiar Código</button>
-              <p style="font-size: 0.9rem; color: #555;">Após copiar o código, siga as instruções do seu app bancário.</p>
+              <p style="margin-bottom: 10px;">Utilize o QR Code abaixo para efetuar o pagamento no valor de R$ ${recalculatedTotal.toFixed(2)}</p>
+              <img src="data:image/png;base64,${transactionData.qr_code_base64}" alt="QR Code Pix" style="max-width: 200px; display: block; margin: 0 auto 10px;">
+              <p style="font-size: 0.9rem; color: #555;">Após escanear o QR Code, aguarde a confirmação do pagamento.</p>
             `;
             pixInfoDiv.style.display = 'block';
             paymentForm.querySelector('button[type="submit"]').disabled = true;
-            
-            document.getElementById('copy-code-button').addEventListener('click', () => {
-              const codeText = document.getElementById('pix-copy-code').value;
-              navigator.clipboard.writeText(codeText)
-                .then(() => alert('Código Pix copiado!'))
-                .catch(err => console.error('Erro ao copiar o código Pix:', err));
-            });
           } else {
             alert("Não foi possível gerar o pagamento via Pix. Tente novamente.");
           }
@@ -826,3 +819,6 @@ Pizza Express - Sabor que chega rápido!`.trim();
 
   atualizarCarrinhoUI();
 });
+
+// Fim das funções do script
+
