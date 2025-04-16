@@ -438,30 +438,33 @@ document.addEventListener('DOMContentLoaded', () => {
   if (paymentForm) {
     paymentForm.addEventListener('submit', function (e) {
       e.preventDefault();
-      const metodo = document.querySelector('input[name="payment-method"]:checked').value;
-      
       if (metodo === 'Pix') {
-  // Recalcula o total do pedido incluindo a taxa de entrega
-  pedidoInfo.total = calcularTotalPedido() + (pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0);
+  // Recalcula o total do pedido (itens + taxa de entrega) e o formata com duas casas decimais
+  let recalculatedTotal = calcularTotalPedido() + (pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0);
+  console.log('Recalculated total:', recalculatedTotal);
+  
   fetch('https://meu-app-sooty.vercel.app/mp-pix', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ valor: Number(pedidoInfo.total) })
+    // Envia o valor formatado como string (ex: "37.90"), conforme a API espera
+    body: JSON.stringify({ valor: recalculatedTotal.toFixed(2) })
   })
   .then(response => {
-    if(!response.ok) {
+    if (!response.ok) {
       throw new Error(`Erro HTTP: ${response.status}`);
     }
     return response.json();
   })
   .then(data => {
     console.log("Resposta da API PIX:", data);
-    let transactionData = (data.pix && data.pix.transaction_data) ? data.pix.transaction_data : data.transaction_data;
+    let transactionData = (data.pix && data.pix.transaction_data)
+      ? data.pix.transaction_data
+      : data.transaction_data;
     if (transactionData && transactionData.qr_code_base64) {
       const pixInfoDiv = document.getElementById('pix-info');
       pixInfoDiv.innerHTML = `
         <p style="font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">Pagamento via Pix Gerado com Sucesso!</p>
-        <p style="margin-bottom: 10px;">Utilize o QR Code abaixo para efetuar o pagamento no valor de R$ ${pedidoInfo.total.toFixed(2)}</p>
+        <p style="margin-bottom: 10px;">Utilize o QR Code abaixo para efetuar o pagamento no valor de R$ ${recalculatedTotal.toFixed(2)}</p>
         <img src="data:image/png;base64,${transactionData.qr_code_base64}" alt="QR Code Pix" style="max-width: 200px; display: block; margin: 0 auto 10px;">
         <p style="font-size: 0.9rem; color: #555;">Após escanear o QR Code, aguarde a confirmação do pagamento.</p>
       `;
