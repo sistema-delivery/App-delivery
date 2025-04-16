@@ -11,9 +11,13 @@
   <!-- Header / Navigation -->
   <header>
     <nav class="navbar">
-      <div class="logo">
-        <h1>Pizza Express</h1>
+      <!-- Botão de menu no canto esquerdo -->
+      <div class="mobile-menu-toggle">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
       </div>
+      <!-- Menu principal -->
       <ul class="nav-menu">
         <li><a href="#home">Início</a></li>
         <li><a href="#vendas">Mais Vendidas</a></li>
@@ -27,13 +31,8 @@
           </ul>
         </li>
       </ul>
-      <div class="mobile-menu-toggle">
-        <span class="bar"></span>
-        <span class="bar"></span>
-        <span class="bar"></span>
-      </div>
-      <!-- Botão para visualizar o carrinho modificado para ícone de carrinho com contador -->
-      <button class="cart-button" onclick="abrirCarrinho()">🛒 <span id="cart-count">0</span></button>
+      <!-- Botão do carrinho, ajustado para ficar um pouco mais à esquerda -->
+      <button class="cart-button" onclick="abrirCarrinho()" style="right:10px;">🛒 <span id="cart-count">0</span></button>
     </nav>
   </header>
 
