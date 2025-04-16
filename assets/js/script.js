@@ -333,8 +333,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const creamCheesePrice = pizzaData ? pizzaData.borders["Cream cheese"] : 3.50;
       
       const bordasCost = (pizza.bordas.cheddar * cheddarPrice) +
-                         (pizza.bordas.catupiry * catupiryPrice) +
-                         (pizza.bordas.cream * creamCheesePrice);
+                          (pizza.bordas.catupiry * catupiryPrice) +
+                          (pizza.bordas.cream * creamCheesePrice);
       const bebidasCost = pizza.bebidas
         ? pizza.bebidas.reduce((acc, bev) => acc + (bev.price * bev.quantity), 0)
         : 0;
@@ -736,15 +736,18 @@ Pizza Express - Sabor que chega rápido!`.trim();
     totalEl.innerText = calcularTotalPedido().toFixed(2);
   }
 
+  // ======================================================
+  // Funções alteradas para exibição do carrinho como modal
+  // ======================================================
   window.abrirCarrinho = function() {
-  const cartElement = document.getElementById("cart");
-  cartElement.classList.add("open");
-  atualizarCarrinhoUI();
-};
+    const cartElement = document.getElementById("cart");
+    cartElement.classList.add("open");
+    atualizarCarrinhoUI();
+  };
 
-window.fecharCarrinho = function() {
-  document.getElementById("cart").classList.remove("open");
-};
+  window.fecharCarrinho = function() {
+    document.getElementById("cart").classList.remove("open");
+  };
 
   // Ao clicar em "Finalizar Pedido" no carrinho, abre o modal de pagamento
   window.finalizarPedido = function() {
