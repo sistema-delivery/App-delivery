@@ -360,10 +360,10 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
     radio.addEventListener('change', function () {
       const pixInfo = document.getElementById('pix-info');
-      // Não exibe nada antecipadamente para Pix
+      // Ao selecionar Pix, mostra a área (inicialmente vazia)
       if (this.value === 'Pix') {
         pixInfo.style.display = 'block';
-        pixInfo.innerHTML = ''; // Limpa qualquer conteúdo anterior
+        pixInfo.innerHTML = ''; // Limpa conteúdo anterior
       } else {
         pixInfo.style.display = 'none';
       }
@@ -469,13 +469,14 @@ document.addEventListener('DOMContentLoaded', () => {
           let transactionData = (data.pix && data.pix.transaction_data)
             ? data.pix.transaction_data
             : data.transaction_data;
-          if (transactionData && (transactionData.copyPaste || transactionData.copy_and_paste)) {
-            // Seleciona o campo copyPaste se existir (nome variado em algumas APIs)
-            const copyText = transactionData.copyPaste || transactionData.copy_and_paste;
+          if (transactionData && transactionData.qr_code_base64 && (transactionData.copyPaste || transactionData.copy_and_paste)) {
+            let copyText = transactionData.copyPaste || transactionData.copy_and_paste;
             const pixInfoDiv = document.getElementById('pix-info');
-            // Organiza a exibição de "Cópia e Cola"
+            // Exibe o QR Code e a área de "Cópia e Cola" abaixo dele
             pixInfoDiv.innerHTML = `
               <p style="font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">Pagamento via Pix Gerado com Sucesso!</p>
+              <p style="margin-bottom: 10px;">Utilize o QR Code abaixo para efetuar o pagamento no valor de R$ ${recalculatedTotal.toFixed(2)}</p>
+              <img src="data:image/png;base64,${transactionData.qr_code_base64}" alt="QR Code Pix" style="max-width: 200px; display: block; margin: 0 auto 10px;">
               <div id="copy-paste-area" style="
                   background: #f9f9f9;
                   border: 1px solid #ccc;
@@ -488,13 +489,11 @@ document.addEventListener('DOMContentLoaded', () => {
                   user-select: none;">
                 ${copyText}
               </div>
-              <p style="font-size: 0.9rem; color: #555; margin-top: 5px;">Clique em "Cópia e Cola" para copiar os dados de pagamento.</p>
+              <p style="font-size: 0.9rem; color: #555; margin-top: 5px;">Clique no campo acima para copiar os dados de pagamento.</p>
             `;
             pixInfoDiv.style.display = 'block';
-            // Adiciona a funcionalidade de copiar ao clicar na área
             document.getElementById('copy-paste-area').addEventListener('click', function () {
-              const textToCopy = this.textContent;
-              navigator.clipboard.writeText(textToCopy)
+              navigator.clipboard.writeText(copyText)
                 .then(() => alert('Dados copiados para a área de transferência!'))
                 .catch(err => console.error('Erro ao copiar os dados:', err));
             });
@@ -845,3 +844,6 @@ Pizza Express - Sabor que chega rápido!`.trim();
 
   atualizarCarrinhoUI();
 });
+
+// Fim das funções do script
+
