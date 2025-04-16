@@ -938,33 +938,32 @@ footer {
 /* =================================================== */
 /* Atualização para o Carrinho (Modal de Pedidos)     */
 /* =================================================== */
-/* Removemos o display:none e configuramos para modal */
-#cart {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 50vw;           /* Ocupa metade da tela */
-  height: 100vh;         /* Ocupa toda a altura da tela */
-  background: #fff;
-  padding: 20px;
-  border-radius: 16px 0 0 16px;
-  box-shadow: -5px 0 20px rgba(0, 0, 0, 0.2);
-  z-index: 2000;
-  transform: translateX(100%);  /* Inicialmente fora da tela (à direita) */
-  transition: transform 0.3s ease-in-out;
-  overflow-y: auto;
+/* Neste caso, mantemos o modal do carrinho como está, mas apenas o botão que o ativa é ajustado */
+
+/* Novo estilo para o botão do carrinho */
+.cart-button {
+  background: transparent;
+  border: none;
+  color: #333;
+  font-size: 32px;  /* Ícone maior */
+  cursor: pointer;
+  position: relative;
 }
 
-/* Quando o carrinho estiver aberto, remove a translação */
-#cart.open {
-  transform: translateX(0);
-}
-
-/* Ajuste do carrinho para dispositivos móveis */
-@media (max-width: 480px) {
-  #cart {
-    width: 80vw;
-  }
+/* Badge do carrinho */
+.cart-button #cart-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: red;
+  color: #fff;
+  font-size: 12px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* =================================================== */
