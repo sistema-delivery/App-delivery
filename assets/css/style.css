@@ -1021,3 +1021,21 @@ footer {
 }
 
 /* =================================================== */
+
+/* Estilo para o botão Remover no modal do carrinho */
+.remove-button {
+  background-color: #ff3c00;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-left: 10px;
+}
+
+.remove-button:hover {
+  background-color: #e23300;
+  transform: scale(1.05);
+}
