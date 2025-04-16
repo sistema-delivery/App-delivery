@@ -10,31 +10,31 @@
 <body>
   <!-- Header / Navigation -->
   <header>
-    <nav class="navbar">
-      <!-- Botão de menu no canto esquerdo -->
-      <div class="mobile-menu-toggle">
-        <span class="bar"></span>
-        <span class="bar"></span>
-        <span class="bar"></span>
-      </div>
-      <!-- Menu principal -->
-      <ul class="nav-menu">
-        <li><a href="#home">Início</a></li>
-        <li><a href="#vendas">Mais Vendidas</a></li>
-        <li><a href="#tradicionais">Tradicionais</a></li>
-        <li><a href="#premium">Premium</a></li>
-        <li class="menu-item-has-children">
-          <a href="#">Contato</a>
-          <ul class="sub-menu">
-            <li><a href="https://instagram.com/seuInstagram" target="_blank">Instagram</a></li>
-            <li><a href="https://wa.me/5581997333714" target="_blank">WhatsApp</a></li>
-          </ul>
-        </li>
-      </ul>
-      <!-- Botão do carrinho, ajustado para ficar um pouco mais à esquerda -->
-      <button class="cart-button" onclick="abrirCarrinho()" style="right:10px;">🛒 <span id="cart-count">0</span></button>
-    </nav>
-  </header>
+  <nav class="navbar">
+    <!-- Botão de menu (Mobile Menu Toggle) com margem à esquerda para deslocá-lo um pouco para a direita -->
+    <div class="mobile-menu-toggle" style="margin-left: 10px;">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </div>
+    <!-- Menu principal -->
+    <ul class="nav-menu">
+      <li><a href="#home">Início</a></li>
+      <li><a href="#vendas">Mais Vendidas</a></li>
+      <li><a href="#tradicionais">Tradicionais</a></li>
+      <li><a href="#premium">Premium</a></li>
+      <li class="menu-item-has-children">
+        <a href="#">Contato</a>
+        <ul class="sub-menu">
+          <li><a href="https://instagram.com/seuInstagram" target="_blank">Instagram</a></li>
+          <li><a href="https://wa.me/5581997333714" target="_blank">WhatsApp</a></li>
+        </ul>
+      </li>
+    </ul>
+    <!-- Botão do carrinho, ajustado para ficar um pouco mais à esquerda -->
+    <button class="cart-button" onclick="abrirCarrinho()" style="right:10px;">🛒 <span id="cart-count">0</span></button>
+  </nav>
+</header>
 
   <!-- Hero Section -->
   <section id="home" class="hero">
