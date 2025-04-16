@@ -1,3 +1,5 @@
+// script.js
+
 // Declaração global do carrinho para que todas as funções possam acessá-lo
 let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
 
@@ -281,7 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
           bebidaPrice = window.storeData.beverages[bebidaName];
         }
         const bebidaQuantity = parseInt(item.querySelector('.bebida-quantity').value) || 0;
-        if(bebidaQuantity > 0){
+        if (bebidaQuantity > 0) {
           bebidas.push({
             name: bebidaName,
             price: bebidaPrice,
@@ -329,13 +331,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const catupiryPrice = pizzaData ? pizzaData.borders["Catupiry"] : 6.00;
       const creamCheesePrice = pizzaData ? pizzaData.borders["Cream cheese"] : 3.50;
       
-      const bordasCost = (pizza.bordas.cheddar * cheddarPrice) +
-                          (pizza.bordas.catupiry * catupiryPrice) +
-                          (pizza.bordas.cream * creamCheesePrice);
+      const bordasCost = pizza.bordas.cheddar * cheddarPrice +
+                         pizza.bordas.catupiry * catupiryPrice +
+                         pizza.bordas.cream * creamCheesePrice;
       const bebidasCost = pizza.bebidas
-        ? pizza.bebidas.reduce((acc, bev) => acc + (bev.price * bev.quantity), 0)
+        ? pizza.bebidas.reduce((acc, bev) => acc + bev.price * bev.quantity, 0)
         : 0;
-      const subtotal = (sizePrice * pizza.quantidade) + bordasCost + bebidasCost;
+      const subtotal = sizePrice * pizza.quantidade + bordasCost + bebidasCost;
       
       let bebidaText = "";
       if (pizza.bebidas && pizza.bebidas.length > 0) {
@@ -692,7 +694,7 @@ Pizza Express - Sabor que chega rápido!`.trim();
     atualizarCarrinhoUI();
   };
 
-  // Atualiza a interface do carrinho (lista de itens e total) – com botão "Remover" integrado
+  // Atualiza a interface do carrinho (modal) com layout mais organizado e estilizado
   function atualizarCarrinhoUI() {
     const lista = document.getElementById("cart-items");
     const totalEl = document.getElementById("cart-total");
@@ -724,29 +726,55 @@ Pizza Express - Sabor que chega rápido!`.trim();
         ? pizza.bebidas.reduce((acc, bev) => acc + bev.price * bev.quantity, 0)
         : 0;
       const subtotal = sizePrice * pizza.quantidade + bordasCost + bebidasCost;
-      
-      const item = document.createElement("li");
-      item.innerText = `Pizza: ${pizza.nome} - ${pizza.tamanho}, ${pizza.massa}, Qtde: ${pizza.quantidade}`;
-      
-      if (pizza.bebidas && pizza.bebidas.length > 0) {
-        const bebidaText = " - Bebidas: " + pizza.bebidas.map(b => `${b.name} x${b.quantity}`).join(', ');
-        item.innerText += bebidaText;
-      }
-      item.innerText += ` - R$ ${subtotal.toFixed(2)}`;
 
-      // Botão "Remover" para cada item
+      // Cria o elemento da lista com estrutura organizada usando flexbox
+      const li = document.createElement("li");
+      li.classList.add("cart-item");
+
+      // Container para detalhes do pedido
+      const detailsDiv = document.createElement("div");
+      detailsDiv.classList.add("cart-item-details");
+
+      const title = document.createElement("p");
+      title.classList.add("cart-item-title");
+      title.textContent = `${pizza.nome} (${pizza.tamanho} - ${pizza.massa})`;
+      detailsDiv.appendChild(title);
+
+      const qty = document.createElement("p");
+      qty.textContent = `Quantidade: ${pizza.quantidade}`;
+      detailsDiv.appendChild(qty);
+
+      if (pizza.bebidas && pizza.bebidas.length > 0) {
+        const drinks = document.createElement("p");
+        drinks.textContent = `Bebidas: ${pizza.bebidas.map(b => `${b.name} x${b.quantity}`).join(", ")}`;
+        detailsDiv.appendChild(drinks);
+      }
+
+      const subt = document.createElement("p");
+      subt.classList.add("cart-item-subtotal");
+      subt.textContent = `Subtotal: R$ ${subtotal.toFixed(2)}`;
+      detailsDiv.appendChild(subt);
+
+      li.appendChild(detailsDiv);
+
+      // Container para o botão de remoção
+      const removeContainer = document.createElement("div");
+      removeContainer.classList.add("cart-item-remove");
+
       const removeBtn = document.createElement("button");
       removeBtn.textContent = "Remover";
       removeBtn.classList.add("remove-button");
-      removeBtn.addEventListener("click", function() {
+      removeBtn.addEventListener("click", function () {
         removerPedido(index);
       });
-      item.appendChild(removeBtn);
+      removeContainer.appendChild(removeBtn);
 
-      lista.appendChild(item);
+      li.appendChild(removeContainer);
+
+      lista.appendChild(li);
     });
 
-    totalEl.innerText = calcularTotalPedido().toFixed(2);
+    totalEl.textContent = calcularTotalPedido().toFixed(2);
     
     const cartCount = document.getElementById("cart-count");
     if (cartCount) {
