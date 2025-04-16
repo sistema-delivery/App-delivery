@@ -121,7 +121,7 @@ const storeData = {
 
   beverages: {
     "Coca-Cola 1,5L": 11.50,
-    "Guaraná 1L": 7.00,
+    "Guaraná 1L": 3.00,
     "Guaraná 2L": 13.00
   },
 
