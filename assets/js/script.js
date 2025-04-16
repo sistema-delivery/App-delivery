@@ -1,5 +1,3 @@
-// script.js
-
 // Declaração global do carrinho para que todas as funções possam acessá-lo
 let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
 
@@ -448,11 +446,11 @@ document.addEventListener('DOMContentLoaded', () => {
         let recalculatedTotal = calcularTotalPedido() + (pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0);
         console.log('Recalculated total:', recalculatedTotal);
         
-        // Envia o valor formatado com duas casas decimais, conforme a API espera
+        // Envia o valor formatado com duas casas decimais convertido para número
         fetch('https://meu-app-sooty.vercel.app/mp-pix', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ valor: recalculatedTotal.toFixed(2) })
+          body: JSON.stringify({ valor: Number(recalculatedTotal.toFixed(2)) })
         })
         .then(response => {
           if (!response.ok) {
@@ -821,3 +819,6 @@ Pizza Express - Sabor que chega rápido!`.trim();
 
   atualizarCarrinhoUI();
 });
+
+// Fim das funções do script
+
