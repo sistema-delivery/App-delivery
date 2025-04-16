@@ -737,13 +737,14 @@ Pizza Express - Sabor que chega rápido!`.trim();
   }
 
   window.abrirCarrinho = function() {
-    document.getElementById("cart").style.display = "block";
-    atualizarCarrinhoUI();
-  };
+  const cartElement = document.getElementById("cart");
+  cartElement.classList.add("open");
+  atualizarCarrinhoUI();
+};
 
-  window.fecharCarrinho = function() {
-    document.getElementById("cart").style.display = "none";
-  };
+window.fecharCarrinho = function() {
+  document.getElementById("cart").classList.remove("open");
+};
 
   // Ao clicar em "Finalizar Pedido" no carrinho, abre o modal de pagamento
   window.finalizarPedido = function() {
