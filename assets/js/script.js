@@ -5,7 +5,6 @@ let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
 function calcularTotalPedido() {
   let total = 0;
   carrinho.forEach((pizza) => {
-    // Preço do tamanho
     let sizePrice = 0;
     if (
       window.storeData &&
@@ -15,42 +14,39 @@ function calcularTotalPedido() {
     ) {
       sizePrice = window.storeData.pizzas[pizza.nome].sizes[pizza.tamanho] || 0;
     } else {
-      sizePrice = pizza.tamanho === "Pequena"
-        ? 10
-        : pizza.tamanho === "Média"
-          ? 15
-          : 20;
+      sizePrice = pizza.tamanho === "Pequena" ? 10 : pizza.tamanho === "Média" ? 15 : 20;
     }
-    // Para as bordas, se houver dados no storeData, usa os preços definidos
-    let pizzaData = (window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizza.nome])
-                      ? window.storeData.pizzas[pizza.nome]
-                      : null;
+    let pizzaData =
+      window.storeData &&
+      window.storeData.pizzas &&
+      window.storeData.pizzas[pizza.nome]
+        ? window.storeData.pizzas[pizza.nome]
+        : null;
     const cheddarPrice = pizzaData ? pizzaData.borders["Cheddar"] : 5.00;
     const catupiryPrice = pizzaData ? pizzaData.borders["Catupiry"] : 6.00;
     const creamCheesePrice = pizzaData ? pizzaData.borders["Cream cheese"] : 3.50;
-
-    const bordasCost = (pizza.bordas.cheddar * cheddarPrice) +
-                       (pizza.bordas.catupiry * catupiryPrice) +
-                       (pizza.bordas.cream * creamCheesePrice);
-
-    // Bebidas: tenta usar os valores do storeData.beverages se disponíveis
+    const bordasCost =
+      pizza.bordas.cheddar * cheddarPrice +
+      pizza.bordas.catupiry * catupiryPrice +
+      pizza.bordas.cream * creamCheesePrice;
     const bebidasCost = pizza.bebidas
       ? pizza.bebidas.reduce((acc, bev) => {
-          const priceFromStore = (window.storeData &&
-                                  window.storeData.beverages &&
-                                  window.storeData.beverages[bev.name] !== undefined)
-                                  ? window.storeData.beverages[bev.name]
-                                  : bev.price;
-          return acc + (priceFromStore * bev.quantity);
+          const priceFromStore =
+            window.storeData &&
+            window.storeData.beverages &&
+            window.storeData.beverages[bev.name] !== undefined
+              ? window.storeData.beverages[bev.name]
+              : bev.price;
+          return acc + priceFromStore * bev.quantity;
         }, 0)
       : 0;
-
-    const subtotal = (sizePrice * pizza.quantidade) + bordasCost + bebidasCost;
+    const subtotal = sizePrice * pizza.quantidade + bordasCost + bebidasCost;
     total += subtotal;
   });
   return total;
 }
 
+// Eventos após o carregamento do DOM
 document.addEventListener('DOMContentLoaded', () => {
   // Função auxiliar para converter strings de preço ("6,00") para formato numérico ("6.00")
   function parsePrice(str) {
@@ -58,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Incrementa o valor de um input (bordas)
-  window.incrementField = function(fieldId) {
+  window.incrementField = function (fieldId) {
     const input = document.getElementById(fieldId);
     if (input) {
       let current = parseInt(input.value) || 0;
@@ -68,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // Incrementa o valor do input imediatamente anterior (bebidas)
-  window.incrementSibling = function(button) {
+  window.incrementSibling = function (button) {
     const input = button.previousElementSibling;
     if (input && input.tagName === 'INPUT') {
       let current = parseInt(input.value) || 0;
@@ -96,7 +92,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modalPizzaName) {
       modalPizzaName.textContent = pizzaName;
     }
-    if (window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizzaName]) {
+    if (
+      window.storeData &&
+      window.storeData.pizzas &&
+      window.storeData.pizzas[pizzaName]
+    ) {
       const pizzaData = window.storeData.pizzas[pizzaName];
       const modalDescription = document.getElementById('modal-pizza-description');
       if (modalDescription) {
@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('pix-info').style.display = 'none';
   }
 
-  window.addEventListener('click', function(event) {
+  window.addEventListener('click', function (event) {
     const orderModal = document.getElementById('order-modal');
     const paymentModal = document.getElementById('payment-modal');
     if (event.target === orderModal) closeOrderModal();
@@ -200,7 +200,6 @@ document.addEventListener('DOMContentLoaded', () => {
       sizePrice = pizzaData.sizes[size] || 0;
     }
 
-    // Usa os preços definidos no storeData, se disponíveis; caso contrário, valores padrão
     const cheddarPrice = pizzaData ? pizzaData.borders["Cheddar"] : 5.00;
     const catupiryPrice = pizzaData ? pizzaData.borders["Catupiry"] : 6.00;
     const creamCheesePrice = pizzaData ? pizzaData.borders["Cream cheese"] : 3.50;
@@ -216,7 +215,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const bebidaName = item.querySelector('p').textContent;
       const priceText = item.querySelector('.price').textContent.replace('R$', '').trim();
       let bebidaPrice = parsePrice(priceText);
-      // Se houver valor definido no storeData, usa-o
       if (window.storeData && window.storeData.beverages && window.storeData.beverages[bebidaName] !== undefined) {
         bebidaPrice = window.storeData.beverages[bebidaName];
       }
@@ -246,7 +244,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Eventos para atualizar o resumo conforme as escolhas do usuário
   document.querySelectorAll('input[name="pizza-size"]').forEach(el => el.addEventListener('change', updateOrderSummary));
   const crustSelect = document.querySelector('select[name="pizza-crust"]');
   if (crustSelect) crustSelect.addEventListener('change', updateOrderSummary);
@@ -284,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
           bebidaPrice = window.storeData.beverages[bebidaName];
         }
         const bebidaQuantity = parseInt(item.querySelector('.bebida-quantity').value) || 0;
-        if (bebidaQuantity > 0) {
+        if(bebidaQuantity > 0){
           bebidas.push({
             name: bebidaName,
             price: bebidaPrice,
@@ -409,7 +406,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pedidoInfo.baseTotal !== undefined) {
           pedidoInfo.total = pedidoInfo.baseTotal + (pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0);
         }
-        if (document.getElementById('payment-modal').style.display === 'block'){
+        if (document.getElementById('payment-modal').style.display === 'block') {
           updatePaymentSummaryCart();
         }
       })
@@ -444,8 +441,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const metodo = document.querySelector('input[name="payment-method"]:checked').value;
       
       if (metodo === 'Pix') {
-        // Fluxo para Pagamento via Pix:
-        // Chama o endpoint do seu servidor para gerar o QR CODE
         fetch('https://meu-app-sooty.vercel.app/mp-pix', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -453,7 +448,6 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(response => response.json())
         .then(data => {
-          // Tenta recuperar a transação no formato antigo ou novo
           let transactionData = (data.pix && data.pix.transaction_data) ? data.pix.transaction_data : data.transaction_data;
           if (transactionData && transactionData.qr_code_base64) {
             const pixInfoDiv = document.getElementById('pix-info');
@@ -464,7 +458,6 @@ document.addEventListener('DOMContentLoaded', () => {
               <p style="font-size: 0.9rem; color: #555;">Após escanear o QR Code, aguarde a confirmação do pagamento.</p>
             `;
             pixInfoDiv.style.display = 'block';
-            // Desabilita o botão para evitar múltiplas requisições
             paymentForm.querySelector('button[type="submit"]').disabled = true;
           } else {
             alert("Não foi possível gerar o pagamento via Pix. Tente novamente.");
@@ -475,7 +468,6 @@ document.addEventListener('DOMContentLoaded', () => {
           alert("Erro ao criar pagamento via Pix. Tente novamente.");
         });
       } else {
-        // Fluxo para outras formas de pagamento (mantém o fluxo original via WhatsApp)
         const status = 'Pagamento na entrega';
         const chavePix = '708.276.084-11';
         const dataAtual = new Date();
@@ -642,6 +634,15 @@ Pizza Express - Sabor que chega rápido!`.trim();
     localStorage.setItem('carrinho', JSON.stringify(carrinho));
   }
 
+  // Função para remover um item do carrinho e atualizar a interface
+  function removerPedido(index) {
+    if (confirm("Deseja remover este pedido?")) {
+      carrinho.splice(index, 1);
+      atualizarLocalStorage();
+      atualizarCarrinhoUI();
+    }
+  }
+
   // Adiciona o pedido atual ao carrinho e persiste os dados
   window.adicionarAoCarrinho = function() {
     const tamanho = document.querySelector('input[name="pizza-size"]:checked')?.value;
@@ -657,7 +658,6 @@ Pizza Express - Sabor que chega rápido!`.trim();
       return;
     }
     
-    // Coleta as bebidas selecionadas
     const bebidas = [];
     document.querySelectorAll('.bebida-item').forEach(item => {
       const bebidaName = item.querySelector('p').textContent;
@@ -682,7 +682,7 @@ Pizza Express - Sabor que chega rápido!`.trim();
       massa,
       quantidade,
       bordas: { cheddar, catupiry, cream },
-      bebidas  // Guarda as bebidas selecionadas
+      bebidas
     };
 
     carrinho.push(pizza);
@@ -692,13 +692,13 @@ Pizza Express - Sabor que chega rápido!`.trim();
     atualizarCarrinhoUI();
   };
 
-  // Atualiza a interface do carrinho (lista de itens e total)
+  // Atualiza a interface do carrinho (lista de itens e total) – com botão "Remover" integrado
   function atualizarCarrinhoUI() {
     const lista = document.getElementById("cart-items");
     const totalEl = document.getElementById("cart-total");
     lista.innerHTML = "";
-    
-    carrinho.forEach((pizza) => {
+
+    carrinho.forEach((pizza, index) => {
       let sizePrice = 0;
       if (
         window.storeData &&
@@ -717,30 +717,46 @@ Pizza Express - Sabor que chega rápido!`.trim();
       const catupiryPrice = pizzaData ? pizzaData.borders["Catupiry"] : 6.00;
       const creamCheesePrice = pizzaData ? pizzaData.borders["Cream cheese"] : 3.50;
       
-      const bordasCost = (pizza.bordas.cheddar * cheddarPrice) +
-                          (pizza.bordas.catupiry * catupiryPrice) +
-                          (pizza.bordas.cream * creamCheesePrice);
+      const bordasCost = pizza.bordas.cheddar * cheddarPrice +
+                         pizza.bordas.catupiry * catupiryPrice +
+                         pizza.bordas.cream * creamCheesePrice;
       const bebidasCost = pizza.bebidas
-        ? pizza.bebidas.reduce((acc, bev) => acc + (bev.price * bev.quantity), 0)
+        ? pizza.bebidas.reduce((acc, bev) => acc + bev.price * bev.quantity, 0)
         : 0;
-      const subtotal = (sizePrice * pizza.quantidade) + bordasCost + bebidasCost;
-      
-      let bebidaText = "";
-      if (pizza.bebidas && pizza.bebidas.length > 0) {
-        bebidaText = " - Bebidas: " + pizza.bebidas.map(b => `${b.name} x${b.quantity}`).join(', ');
-      }
+      const subtotal = sizePrice * pizza.quantidade + bordasCost + bebidasCost;
       
       const item = document.createElement("li");
-      item.innerText = `Pizza: ${pizza.nome} - ${pizza.tamanho}, ${pizza.massa}, Qtde: ${pizza.quantidade}${bebidaText} - R$ ${subtotal.toFixed(2)}`;
+      item.innerText = `Pizza: ${pizza.nome} - ${pizza.tamanho}, ${pizza.massa}, Qtde: ${pizza.quantidade}`;
+      
+      if (pizza.bebidas && pizza.bebidas.length > 0) {
+        const bebidaText = " - Bebidas: " + pizza.bebidas.map(b => `${b.name} x${b.quantity}`).join(', ');
+        item.innerText += bebidaText;
+      }
+      item.innerText += ` - R$ ${subtotal.toFixed(2)}`;
+
+      // Botão "Remover" para cada item
+      const removeBtn = document.createElement("button");
+      removeBtn.textContent = "Remover";
+      removeBtn.classList.add("remove-button");
+      removeBtn.addEventListener("click", function() {
+        removerPedido(index);
+      });
+      item.appendChild(removeBtn);
+
       lista.appendChild(item);
     });
-    
+
     totalEl.innerText = calcularTotalPedido().toFixed(2);
+    
+    const cartCount = document.getElementById("cart-count");
+    if (cartCount) {
+      cartCount.textContent = carrinho.length;
+    }
   }
 
-  // ======================================================
-  // Funções alteradas para exibição do carrinho como modal
-  // ======================================================
+  // ========================================
+  // Funções para exibição do carrinho como modal
+  // ========================================
   window.abrirCarrinho = function() {
     const cartElement = document.getElementById("cart");
     cartElement.classList.add("open");
@@ -757,10 +773,9 @@ Pizza Express - Sabor que chega rápido!`.trim();
       alert("Seu carrinho está vazio!");
       return;
     }
-    updatePaymentSummaryCart();  // Atualiza o resumo do pagamento unificando os cálculos
+    updatePaymentSummaryCart();
     openPaymentModal();
   };
 
-  // Atualiza a interface do carrinho ao carregar a página
   atualizarCarrinhoUI();
 });
