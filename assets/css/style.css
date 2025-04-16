@@ -6,6 +6,10 @@
 }
 
 /* GLOBAL */
+html, body {
+  overflow-x: hidden;
+}
+
 body {
   font-family: 'Segoe UI', sans-serif;
   line-height: 1.6;
@@ -637,7 +641,7 @@ footer {
 
 .carousel-dots .dot.active {
   opacity: 1;
-  background: #ff3c00; /* ou a cor que preferir */
+  background: #ff3c00;
 }
 
 /* Configuração do carrossel de imagens */
@@ -677,7 +681,7 @@ footer {
   padding: 10px 15px;
   border-radius: 8px;
   transition: background-color 0.3s, border-color 0.3s;
-  width: 100px; /* ou ajuste conforme seu design */
+  width: 100px;
 }
 
 .payment-option:hover {
@@ -701,7 +705,7 @@ footer {
   font-weight: bold;
 }
 
-/* Caso queira destacar a opção selecionada, utilize JavaScript ou o seletor :checked com pseudo-elementos */
+/* Destacando a opção selecionada */
 .payment-option input[type="radio"]:checked + img {
   border: 2px solid #ff3c00;
   padding: 4px;
@@ -718,14 +722,14 @@ footer {
   padding: 10px 15px;
   border-radius: 8px;
   transition: background-color 0.3s, border-color 0.3s;
-  width: 110px; /* Aumentei um pouco a largura para acomodar "Dinheiro" */
+  width: 110px;
 }
 
 .payment-option span {
   font-size: 1rem;
   font-weight: bold;
   text-align: center;
-  white-space: nowrap; /* Impede quebra de linha */
+  white-space: nowrap;
 }
 
 /* Estilo para o campo de Número (caixa de texto) */
@@ -850,8 +854,8 @@ footer {
   cursor: pointer;
   transition: background 0.3s, transform 0.2s;
   z-index: 2;
-  font-size: 0;  /* Oculta qualquer conteúdo interno */
-  overflow: hidden;  /* Garante que texto interno não apareça */
+  font-size: 0;
+  overflow: hidden;
 }
 
 /* Posicionamento: botão Voltar à esquerda, Fechar à direita */
@@ -931,6 +935,7 @@ footer {
   align-items: center;
 }
 
+/* Carrinho de Compras */
 .cart {
   display: none;
   position: fixed;
@@ -957,7 +962,7 @@ footer {
 
 /* Novo estilo para o botão do carrinho com ícone */
 .cart-button {
-  background: transparent;  /* Fundo transparente para tirar o fundo laranja */
+  background: transparent;
   border: none;
   color: #333;
   font-size: 24px;
@@ -979,4 +984,15 @@ footer {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Ajuste do carrinho para dispositivos móveis */
+@media (max-width: 480px) {
+  .cart {
+    right: 0;
+    left: 0;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
 }
