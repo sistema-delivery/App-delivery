@@ -1,5 +1,3 @@
-// script.js
-
 // Declaração global do carrinho para que todas as funções possam acessá-lo
 let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
 
