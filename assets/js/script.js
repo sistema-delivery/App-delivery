@@ -453,12 +453,14 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(response => response.json())
         .then(data => {
-          if (data.pix && data.pix.transaction_data && data.pix.transaction_data.qr_code_base64) {
+          // Tenta recuperar a transação no formato antigo ou novo
+          let transactionData = (data.pix && data.pix.transaction_data) ? data.pix.transaction_data : data.transaction_data;
+          if (transactionData && transactionData.qr_code_base64) {
             const pixInfoDiv = document.getElementById('pix-info');
             pixInfoDiv.innerHTML = `
               <p style="font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">Pagamento via Pix Gerado com Sucesso!</p>
               <p style="margin-bottom: 10px;">Utilize o QR Code abaixo para efetuar o pagamento no valor de R$ ${pedidoInfo.total.toFixed(2)}</p>
-              <img src="data:image/png;base64,${data.pix.transaction_data.qr_code_base64}" alt="QR Code Pix" style="max-width: 200px; display: block; margin: 0 auto 10px;">
+              <img src="data:image/png;base64,${transactionData.qr_code_base64}" alt="QR Code Pix" style="max-width: 200px; display: block; margin: 0 auto 10px;">
               <p style="font-size: 0.9rem; color: #555;">Após escanear o QR Code, aguarde a confirmação do pagamento.</p>
             `;
             pixInfoDiv.style.display = 'block';
