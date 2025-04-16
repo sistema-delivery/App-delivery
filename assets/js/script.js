@@ -687,54 +687,54 @@ Pizza Express - Sabor que chega rápido!`.trim();
     atualizarLocalStorage();
     alert("Pizza adicionada ao carrinho!");
     closeOrderModal();
-  // Atualiza a interface do carrinho (lista de itens e total)
-function atualizarCarrinhoUI() {
-  const lista = document.getElementById("cart-items");
-  const totalEl = document.getElementById("cart-total");
-  lista.innerHTML = "";
-  
-  carrinho.forEach((pizza) => {
-    let sizePrice = 0;
-    if (
-      window.storeData &&
-      window.storeData.pizzas &&
-      window.storeData.pizzas[pizza.nome] &&
-      window.storeData.pizzas[pizza.nome].sizes
-    ) {
-      sizePrice = window.storeData.pizzas[pizza.nome].sizes[pizza.tamanho] || 0;
-    } else {
-      sizePrice = pizza.tamanho === "Pequena" ? 10 : pizza.tamanho === "Média" ? 15 : 20;
-    }
-    let pizzaData = (window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizza.nome])
-                      ? window.storeData.pizzas[pizza.nome]
-                      : null;
-    const cheddarPrice = pizzaData ? pizzaData.borders["Cheddar"] : 5.00;
-    const catupiryPrice = pizzaData ? pizzaData.borders["Catupiry"] : 6.00;
-    const creamCheesePrice = pizzaData ? pizzaData.borders["Cream cheese"] : 3.50;
-    
-    const bordasCost = (pizza.bordas.cheddar * cheddarPrice) +
-                        (pizza.bordas.catupiry * catupiryPrice) +
-                        (pizza.bordas.cream * creamCheesePrice);
-    const bebidasCost = pizza.bebidas
-      ? pizza.bebidas.reduce((acc, bev) => acc + (bev.price * bev.quantity), 0)
-      : 0;
-    const subtotal = (sizePrice * pizza.quantidade) + bordasCost + bebidasCost;
-    
-    let bebidaText = "";
-    if (pizza.bebidas && pizza.bebidas.length > 0) {
-      bebidaText = " - Bebidas: " + pizza.bebidas.map(b => `${b.name} x${b.quantity}`).join(', ');
-    }
-    
-    const item = document.createElement("li");
-    item.innerText = `Pizza: ${pizza.nome} - ${pizza.tamanho}, ${pizza.massa}, Qtde: ${pizza.quantidade}${bebidaText} - R$ ${subtotal.toFixed(2)}`;
-    lista.appendChild(item);
-  });
-  
-  totalEl.innerText = calcularTotalPedido().toFixed(2);
+    atualizarCarrinhoUI();
+  };
 
-  // Atualiza o contador do carrinho com o número de pedidos
-  document.getElementById("cart-count").textContent = carrinho.length;
-}
+  // Atualiza a interface do carrinho (lista de itens e total)
+  function atualizarCarrinhoUI() {
+    const lista = document.getElementById("cart-items");
+    const totalEl = document.getElementById("cart-total");
+    lista.innerHTML = "";
+    
+    carrinho.forEach((pizza) => {
+      let sizePrice = 0;
+      if (
+        window.storeData &&
+        window.storeData.pizzas &&
+        window.storeData.pizzas[pizza.nome] &&
+        window.storeData.pizzas[pizza.nome].sizes
+      ) {
+        sizePrice = window.storeData.pizzas[pizza.nome].sizes[pizza.tamanho] || 0;
+      } else {
+        sizePrice = pizza.tamanho === "Pequena" ? 10 : pizza.tamanho === "Média" ? 15 : 20;
+      }
+      let pizzaData = (window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizza.nome])
+                        ? window.storeData.pizzas[pizza.nome]
+                        : null;
+      const cheddarPrice = pizzaData ? pizzaData.borders["Cheddar"] : 5.00;
+      const catupiryPrice = pizzaData ? pizzaData.borders["Catupiry"] : 6.00;
+      const creamCheesePrice = pizzaData ? pizzaData.borders["Cream cheese"] : 3.50;
+      
+      const bordasCost = (pizza.bordas.cheddar * cheddarPrice) +
+                          (pizza.bordas.catupiry * catupiryPrice) +
+                          (pizza.bordas.cream * creamCheesePrice);
+      const bebidasCost = pizza.bebidas
+        ? pizza.bebidas.reduce((acc, bev) => acc + (bev.price * bev.quantity), 0)
+        : 0;
+      const subtotal = (sizePrice * pizza.quantidade) + bordasCost + bebidasCost;
+      
+      let bebidaText = "";
+      if (pizza.bebidas && pizza.bebidas.length > 0) {
+        bebidaText = " - Bebidas: " + pizza.bebidas.map(b => `${b.name} x${b.quantity}`).join(', ');
+      }
+      
+      const item = document.createElement("li");
+      item.innerText = `Pizza: ${pizza.nome} - ${pizza.tamanho}, ${pizza.massa}, Qtde: ${pizza.quantidade}${bebidaText} - R$ ${subtotal.toFixed(2)}`;
+      lista.appendChild(item);
+    });
+    
+    totalEl.innerText = calcularTotalPedido().toFixed(2);
+  }
 
   window.abrirCarrinho = function() {
     document.getElementById("cart").style.display = "block";
