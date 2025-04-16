@@ -996,3 +996,24 @@ footer {
     margin: 0 auto;
   }
 }
+
+/* Estilo atualizado para o carrinho com animação slide a partir da direita */
+#cart {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 50vw;           /* Ocupa metade da largura da tela */
+  height: 100vh;         /* Ocupa toda a altura da tela */
+  background: #fff;
+  padding: 20px;
+  border-radius: 16px 0 0 16px;
+  box-shadow: -5px 0 20px rgba(0, 0, 0, 0.2);
+  z-index: 2000;
+  transform: translateX(100%);  /* Inicialmente fora da tela (à direita) */
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Quando aberto, o carrinho desliza para dentro */
+#cart.open {
+  transform: translateX(0);
+}
