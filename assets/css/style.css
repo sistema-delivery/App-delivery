@@ -938,9 +938,41 @@ footer {
 /* =================================================== */
 /* Atualização para o Carrinho (Modal de Pedidos)     */
 /* =================================================== */
-/* Neste caso, mantemos o modal do carrinho como está, mas apenas o botão que o ativa é ajustado */
+/* O modal do carrinho será exibido ocupando metade da tela, com animação vindo do lado direito.
+   É importante garantir que o seletor de ID #cart esteja com display: block para que não seja ocultado.
+   Caso exista alguma regra anterior (por exemplo, da classe .cart), este comando força a exibição. */
+#cart {
+  display: block !important;
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 50vw;           /* Ocupa metade da tela */
+  height: 100vh;         /* Ocupa toda a altura da tela */
+  background: url('../images/cart-bg.png') no-repeat center center;
+  background-size: cover;
+  padding: 20px;
+  border-radius: 16px 0 0 16px;
+  box-shadow: -5px 0 20px rgba(0, 0, 0, 0.2);
+  z-index: 2000;
+  transform: translateX(100%);  /* Inicialmente fora da tela (à direita) */
+  transition: transform 0.3s ease-in-out;
+  overflow-y: auto;
+}
 
-/* Novo estilo para o botão do carrinho */
+/* Quando o carrinho estiver aberto, remove a translação */
+#cart.open {
+  transform: translateX(0);
+}
+
+/* Ajuste do carrinho para dispositivos móveis */
+@media (max-width: 480px) {
+  #cart {
+    width: 80vw;
+  }
+}
+
+/* =================================================== */
+/* Novo estilo para o botão do carrinho (ícone maior) */
 .cart-button {
   background: transparent;
   border: none;
