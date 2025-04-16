@@ -336,7 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ? pizza.bebidas.reduce((acc, bev) => acc + bev.price * bev.quantity, 0)
         : 0;
       const subtotal = sizePrice * pizza.quantidade + bordasCost + bebidasCost;
-      
+
       let bebidaText = "";
       if (pizza.bebidas && pizza.bebidas.length > 0) {
         bebidaText = ` - Bebidas: ${pizza.bebidas.map(b => `${b.name} x${b.quantity} - R$ ${(b.price * b.quantity).toFixed(2)}`).join(', ')}`;
@@ -460,15 +460,13 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(data => {
           console.log("Resposta da API PIX:", data);
-          let transactionData = (data.pix && data.pix.transaction_data)
-            ? data.pix.transaction_data
-            : data.transaction_data;
-          if (transactionData && transactionData.qr_code_base64) {
+          if (data.pix && data.pix.qr_code_base64 && data.pix.copy_and_paste) {
             const pixInfoDiv = document.getElementById('pix-info');
             pixInfoDiv.innerHTML = `
               <p style="font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">Pagamento via Pix Gerado com Sucesso!</p>
               <p style="margin-bottom: 10px;">Utilize o QR Code abaixo para efetuar o pagamento no valor de R$ ${recalculatedTotal.toFixed(2)}</p>
-              <img src="data:image/png;base64,${transactionData.qr_code_base64}" alt="QR Code Pix" style="max-width: 200px; display: block; margin: 0 auto 10px;">
+              <img src="data:image/png;base64,${data.pix.qr_code_base64}" alt="QR Code Pix" style="max-width: 200px; display: block; margin: 0 auto 10px;">
+              <p style="margin-bottom: 10px;">Chave Pix (copy & paste): ${data.pix.copy_and_paste}</p>
               <p style="font-size: 0.9rem; color: #555;">Após escanear o QR Code, aguarde a confirmação do pagamento.</p>
             `;
             pixInfoDiv.style.display = 'block';
@@ -821,4 +819,3 @@ Pizza Express - Sabor que chega rápido!`.trim();
 });
 
 // Fim das funções do script
-
