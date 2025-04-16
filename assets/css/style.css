@@ -963,7 +963,30 @@ footer {
   transform: translateX(0);
 }
 
-/* Ajuste do carrinho para dispositivos móveis */
+/* Botão de fechar o carrinho (substituído pelo "X") */
+#cart .close-cart {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+}
+
+/* Rodapé do carrinho com o botão de Finalizar Pedido centralizado na parte inferior */
+#cart .cart-footer {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 40px); /* considerando o padding */
+  text-align: center;
+}
+
+/* Ajuste para dispositivos menores */
 @media (max-width: 480px) {
   #cart {
     width: 80vw;
