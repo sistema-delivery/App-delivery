@@ -1,3 +1,5 @@
+// script.js
+
 // Declaração global do carrinho para que todas as funções possam acessá-lo
 let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
 
@@ -438,46 +440,49 @@ document.addEventListener('DOMContentLoaded', () => {
   if (paymentForm) {
     paymentForm.addEventListener('submit', function (e) {
       e.preventDefault();
+      
+      const metodo = document.querySelector('input[name="payment-method"]:checked').value;
+      
       if (metodo === 'Pix') {
-  // Recalcula o total do pedido (itens + taxa de entrega) e o formata com duas casas decimais
-  let recalculatedTotal = calcularTotalPedido() + (pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0);
-  console.log('Recalculated total:', recalculatedTotal);
-  
-  fetch('https://meu-app-sooty.vercel.app/mp-pix', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    // Envia o valor formatado como string (ex: "37.90"), conforme a API espera
-    body: JSON.stringify({ valor: recalculatedTotal.toFixed(2) })
-  })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error(`Erro HTTP: ${response.status}`);
-    }
-    return response.json();
-  })
-  .then(data => {
-    console.log("Resposta da API PIX:", data);
-    let transactionData = (data.pix && data.pix.transaction_data)
-      ? data.pix.transaction_data
-      : data.transaction_data;
-    if (transactionData && transactionData.qr_code_base64) {
-      const pixInfoDiv = document.getElementById('pix-info');
-      pixInfoDiv.innerHTML = `
-        <p style="font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">Pagamento via Pix Gerado com Sucesso!</p>
-        <p style="margin-bottom: 10px;">Utilize o QR Code abaixo para efetuar o pagamento no valor de R$ ${recalculatedTotal.toFixed(2)}</p>
-        <img src="data:image/png;base64,${transactionData.qr_code_base64}" alt="QR Code Pix" style="max-width: 200px; display: block; margin: 0 auto 10px;">
-        <p style="font-size: 0.9rem; color: #555;">Após escanear o QR Code, aguarde a confirmação do pagamento.</p>
-      `;
-      pixInfoDiv.style.display = 'block';
-      paymentForm.querySelector('button[type="submit"]').disabled = true;
-    } else {
-      alert("Não foi possível gerar o pagamento via Pix. Tente novamente.");
-    }
-  })
-  .catch(err => {
-    console.error("Erro ao processar pagamento via Pix:", err);
-    alert("Erro ao criar pagamento via Pix. Tente novamente.");
-  });
+        // Recalcula o total do pedido (itens + taxa de entrega)
+        let recalculatedTotal = calcularTotalPedido() + (pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0);
+        console.log('Recalculated total:', recalculatedTotal);
+        
+        // Envia o valor formatado com duas casas decimais, conforme a API espera
+        fetch('https://meu-app-sooty.vercel.app/mp-pix', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ valor: recalculatedTotal.toFixed(2) })
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Erro HTTP: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log("Resposta da API PIX:", data);
+          let transactionData = (data.pix && data.pix.transaction_data)
+            ? data.pix.transaction_data
+            : data.transaction_data;
+          if (transactionData && transactionData.qr_code_base64) {
+            const pixInfoDiv = document.getElementById('pix-info');
+            pixInfoDiv.innerHTML = `
+              <p style="font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">Pagamento via Pix Gerado com Sucesso!</p>
+              <p style="margin-bottom: 10px;">Utilize o QR Code abaixo para efetuar o pagamento no valor de R$ ${recalculatedTotal.toFixed(2)}</p>
+              <img src="data:image/png;base64,${transactionData.qr_code_base64}" alt="QR Code Pix" style="max-width: 200px; display: block; margin: 0 auto 10px;">
+              <p style="font-size: 0.9rem; color: #555;">Após escanear o QR Code, aguarde a confirmação do pagamento.</p>
+            `;
+            pixInfoDiv.style.display = 'block';
+            paymentForm.querySelector('button[type="submit"]').disabled = true;
+          } else {
+            alert("Não foi possível gerar o pagamento via Pix. Tente novamente.");
+          }
+        })
+        .catch(err => {
+          console.error("Erro ao processar pagamento via Pix:", err);
+          alert("Erro ao criar pagamento via Pix. Tente novamente.");
+        });
       } else {
         const status = 'Pagamento na entrega';
         const chavePix = '708.276.084-11';
@@ -499,7 +504,7 @@ document.addEventListener('DOMContentLoaded', () => {
 *Tipos de Massa:* ${pedidoInfo.crust}
 *Bordas:* Cheddar (${pedidoInfo.borderCheddar} un.) + Catupiry (${pedidoInfo.borderCatupiry} un.) + Cream cheese (${pedidoInfo.borderCreamCheese} un.)
 *Quantidade:* ${pedidoInfo.quantidade} unidade(s)
-*Bebida(s):* ${pedidoInfo.bebida.length > 0 ? pedidoInfo.bebida.map(b => `${b.name} x${b.quantity} - R$ ${(b.price*b.quantity).toFixed(2)}`).join(', ') : 'Nenhuma'}
+*Bebida(s):* ${pedidoInfo.bebida.length > 0 ? pedidoInfo.bebida.map(b => `${b.name} x${b.quantity} - R$ ${(b.price * b.quantity).toFixed(2)}`).join(', ') : 'Nenhuma'}
 *Total do Pedido:* R$ ${pedidoInfo.total.toFixed(2)}
 ------------------------------------
 *Status do Pagamento:* ${status}
