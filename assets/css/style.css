@@ -948,8 +948,7 @@ footer {
   right: 0;
   width: 50vw;           /* Ocupa metade da tela */
   height: 100vh;         /* Ocupa toda a altura da tela */
-  background: url('../images/cart-bg.png') no-repeat center center;
-  background-size: cover;
+  background: #fff;      /* Fundo branco */
   padding: 20px;
   border-radius: 16px 0 0 16px;
   box-shadow: -5px 0 20px rgba(0, 0, 0, 0.2);
