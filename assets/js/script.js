@@ -1,5 +1,3 @@
-// script.js
-
 // Declaração global do carrinho para que todas as funções possam acessá-lo
 let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
 
@@ -283,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
           bebidaPrice = window.storeData.beverages[bebidaName];
         }
         const bebidaQuantity = parseInt(item.querySelector('.bebida-quantity').value) || 0;
-        if (bebidaQuantity > 0) {
+        if(bebidaQuantity > 0){
           bebidas.push({
             name: bebidaName,
             price: bebidaPrice,
@@ -434,7 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ========================================
-  // Processamento do formulário de pagamento
+  // Processamento do formulário de pagamento (Atualizado para a API PIX)
   // ========================================
   const paymentForm = document.getElementById('modal-payment-form');
   if (paymentForm) {
@@ -443,13 +441,20 @@ document.addEventListener('DOMContentLoaded', () => {
       const metodo = document.querySelector('input[name="payment-method"]:checked').value;
       
       if (metodo === 'Pix') {
+        // Converte explicitamente o total para número e faz a requisição
         fetch('https://meu-app-sooty.vercel.app/mp-pix', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ valor: pedidoInfo.total })
+          body: JSON.stringify({ valor: Number(pedidoInfo.total) })
         })
-        .then(response => response.json())
+        .then(response => {
+          if(!response.ok) {
+            throw new Error(`Erro HTTP: ${response.status}`);
+          }
+          return response.json();
+        })
         .then(data => {
+          console.log("Resposta da API PIX:", data);
           let transactionData = (data.pix && data.pix.transaction_data) ? data.pix.transaction_data : data.transaction_data;
           if (transactionData && transactionData.qr_code_base64) {
             const pixInfoDiv = document.getElementById('pix-info');
