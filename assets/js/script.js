@@ -281,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
           bebidaPrice = window.storeData.beverages[bebidaName];
         }
         const bebidaQuantity = parseInt(item.querySelector('.bebida-quantity').value) || 0;
-        if (bebidaQuantity > 0) {
+        if(bebidaQuantity > 0){
           bebidas.push({
             name: bebidaName,
             price: bebidaPrice,
@@ -360,13 +360,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
     radio.addEventListener('change', function () {
       const pixInfo = document.getElementById('pix-info');
-      // Ao selecionar Pix, mostra a área (inicialmente vazia)
-      if (this.value === 'Pix') {
-        pixInfo.style.display = 'block';
-        pixInfo.innerHTML = ''; // Limpa conteúdo anterior
-      } else {
-        pixInfo.style.display = 'none';
-      }
+      pixInfo.style.display = this.value === 'Pix' ? 'block' : 'none';
     });
   });
 
@@ -469,34 +463,15 @@ document.addEventListener('DOMContentLoaded', () => {
           let transactionData = (data.pix && data.pix.transaction_data)
             ? data.pix.transaction_data
             : data.transaction_data;
-          if (transactionData && transactionData.qr_code_base64 && (transactionData.copyPaste || transactionData.copy_and_paste)) {
-            let copyText = transactionData.copyPaste || transactionData.copy_and_paste;
+          if (transactionData && transactionData.qr_code_base64) {
             const pixInfoDiv = document.getElementById('pix-info');
-            // Exibe o QR Code e a área de "Cópia e Cola" abaixo dele
             pixInfoDiv.innerHTML = `
               <p style="font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">Pagamento via Pix Gerado com Sucesso!</p>
               <p style="margin-bottom: 10px;">Utilize o QR Code abaixo para efetuar o pagamento no valor de R$ ${recalculatedTotal.toFixed(2)}</p>
               <img src="data:image/png;base64,${transactionData.qr_code_base64}" alt="QR Code Pix" style="max-width: 200px; display: block; margin: 0 auto 10px;">
-              <div id="copy-paste-area" style="
-                  background: #f9f9f9;
-                  border: 1px solid #ccc;
-                  border-radius: 4px;
-                  padding: 10px;
-                  cursor: pointer;
-                  text-align: center;
-                  font-family: monospace;
-                  font-size: 1rem;
-                  user-select: none;">
-                ${copyText}
-              </div>
-              <p style="font-size: 0.9rem; color: #555; margin-top: 5px;">Clique no campo acima para copiar os dados de pagamento.</p>
+              <p style="font-size: 0.9rem; color: #555;">Após escanear o QR Code, aguarde a confirmação do pagamento.</p>
             `;
             pixInfoDiv.style.display = 'block';
-            document.getElementById('copy-paste-area').addEventListener('click', function () {
-              navigator.clipboard.writeText(copyText)
-                .then(() => alert('Dados copiados para a área de transferência!'))
-                .catch(err => console.error('Erro ao copiar os dados:', err));
-            });
             paymentForm.querySelector('button[type="submit"]').disabled = true;
           } else {
             alert("Não foi possível gerar o pagamento via Pix. Tente novamente.");
