@@ -182,9 +182,71 @@ document.addEventListener('DOMContentLoaded', () => {
   // Atualiza o Resumo do Pedido (Modal)
   // ====================================
   function updateOrderSummary() {
-    /* ... sua lógica de resumo original permanece inalterada ... */
+    const pizzaName = document.getElementById('modal-pizza-name')?.textContent.trim() || '';
+    const size = document.querySelector('input[name="pizza-size"]:checked')?.value || 'Não selecionado';
+    const crust = document.querySelector('select[name="pizza-crust"]').value || 'Não selecionado';
+    const totalPizzas = parseInt(document.getElementById('modal-pizza-quantity')?.value) || 1;
+    const cheddarQuantity = parseInt(document.getElementById('border-cheddar')?.value) || 0;
+    const catupiryQuantity = parseInt(document.getElementById('border-catupiry')?.value) || 0;
+    const creamCheeseQuantity = parseInt(document.getElementById('border-cream-cheese')?.value) || 0;
+    
+    const somaBordas = cheddarQuantity + catupiryQuantity + creamCheeseQuantity;
+    const semBorda = totalPizzas - (somaBordas > totalPizzas ? totalPizzas : somaBordas);
+    
+    let sizePrice = 0;
+    let pizzaData = null;
+    if (pizzaName && window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizzaName]) {
+      pizzaData = window.storeData.pizzas[pizzaName];
+      sizePrice = pizzaData.sizes[size] || 0;
+    }
+
+    // Usa os preços definidos no storeData, se disponíveis; caso contrário, valores padrão
+    const cheddarPrice = pizzaData ? pizzaData.borders["Cheddar"] : 5.00;
+    const catupiryPrice = pizzaData ? pizzaData.borders["Catupiry"] : 6.00;
+    const creamCheesePrice = pizzaData ? pizzaData.borders["Cream cheese"] : 3.50;
+
+    const pizzasCost = (sizePrice * totalPizzas) +
+                        (cheddarQuantity * cheddarPrice) +
+                        (catupiryQuantity * catupiryPrice) +
+                        (creamCheeseQuantity * creamCheesePrice);
+
+    let beveragesCost = 0;
+    const beveragesSummary = [];
+    document.querySelectorAll('.bebida-item').forEach(item => {
+      const bebidaName = item.querySelector('p').textContent;
+      const priceText = item.querySelector('.price').textContent.replace('R$', '').trim();
+      let bebidaPrice = parsePrice(priceText);
+      // Se houver valor definido no storeData, usa-o
+      if (window.storeData && window.storeData.beverages && window.storeData.beverages[bebidaName] !== undefined) {
+        bebidaPrice = window.storeData.beverages[bebidaName];
+      }
+      const bebidaQuantity = parseInt(item.querySelector('.bebida-quantity').value) || 0;
+      if (bebidaQuantity > 0) {
+        beveragesCost += bebidaPrice * bebidaQuantity;
+        beveragesSummary.push(`${bebidaName} x${bebidaQuantity} - R$ ${(bebidaPrice * bebidaQuantity).toFixed(2)}`);
+      }
+    });
+
+    const baseTotal = pizzasCost + beveragesCost;
+    pedidoInfo.baseTotal = baseTotal;
+
+    const deliveryFee = pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0;
+    pedidoInfo.total = baseTotal + deliveryFee;
+
+    if (document.getElementById('order-summary')) {
+      document.getElementById('summary-size').textContent = `Tamanho: ${size} - R$ ${sizePrice.toFixed(2)}`;
+      document.getElementById('summary-crust').textContent = `Tipo de Massa: ${crust}`;
+      document.getElementById('summary-border').textContent = `Bordas: Cheddar (${cheddarQuantity} un. × R$ ${cheddarPrice.toFixed(2)}) + Catupiry (${catupiryQuantity} un. × R$ ${catupiryPrice.toFixed(2)}) + Cream cheese (${creamCheeseQuantity} un. × R$ ${creamCheesePrice.toFixed(2)})`;
+      document.getElementById('summary-quantity').textContent = `Quantidade de Pizzas: ${totalPizzas} (Sem borda: ${semBorda})`;
+      document.getElementById('summary-beverage').textContent = `Bebidas: ${beveragesSummary.length > 0 ? beveragesSummary.join(', ') : 'Nenhuma selecionada'}`;
+      
+      if (document.getElementById('summary-total')) {
+        document.getElementById('summary-total').innerHTML = `<strong>Total: R$ ${pedidoInfo.total.toFixed(2)}</strong>`;
+      }
+    }
   }
 
+  // Eventos para atualizar o resumo conforme as escolhas do usuário
   document.querySelectorAll('input[name="pizza-size"]').forEach(el => el.addEventListener('change', updateOrderSummary));
   const crustSelect = document.querySelector('select[name="pizza-crust"]');
   if (crustSelect) crustSelect.addEventListener('change', updateOrderSummary);
@@ -193,7 +255,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('border-cheddar').addEventListener('input', updateOrderSummary);
   document.getElementById('border-catupiry').addEventListener('input', updateOrderSummary);
   document.getElementById('border-cream-cheese').addEventListener('input', updateOrderSummary);
-  document.querySelectorAll('.bebida-quantity').forEach(input => input.addEventListener('input', updateOrderSummary));
+  document.querySelectorAll('.bebida-quantity').forEach(input => {
+    input.addEventListener('input', updateOrderSummary);
+  });
 
   // ========================================
   // Processamento do formulário de pedido
@@ -202,7 +266,34 @@ document.addEventListener('DOMContentLoaded', () => {
   if (orderForm) {
     orderForm.addEventListener('submit', function (e) {
       e.preventDefault();
-      /* ... coleta de pedido original ... */
+      pedidoInfo.nome = document.getElementById('modal-pizza-name').textContent;
+      pedidoInfo.tamanho = document.querySelector('input[name="pizza-size"]:checked').value;
+      pedidoInfo.crust = document.querySelector('select[name="pizza-crust"]').value;
+      pedidoInfo.borderCheddar = document.getElementById('border-cheddar').value;
+      pedidoInfo.borderCatupiry = document.getElementById('border-catupiry').value;
+      pedidoInfo.borderCreamCheese = document.getElementById('border-cream-cheese').value;
+      pedidoInfo.quantidade = document.getElementById('modal-pizza-quantity').value;
+      pedidoInfo.adicionais = document.getElementById('modal-additional')?.value || 'Nenhum';
+      
+      const bebidas = [];
+      document.querySelectorAll('.bebida-item').forEach(item => {
+        const bebidaName = item.querySelector('p').textContent;
+        const priceText = item.querySelector('.price').textContent.replace('R$', '').trim();
+        let bebidaPrice = parsePrice(priceText);
+        if (window.storeData && window.storeData.beverages && window.storeData.beverages[bebidaName] !== undefined) {
+          bebidaPrice = window.storeData.beverages[bebidaName];
+        }
+        const bebidaQuantity = parseInt(item.querySelector('.bebida-quantity').value) || 0;
+        if (bebidaQuantity > 0) {
+          bebidas.push({
+            name: bebidaName,
+            price: bebidaPrice,
+            quantity: bebidaQuantity
+          });
+        }
+      });
+      pedidoInfo.bebida = bebidas.length > 0 ? bebidas : [];
+      
       updateOrderSummary();
       closeOrderModal();
       openPaymentModal();
@@ -211,10 +302,59 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ========================================
-  // Atualiza o resumo de pagamento do modal
+  // Atualiza o resumo de pagamento do modal, incluindo a taxa de entrega
   // ========================================
   function updatePaymentSummaryCart() {
-    /* ... lógica original de resumo de pagamento ... */
+    let paymentSummaryElement = document.getElementById('payment-summary');
+    if (!paymentSummaryElement) {
+      paymentSummaryElement = document.createElement('div');
+      paymentSummaryElement.id = 'payment-summary';
+      const deliveryFeeElement = document.getElementById('delivery-fee');
+      deliveryFeeElement.parentNode.insertBefore(paymentSummaryElement, deliveryFeeElement.nextSibling);
+    }
+    let summaryText = '';
+    
+    carrinho.forEach((pizza, index) => {
+      let sizePrice = 0;
+      if (
+        window.storeData &&
+        window.storeData.pizzas &&
+        window.storeData.pizzas[pizza.nome] &&
+        window.storeData.pizzas[pizza.nome].sizes
+      ) {
+        sizePrice = window.storeData.pizzas[pizza.nome].sizes[pizza.tamanho] || 0;
+      } else {
+        sizePrice = pizza.tamanho === "Pequena" ? 10 : pizza.tamanho === "Média" ? 15 : 20;
+      }
+      let pizzaData = (window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizza.nome])
+                        ? window.storeData.pizzas[pizza.nome] : null;
+      const cheddarPrice = pizzaData ? pizzaData.borders["Cheddar"] : 5.00;
+      const catupiryPrice = pizzaData ? pizzaData.borders["Catupiry"] : 6.00;
+      const creamCheesePrice = pizzaData ? pizzaData.borders["Cream cheese"] : 3.50;
+      
+      const bordasCost = (pizza.bordas.cheddar * cheddarPrice) +
+                          (pizza.bordas.catupiry * catupiryPrice) +
+                          (pizza.bordas.cream * creamCheesePrice);
+      const bebidasCost = pizza.bebidas
+        ? pizza.bebidas.reduce((acc, bev) => acc + (bev.price * bev.quantity), 0)
+        : 0;
+      const subtotal = (sizePrice * pizza.quantidade) + bordasCost + bebidasCost;
+      
+      let bebidaText = "";
+      if (pizza.bebidas && pizza.bebidas.length > 0) {
+        bebidaText = ` - Bebidas: ${pizza.bebidas.map(b => `${b.name} x${b.quantity} - R$ ${(b.price * b.quantity).toFixed(2)}`).join(', ')}`;
+      }
+      summaryText += `<p><strong>Pizza ${index + 1}:</strong> ${pizza.nome} - ${pizza.tamanho}, ${pizza.massa}, Qtde: ${pizza.quantidade}${bebidaText} - R$ ${subtotal.toFixed(2)}</p>`;
+    });
+    
+    const itensTotal = calcularTotalPedido();
+    const deliveryFee = pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0;
+    const totalComEntrega = itensTotal + deliveryFee;
+    
+    summaryText += `<p><strong>Taxa de Entrega:</strong> R$ ${deliveryFee.toFixed(2)}</p>`;
+    summaryText += `<p><strong>Total do Pedido:</strong> R$ ${totalComEntrega.toFixed(2)}</p>`;
+    
+    paymentSummaryElement.innerHTML = summaryText;
   }
 
   // ========================================
@@ -228,8 +368,71 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('cep').addEventListener('blur', function() {
-    /* ... lookup CEP original ... */
+    const cep = this.value.replace(/\D/g, '');
+    if (cep.length !== 8) {
+      document.getElementById('delivery-fee').textContent = "CEP inválido. Insira 8 dígitos.";
+      return;
+    }
+    lookupAddressByCEP(cep);
   });
+
+  function lookupAddressByCEP(cep) {
+    fetch(`https://viacep.com.br/ws/${cep}/json/`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.erro) {
+          document.getElementById('delivery-fee').textContent = "CEP não encontrado. Verifique o CEP informado.";
+          return;
+        }
+        document.getElementById('rua').value = data.logradouro || '';
+        document.getElementById('bairro').value = data.bairro || '';
+        document.getElementById('cidade').value = data.localidade || '';
+        document.getElementById('estado').value = data.uf || '';
+
+        const cityKey = data.localidade && data.uf ? `${data.localidade} (${data.uf})` : defaultCity;
+        const bairro = data.bairro;
+        let fee;
+        if (
+          bairro &&
+          window.storeData &&
+          window.storeData.deliveryFees &&
+          window.storeData.deliveryFees[cityKey] &&
+          window.storeData.deliveryFees[cityKey].hasOwnProperty(bairro)
+        ) {
+          fee = window.storeData.deliveryFees[cityKey][bairro].toFixed(2);
+          document.getElementById('delivery-fee').textContent = `Taxa de Entrega: R$ ${fee}`;
+          pedidoInfo.deliveryFee = fee;
+        } else {
+          document.getElementById('delivery-fee').textContent = "Bairro fora da área de entrega.";
+          pedidoInfo.deliveryFee = null;
+        }
+        if (pedidoInfo.baseTotal !== undefined) {
+          pedidoInfo.total = pedidoInfo.baseTotal + (pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0);
+        }
+        if (document.getElementById('payment-modal').style.display === 'block'){
+          updatePaymentSummaryCart();
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById('delivery-fee').textContent = "Erro ao buscar a localização.";
+      });
+  }
+
+  function toRad(degrees) {
+    return degrees * Math.PI / 180;
+  }
+
+  function calculateDistance(loc1, loc2) {
+    const R = 6371;
+    const dLat = toRad(loc2.lat - loc1.lat);
+    const dLon = toRad(loc2.lon - loc1.lon);
+    const lat1 = toRad(loc1.lat);
+    const lat2 = toRad(loc2.lat);
+    const a = Math.sin(dLat / 2) ** 2 + Math.sin(dLon / 2) ** 2 * Math.cos(lat1) * Math.cos(lat2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
 
   // ========================================
   // Processamento do formulário de pagamento
@@ -239,64 +442,38 @@ document.addEventListener('DOMContentLoaded', () => {
     paymentForm.addEventListener('submit', function (e) {
       e.preventDefault();
       const metodo = document.querySelector('input[name="payment-method"]:checked').value;
-
+      
       if (metodo === 'Pix') {
         // Fluxo para Pagamento via Pix:
+        // Chama o endpoint do seu servidor para gerar o QR CODE
         fetch('https://meu-app-sooty.vercel.app/mp-pix', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ valor: Number(pedidoInfo.total.toFixed(2)) })
+          body: JSON.stringify({ valor: pedidoInfo.total })
         })
-        .then(response => {
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
-          // recupera transaction_data
-          const tx = data.pix?.transaction_data ?? data.transaction_data;
-          if (!tx?.qr_code_base64 || !tx?.qr_code) {
-            alert("Não foi possível gerar o Pix. Tente novamente.");
-            return;
+          // Tenta recuperar a transação no formato antigo ou novo
+          let transactionData = (data.pix && data.pix.transaction_data) ? data.pix.transaction_data : data.transaction_data;
+          if (transactionData && transactionData.qr_code_base64) {
+            const pixInfoDiv = document.getElementById('pix-info');
+            pixInfoDiv.innerHTML = `
+              <p style="font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">Pagamento via Pix Gerado com Sucesso!</p>
+              <p style="margin-bottom: 10px;">Utilize o QR Code abaixo para efetuar o pagamento no valor de R$ ${pedidoInfo.total.toFixed(2)}</p>
+              <img src="data:image/png;base64,${transactionData.qr_code_base64}" alt="QR Code Pix" style="max-width: 200px; display: block; margin: 0 auto 10px;">
+              <p style="font-size: 0.9rem; color: #555;">Após escanear o QR Code, aguarde a confirmação do pagamento.</p>
+            `;
+            pixInfoDiv.style.display = 'block';
+            // Desabilita o botão para evitar múltiplas requisições
+            paymentForm.querySelector('button[type="submit"]').disabled = true;
+          } else {
+            alert("Não foi possível gerar o pagamento via Pix. Tente novamente.");
           }
-
-          const pixInfoDiv = document.getElementById('pix-info');
-          pixInfoDiv.innerHTML = `
-            <p style="font-weight:bold; font-size:1.1rem; margin-bottom:0.5rem;">
-              Pagamento via Pix (R$ ${pedidoInfo.total.toFixed(2)}) gerado com sucesso!
-            </p>
-            <img 
-              src="data:image/png;base64,${tx.qr_code_base64}" 
-              alt="QR Code Pix" 
-              style="max-width:200px; display:block; margin:0 auto 1rem;"
-            />
-            <textarea 
-              id="raw-pix-code" 
-              readonly 
-              style="width:100%; height:4rem; font-family:monospace; padding:0.5rem; margin-bottom:0.5rem;"
-            >${tx.qr_code}</textarea>
-            <button 
-              type="button" 
-              id="copy-pix-code" 
-              style="padding:0.6rem; width:100%;"
-            >Copiar código Pix</button>
-          `;
-          pixInfoDiv.style.display = 'block';
-          // desabilita botão submit para evitar duplicatas
-          paymentForm.querySelector('button[type="submit"]').disabled = true;
-
-          // adiciona listener de cópia
-          document.getElementById('copy-pix-code').addEventListener('click', () => {
-            const raw = document.getElementById('raw-pix-code');
-            raw.select();
-            document.execCommand('copy');
-            alert('Código Pix copiado!');
-          });
         })
         .catch(err => {
-          console.error("Erro Pix:", err);
+          console.error("Erro ao processar pagamento via Pix:", err);
           alert("Erro ao criar pagamento via Pix. Tente novamente.");
         });
-
       } else {
         // Fluxo para outras formas de pagamento (mantém o fluxo original via WhatsApp)
         const status = 'Pagamento na entrega';
