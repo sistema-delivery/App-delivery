@@ -383,6 +383,437 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         document.getElementById('rua').value = data.logradouro || '';
         document.getElementById('bairro').value = data.bairro || '';
+// Declaração global do carrinho para que todas as funções possam acessá-lo
+let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+
+/**
+ * Monta a mensagem completa do pedido no formato WhatsApp.
+ * @param {Object} pedido – contém todos os campos do pedido (pizza, bordas, bebidas, total, endereço, etc).
+ * @param {String} metodo – 'Pix' ou outro (para exibir forma de pagamento).
+ */
+function montarMensagemWhatsApp(pedido, metodo) {
+  const linhas = [];
+
+  linhas.push(`*Pedido de Pizza - Pizza Express*`);
+  linhas.push(`------------------------------------`);
+  linhas.push(`*Pizza:* ${pedido.nome}`);
+  linhas.push(`*Tamanho:* ${pedido.tamanho}`);
+  linhas.push(`*Massa:* ${pedido.crust}`);
+  linhas.push(
+    `*Bordas:* Cheddar (${pedido.borderCheddar}), Catupiry (${pedido.borderCatupiry}), Cream cheese (${pedido.borderCreamCheese})`
+  );
+  linhas.push(`*Quantidade:* ${pedido.quantidade}`);
+  if (pedido.bebida && pedido.bebida.length) {
+    const b = pedido.bebida
+      .map(
+        (bev) => `${bev.name} x${bev.quantity} – R$ ${(bev.price * bev.quantity).toFixed(2)}`
+      )
+      .join(', ');
+    linhas.push(`*Bebidas:* ${b}`);
+  } else {
+    linhas.push(`*Bebidas:* Nenhuma`);
+  }
+  linhas.push(`*Total do Pedido:* R$ ${pedido.total.toFixed(2)}`);
+  linhas.push(`------------------------------------`);
+  linhas.push(`*Forma de Pagamento:* ${metodo}`);
+  linhas.push(`------------------------------------`);
+  linhas.push(`*Endereço de Entrega:*`);
+  linhas.push(`Rua: ${pedido.rua}`);
+  linhas.push(`Bairro: ${pedido.bairro}`);
+  linhas.push(`Cidade: ${pedido.cidade}`);
+  linhas.push(`Número: ${pedido.numero}`);
+  linhas.push(`------------------------------------`);
+  linhas.push(`*Data:* ${new Date().toLocaleDateString()}`);
+  linhas.push(
+    `*Hora:* ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+  );
+  linhas.push(`\nObrigado pelo seu pedido! 🍕`);
+
+  return encodeURIComponent(linhas.join('\n'));
+}
+
+// Função centralizada para calcular o total dos itens do pedido (sem a taxa de entrega)
+function calcularTotalPedido() {
+  let total = 0;
+  carrinho.forEach((pizza) => {
+    let sizePrice = 0;
+    if (
+      window.storeData &&
+      window.storeData.pizzas &&
+      window.storeData.pizzas[pizza.nome] &&
+      window.storeData.pizzas[pizza.nome].sizes
+    ) {
+      sizePrice = window.storeData.pizzas[pizza.nome].sizes[pizza.tamanho] || 0;
+    } else {
+      sizePrice = pizza.tamanho === "Pequena" ? 10 : pizza.tamanho === "Média" ? 15 : 20;
+    }
+    let pizzaData =
+      window.storeData &&
+      window.storeData.pizzas &&
+      window.storeData.pizzas[pizza.nome]
+        ? window.storeData.pizzas[pizza.nome]
+        : null;
+    const cheddarPrice = pizzaData ? pizzaData.borders["Cheddar"] : 5.00;
+    const catupiryPrice = pizzaData ? pizzaData.borders["Catupiry"] : 6.00;
+    const creamCheesePrice = pizzaData ? pizzaData.borders["Cream cheese"] : 3.50;
+    const bordasCost =
+      pizza.bordas.cheddar * cheddarPrice +
+      pizza.bordas.catupiry * catupiryPrice +
+      pizza.bordas.cream * creamCheesePrice;
+    const bebidasCost = pizza.bebidas
+      ? pizza.bebidas.reduce((acc, bev) => {
+          const priceFromStore =
+            window.storeData &&
+            window.storeData.beverages &&
+            window.storeData.beverages[bev.name] !== undefined
+              ? window.storeData.beverages[bev.name]
+              : bev.price;
+          return acc + priceFromStore * bev.quantity;
+        }, 0)
+      : 0;
+    const subtotal = sizePrice * pizza.quantidade + bordasCost + bebidasCost;
+    total += subtotal;
+  });
+  return total;
+}
+
+// Eventos após o carregamento do DOM
+document.addEventListener('DOMContentLoaded', () => {
+  // Função auxiliar para converter strings de preço ("6,00") para formato numérico ("6.00")
+  function parsePrice(str) {
+    return parseFloat(str.replace(",", "."));
+  }
+
+  // Incrementa o valor de um input (bordas)
+  window.incrementField = function (fieldId) {
+    const input = document.getElementById(fieldId);
+    if (input) {
+      let current = parseInt(input.value) || 0;
+      input.value = current + 1;
+      input.dispatchEvent(new Event('input'));
+    }
+  };
+
+  // Incrementa o valor do input imediatamente anterior (bebidas)
+  window.incrementSibling = function (button) {
+    const input = button.previousElementSibling;
+    if (input && input.tagName === 'INPUT') {
+      let current = parseInt(input.value) || 0;
+      input.value = current + 1;
+      input.dispatchEvent(new Event('input'));
+    }
+  };
+
+  // Mobile Menu Toggle
+  const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+  const navMenu = document.querySelector('.nav-menu');
+  mobileMenuToggle.addEventListener('click', () => {
+    navMenu.classList.toggle('active');
+  });
+
+  const storeLocation = { lat: -7.950346, lon: -34.902970 };
+  const defaultCity = "Paulista (PE)";
+  let pedidoInfo = {}; // Armazena o pedido atual
+
+  // ============================
+  // Funções de Modais
+  // ============================
+  function openOrderModal(pizzaName) {
+    const modalPizzaName = document.getElementById('modal-pizza-name');
+    if (modalPizzaName) {
+      modalPizzaName.textContent = pizzaName;
+    }
+    if (
+      window.storeData &&
+      window.storeData.pizzas &&
+      window.storeData.pizzas[pizzaName]
+    ) {
+      const pizzaData = window.storeData.pizzas[pizzaName];
+      const modalDescription = document.getElementById('modal-pizza-description');
+      if (modalDescription) {
+        modalDescription.textContent = pizzaData.description;
+      }
+      // Atualiza os preços por tamanho conforme os dados da pizza
+      const sizeLabels = document.querySelectorAll('.pizza-size-section label');
+      sizeLabels.forEach(label => {
+        const radio = label.querySelector('input[type="radio"]');
+        if (radio && pizzaData.sizes[radio.value]) {
+          const priceDiv = label.querySelector('.price-size');
+          if (priceDiv) {
+            priceDiv.textContent = pizzaData.sizes[radio.value].toFixed(2);
+          }
+        }
+      });
+    }
+    document.getElementById('order-modal').style.display = 'block';
+  }
+
+  function closeOrderModal() {
+    document.getElementById('order-modal').style.display = 'none';
+    const orderForm = document.getElementById('modal-order-form');
+    if (orderForm) {
+      orderForm.reset();
+    }
+    // Reset dos inputs de bordas e bebidas
+    document.getElementById('border-cheddar').value = 0;
+    document.getElementById('border-catupiry').value = 0;
+    document.getElementById('border-cream-cheese').value = 0;
+    document.querySelectorAll('.bebida-quantity').forEach(input => input.value = 0);
+  }
+
+  function openPaymentModal() {
+    document.getElementById('payment-modal').style.display = 'block';
+  }
+
+  function closePaymentModal() {
+    document.getElementById('payment-modal').style.display = 'none';
+    const paymentForm = document.getElementById('modal-payment-form');
+    if (paymentForm) {
+      paymentForm.reset();
+    }
+    document.getElementById('pix-info').style.display = 'none';
+  }
+
+  window.addEventListener('click', function (event) {
+    const orderModal = document.getElementById('order-modal');
+    const paymentModal = document.getElementById('payment-modal');
+    if (event.target === orderModal) closeOrderModal();
+    if (event.target === paymentModal) closePaymentModal();
+  });
+
+  document.querySelectorAll('.modal .close').forEach(closeBtn => {
+    closeBtn.addEventListener('click', () => {
+      closeOrderModal();
+      closePaymentModal();
+    });
+  });
+
+  document.querySelectorAll('.modal .back').forEach(backBtn => {
+    backBtn.addEventListener('click', () => {
+      const modal = backBtn.closest('.modal');
+      if (!modal) return;
+      if (modal.id === 'order-modal') {
+        closeOrderModal();
+      } else if (modal.id === 'payment-modal') {
+        closePaymentModal();
+      } else {
+        modal.style.display = 'none';
+      }
+    });
+  });
+
+  document.querySelectorAll('.horizontal-scroll .item').forEach(item => {
+    item.addEventListener('click', function () {
+      const pizzaName = item.querySelector('p').textContent;
+      openOrderModal(pizzaName);
+    });
+  });
+
+  // ====================================
+  // Atualiza o Resumo do Pedido (Modal)
+  // ====================================
+  function updateOrderSummary() {
+    const pizzaName = document.getElementById('modal-pizza-name')?.textContent.trim() || '';
+    const size = document.querySelector('input[name="pizza-size"]:checked')?.value || 'Não selecionado';
+    const crust = document.querySelector('select[name="pizza-crust"]').value || 'Não selecionado';
+    const totalPizzas = parseInt(document.getElementById('modal-pizza-quantity')?.value) || 1;
+    const cheddarQuantity = parseInt(document.getElementById('border-cheddar')?.value) || 0;
+    const catupiryQuantity = parseInt(document.getElementById('border-catupiry')?.value) || 0;
+    const creamCheeseQuantity = parseInt(document.getElementById('border-cream-cheese')?.value) || 0;
+    
+    const somaBordas = cheddarQuantity + catupiryQuantity + creamCheeseQuantity;
+    const semBorda = totalPizzas - (somaBordas > totalPizzas ? totalPizzas : somaBordas);
+    
+    let sizePrice = 0;
+    let pizzaData = null;
+    if (pizzaName && window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizzaName]) {
+      pizzaData = window.storeData.pizzas[pizzaName];
+      sizePrice = pizzaData.sizes[size] || 0;
+    }
+
+    const cheddarPrice = pizzaData ? pizzaData.borders["Cheddar"] : 5.00;
+    const catupiryPrice = pizzaData ? pizzaData.borders["Catupiry"] : 6.00;
+    const creamCheesePrice = pizzaData ? pizzaData.borders["Cream cheese"] : 3.50;
+
+    const pizzasCost = (sizePrice * totalPizzas) +
+                        (cheddarQuantity * cheddarPrice) +
+                        (catupiryQuantity * catupiryPrice) +
+                        (creamCheeseQuantity * creamCheesePrice);
+
+    let beveragesCost = 0;
+    const beveragesSummary = [];
+    document.querySelectorAll('.bebida-item').forEach(item => {
+      const bebidaName = item.querySelector('p').textContent;
+      const priceText = item.querySelector('.price').textContent.replace('R$', '').trim();
+      let bebidaPrice = parsePrice(priceText);
+      if (window.storeData && window.storeData.beverages && window.storeData.beverages[bebidaName] !== undefined) {
+        bebidaPrice = window.storeData.beverages[bebidaName];
+      }
+      const bebidaQuantity = parseInt(item.querySelector('.bebida-quantity').value) || 0;
+      if (bebidaQuantity > 0) {
+        beveragesCost += bebidaPrice * bebidaQuantity;
+        beveragesSummary.push(`${bebidaName} x${bebidaQuantity} - R$ ${(bebidaPrice * bebidaQuantity).toFixed(2)}`);
+      }
+    });
+
+    const baseTotal = pizzasCost + beveragesCost;
+    pedidoInfo.baseTotal = baseTotal;
+
+    const deliveryFee = pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0;
+    pedidoInfo.total = baseTotal + deliveryFee;
+
+    if (document.getElementById('order-summary')) {
+      document.getElementById('summary-size').textContent = `Tamanho: ${size} - R$ ${sizePrice.toFixed(2)}`;
+      document.getElementById('summary-crust').textContent = `Tipo de Massa: ${crust}`;
+      document.getElementById('summary-border').textContent = `Bordas: Cheddar (${cheddarQuantity} un. × R$ ${cheddarPrice.toFixed(2)}) + Catupiry (${catupiryQuantity} un. × R$ ${catupiryPrice.toFixed(2)}) + Cream cheese (${creamCheeseQuantity} un. × R$ ${creamCheesePrice.toFixed(2)})`;
+      document.getElementById('summary-quantity').textContent = `Quantidade de Pizzas: ${totalPizzas} (Sem borda: ${semBorda})`;
+      document.getElementById('summary-beverage').textContent = `Bebidas: ${beveragesSummary.length > 0 ? beveragesSummary.join(', ') : 'Nenhuma selecionada'}`;
+      
+      if (document.getElementById('summary-total')) {
+        document.getElementById('summary-total').innerHTML = `<strong>Total: R$ ${pedidoInfo.total.toFixed(2)}</strong>`;
+      }
+    }
+  }
+
+  document.querySelectorAll('input[name="pizza-size"]').forEach(el => el.addEventListener('change', updateOrderSummary));
+  const crustSelect = document.querySelector('select[name="pizza-crust"]');
+  if (crustSelect) crustSelect.addEventListener('change', updateOrderSummary);
+  const quantityInput = document.getElementById('modal-pizza-quantity');
+  if (quantityInput) quantityInput.addEventListener('input', updateOrderSummary);
+  document.getElementById('border-cheddar').addEventListener('input', updateOrderSummary);
+  document.getElementById('border-catupiry').addEventListener('input', updateOrderSummary);
+  document.getElementById('border-cream-cheese').addEventListener('input', updateOrderSummary);
+  document.querySelectorAll('.bebida-quantity').forEach(input => {
+    input.addEventListener('input', updateOrderSummary);
+  });
+
+  // ========================================
+  // Processamento do formulário de pedido
+  // ========================================
+  const orderForm = document.getElementById('modal-order-form');
+  if (orderForm) {
+    orderForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      pedidoInfo.nome = document.getElementById('modal-pizza-name').textContent;
+      pedidoInfo.tamanho = document.querySelector('input[name="pizza-size"]:checked').value;
+      pedidoInfo.crust = document.querySelector('select[name="pizza-crust"]').value;
+      pedidoInfo.borderCheddar = document.getElementById('border-cheddar').value;
+      pedidoInfo.borderCatupiry = document.getElementById('border-catupiry').value;
+      pedidoInfo.borderCreamCheese = document.getElementById('border-cream-cheese').value;
+      pedidoInfo.quantidade = document.getElementById('modal-pizza-quantity').value;
+      pedidoInfo.adicionais = document.getElementById('modal-additional')?.value || 'Nenhum';
+      
+      const bebidas = [];
+      document.querySelectorAll('.bebida-item').forEach(item => {
+        const bebidaName = item.querySelector('p').textContent;
+        const priceText = item.querySelector('.price').textContent.replace('R$', '').trim();
+        let bebidaPrice = parsePrice(priceText);
+        if (window.storeData && window.storeData.beverages && window.storeData.beverages[bebidaName] !== undefined) {
+          bebidaPrice = window.storeData.beverages[bebidaName];
+        }
+        const bebidaQuantity = parseInt(item.querySelector('.bebida-quantity').value) || 0;
+        if(bebidaQuantity > 0){
+          bebidas.push({
+            name: bebidaName,
+            price: bebidaPrice,
+            quantity: bebidaQuantity
+          });
+        }
+      });
+      pedidoInfo.bebida = bebidas.length > 0 ? bebidas : [];
+      
+      updateOrderSummary();
+      closeOrderModal();
+      openPaymentModal();
+      updatePaymentSummaryCart();
+    });
+  }
+
+  // ========================================
+  // Atualiza o resumo de pagamento do modal, incluindo a taxa de entrega
+  // ========================================
+  function updatePaymentSummaryCart() {
+    let paymentSummaryElement = document.getElementById('payment-summary');
+    if (!paymentSummaryElement) {
+      paymentSummaryElement = document.createElement('div');
+      paymentSummaryElement.id = 'payment-summary';
+      const deliveryFeeElement = document.getElementById('delivery-fee');
+      deliveryFeeElement.parentNode.insertBefore(paymentSummaryElement, deliveryFeeElement.nextSibling);
+    }
+    let summaryText = '';
+    
+    carrinho.forEach((pizza, index) => {
+      let sizePrice = 0;
+      if (
+        window.storeData &&
+        window.storeData.pizzas &&
+        window.storeData.pizzas[pizza.nome] &&
+        window.storeData.pizzas[pizza.nome].sizes
+      ) {
+        sizePrice = window.storeData.pizzas[pizza.nome].sizes[pizza.tamanho] || 0;
+      } else {
+        sizePrice = pizza.tamanho === "Pequena" ? 10 : pizza.tamanho === "Média" ? 15 : 20;
+      }
+      let pizzaData = (window.storeData && window.storeData.pizzas && window.storeData.pizzas[pizza.nome])
+                        ? window.storeData.pizzas[pizza.nome] : null;
+      const cheddarPrice = pizzaData ? pizzaData.borders["Cheddar"] : 5.00;
+      const catupiryPrice = pizzaData ? pizzaData.borders["Catupiry"] : 6.00;
+      const creamCheesePrice = pizzaData ? pizzaData.borders["Cream cheese"] : 3.50;
+      
+      const bordasCost = pizza.bordas.cheddar * cheddarPrice +
+                         pizza.bordas.catupiry * catupiryPrice +
+                         pizza.bordas.cream * creamCheesePrice;
+      const bebidasCost = pizza.bebidas
+        ? pizza.bebidas.reduce((acc, bev) => acc + bev.price * bev.quantity, 0)
+        : 0;
+      const subtotal = sizePrice * pizza.quantidade + bordasCost + bebidasCost;
+      
+      let bebidaText = "";
+      if (pizza.bebidas && pizza.bebidas.length > 0) {
+        bebidaText = ` - Bebidas: ${pizza.bebidas.map(b => `${b.name} x${b.quantity} - R$ ${(b.price * b.quantity).toFixed(2)}`).join(', ')}`;
+      }
+      summaryText += `<p><strong>Pizza ${index + 1}:</strong> ${pizza.nome} - ${pizza.tamanho}, ${pizza.massa}, Qtde: ${pizza.quantidade}${bebidaText} - R$ ${subtotal.toFixed(2)}</p>`;
+    });
+    
+    const itensTotal = calcularTotalPedido();
+    const deliveryFee = pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0;
+    const totalComEntrega = itensTotal + deliveryFee;
+    
+    summaryText += `<p><strong>Taxa de Entrega:</strong> R$ ${deliveryFee.toFixed(2)}</p>`;
+    summaryText += `<p><strong>Total do Pedido:</strong> R$ ${totalComEntrega.toFixed(2)}</p>`;
+    
+    paymentSummaryElement.innerHTML = summaryText;
+  }
+
+  // ========================================
+  // Eventos para método de pagamento e CEP
+  // ========================================
+  document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
+    radio.addEventListener('change', function () {
+      const pixInfo = document.getElementById('pix-info');
+      pixInfo.style.display = this.value === 'Pix' ? 'block' : 'none';
+    });
+  });
+
+  document.getElementById('cep').addEventListener('blur', function() {
+    const cep = this.value.replace(/\D/g, '');
+    if (cep.length !== 8) {
+      document.getElementById('delivery-fee').textContent = "CEP inválido. Insira 8 dígitos.";
+      return;
+    }
+    lookupAddressByCEP(cep);
+  });
+
+  function lookupAddressByCEP(cep) {
+    fetch(`https://viacep.com.br/ws/${cep}/json/`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.erro) {
+          document.getElementById('delivery-fee').textContent = "CEP não encontrado. Verifique o CEP informado.";
+          return;
+        }
+        document.getElementById('rua').value = data.logradouro || '';
+        document.getElementById('bairro').value = data.bairro || '';
         document.getElementById('cidade').value = data.localidade || '';
         document.getElementById('estado').value = data.uf || '';
 
