@@ -477,18 +477,28 @@ document.addEventListener('DOMContentLoaded', () => {
       alt="QR Code Pix"
       style="max-width: 200px; display: block; margin: 0 auto 10px;"
     >
-    <!-- Novo título -->
     <p style="font-weight: bold; margin-top: 1rem;">
       OU COPIE E COLE NO SEU BANCO
     </p>
-    <!-- Payload Pix para copiar -->
     <textarea
       id="pix-payload-text"
       readonly
       style="width:100%; height:4rem; font-size:0.9rem; padding:0.5rem; box-sizing:border-box;"
     >${transactionData.qr_code}</textarea>
-    <!-- Botão renomeado -->
-    <button id="copy-payload-button" style="display:block; margin: 0.5rem auto 10px;">
+    <button
+      id="copy-payload-button"
+      style="
+        display: block;
+        margin: 0.5rem auto 10px;
+        background-color: orange;
+        color: #fff;
+        border: none;
+        border-radius: 0.25rem;
+        padding: 0.5rem 1rem;
+        font-weight: bold;
+        cursor: pointer;
+      "
+    >
       COPIAR CHAVE PIX
     </button>
     <p style="font-size: 0.9rem; color: #555;">
@@ -497,6 +507,15 @@ document.addEventListener('DOMContentLoaded', () => {
   `;
   pixInfoDiv.style.display = 'block';
   paymentForm.querySelector('button[type="submit"]').disabled = true;
+
+  // agora que o botão existe no DOM, vinculamos o copy
+  const copyPayloadButton = document.getElementById('copy-payload-button');
+  copyPayloadButton.addEventListener('click', () => {
+    const payload = document.getElementById('pix-payload-text').value;
+    navigator.clipboard.writeText(payload)
+      .then(() => alert('Chave Pix copiada!'))
+      .catch(err => console.error('Erro ao copiar payload:', err));
+  });
 } else {
             alert("Não foi possível gerar o pagamento via Pix. Tente novamente.");
           }
@@ -552,16 +571,6 @@ Pizza Express - Sabor que chega rápido!`.trim();
       }
     });
   }
-
-  const copyPayloadButton = document.getElementById('copy-payload-button');
-if (copyPayloadButton) {
-  copyPayloadButton.addEventListener('click', () => {
-    const payload = document.getElementById('pix-payload-text').value;
-    navigator.clipboard.writeText(payload)
-      .then(() => alert('Chave Pix copiada!'))
-      .catch(err => console.error('Erro ao copiar payload:', err));
-  });
-}
 
   // ========================================
   // Scroll horizontal infinito para a seção "As Mais Vendidas"
