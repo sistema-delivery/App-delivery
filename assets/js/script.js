@@ -464,16 +464,38 @@ document.addEventListener('DOMContentLoaded', () => {
             ? data.pix.transaction_data
             : data.transaction_data;
           if (transactionData && transactionData.qr_code_base64) {
-            const pixInfoDiv = document.getElementById('pix-info');
-            pixInfoDiv.innerHTML = `
-              <p style="font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">Pagamento via Pix Gerado com Sucesso!</p>
-              <p style="margin-bottom: 10px;">Utilize o QR Code abaixo para efetuar o pagamento no valor de R$ ${recalculatedTotal.toFixed(2)}</p>
-              <img src="data:image/png;base64,${transactionData.qr_code_base64}" alt="QR Code Pix" style="max-width: 200px; display: block; margin: 0 auto 10px;">
-              <p style="font-size: 0.9rem; color: #555;">Após escanear o QR Code, aguarde a confirmação do pagamento.</p>
-            `;
-            pixInfoDiv.style.display = 'block';
-            paymentForm.querySelector('button[type="submit"]').disabled = true;
-          } else {
+  const pixInfoDiv = document.getElementById('pix-info');
+  pixInfoDiv.innerHTML = `
+    <p style="font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
+      Pagamento via Pix Gerado com Sucesso!
+    </p>
+    <p style="margin-bottom: 10px;">
+      Utilize o QR Code abaixo para efetuar o pagamento no valor de R$ ${recalculatedTotal.toFixed(2)}
+    </p>
+    <img
+      src="data:image/png;base64,${transactionData.qr_code_base64}"
+      alt="QR Code Pix"
+      style="max-width: 200px; display: block; margin: 0 auto 10px;"
+    >
+    <!-- campo oculto para armazenar o Base64 que será copiado -->
+    <input
+      type="text"
+      id="pix-key-text"
+      value="${transactionData.qr_code_base64}"
+      readonly
+      style="opacity:0; position:absolute; left:-9999px;"
+    >
+    <!-- nosso botão de copiar -->
+    <button id="copy-button" style="display:block; margin: 0 auto 10px;">
+      Copiar Código Pix
+    </button>
+    <p style="font-size: 0.9rem; color: #555;">
+      Após escanear o QR Code, aguarde a confirmação do pagamento.
+    </p>
+  `;
+  pixInfoDiv.style.display = 'block';
+  paymentForm.querySelector('button[type="submit"]').disabled = true;
+} else {
             alert("Não foi possível gerar o pagamento via Pix. Tente novamente.");
           }
         })
