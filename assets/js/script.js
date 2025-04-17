@@ -491,7 +491,7 @@ document.addEventListener('DOMContentLoaded', () => {
         display: block;
         margin: 0.5rem auto 10px;
         background-color: orange;
-        color: #fff;
+        color: #32cd32;
         border: none;
         border-radius: 0.25rem;
         padding: 0.5rem 1rem;
@@ -501,7 +501,7 @@ document.addEventListener('DOMContentLoaded', () => {
     >
       COPIAR CHAVE PIX
     </button>
-    <p style="font-size: 0.9rem; color: #5ccd32;">
+    <p style="font-size: 0.9rem; color: #555;">
       Após escanear o QR Code, aguarde a confirmação do pagamento.
     </p>
   `;
