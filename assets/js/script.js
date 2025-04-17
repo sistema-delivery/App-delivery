@@ -417,34 +417,68 @@ ${tx.qr_code}
             fetch(`https://meu-app-sooty.vercel.app/mp-pix/status/${data.transaction_id}`)
   .then(r => r.json())
   .then(({ pago }) => {
-    if (pago) {
-      clearInterval(polling);
-      const pixInfoDiv = document.getElementById('pix-info');
-      pixInfoDiv.innerHTML = `
-        <p style="font-weight:bold; font-size:1.2rem; margin-bottom:10px;">
-          Pagamento confirmado! 🎉
-        </p>
-      `;
-      // *** novo link <a> no lugar do botão ***
-      const href = `https://wa.me/5581997333714?text=${encodeURIComponent(msg)}`;
-      const link = document.createElement('a');
-      link.href = href;
-      link.target = '_blank';
-      link.textContent = 'Ir para WhatsApp';
-      link.style.cssText = `
-        display: block;
-        text-align: center;
-        margin: 1rem auto;
-        padding: 0.75rem 1.5rem;
-        background: #25D366;
-        color: #fff;
-        text-decoration: none;
-        border-radius: 0.25rem;
-        font-size: 1rem;
-      `;
-      pixInfoDiv.appendChild(link);
-    }
-  });
+  if (pago) {
+    clearInterval(polling);
+    const pixInfoDiv = document.getElementById('pix-info');
+    pixInfoDiv.innerHTML = `
+      <p style="font-weight:bold; font-size:1.2rem; margin-bottom:10px;">
+        Pagamento confirmado! 🎉
+      </p>
+    `;
+    // 1) Monta aqui a mensagem completa igual você fazia lá em cima
+    const rua      = document.getElementById('rua').value;
+    const bairro   = document.getElementById('bairro').value;
+    const cidade   = document.getElementById('cidade').value;
+    const numero   = document.getElementById('numero').value;
+    const now      = new Date();
+    const data     = now.toLocaleDateString('pt-BR');
+    const hora     = now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    const bebidas  = pedidoInfo.bebida.length>0
+      ? pedidoInfo.bebida.map(b=>`${b.name} x${b.quantity} – R$ ${(b.price*b.quantity).toFixed(2)}`).join(', ')
+      : 'Nenhuma';
+    const total    = (calcularTotalPedido() + (pedidoInfo.deliveryFee||0)).toFixed(2);
+    const taxa     = pedidoInfo.deliveryFee
+      ? `*Taxa de Entrega:* R$ ${pedidoInfo.deliveryFee}`
+      : '*Taxa de Entrega:* R$ 0,00';
+
+    const msg = `
+*Pedido de Pizza - Pizza Express*
+------------------------------------
+*Pizza:* ${pedidoInfo.nome}
+*Tamanho:* ${pedidoInfo.tamanho}
+*Tipos de Massa:* ${pedidoInfo.crust}
+*Bordas:* Cheddar (${pedidoInfo.borderCheddar}) + Catupiry (${pedidoInfo.borderCatupiry}) + Cream cheese (${pedidoInfo.borderCreamCheese})
+*Quantidade:* ${pedidoInfo.quantidade}
+*Bebida(s):* ${bebidas}
+*Total:* R$ ${total}
+${taxa}
+------------------------------------
+*Endereço:*
+${rua}, ${numero} – ${bairro}, ${cidade}
+
+*Data:* ${data}
+*Hora:* ${hora}
+`.trim();
+
+    // 2) Cria o link <a> com essa msg
+    const link = document.createElement('a');
+    link.href = `https://wa.me/5581997333714?text=${encodeURIComponent(msg)}`;
+    link.target = '_blank';
+    link.textContent = 'Ir para WhatsApp';
+    link.style.cssText = `
+      display: block;
+      text-align: center;
+      margin: 1rem auto;
+      padding: 0.75rem 1.5rem;
+      background: #25D366;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 0.25rem;
+      font-size: 1rem;
+    `;
+    pixInfoDiv.appendChild(link);
+  }
+});
           }, 5000);
 
         })
