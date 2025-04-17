@@ -486,21 +486,21 @@ document.addEventListener('DOMContentLoaded', () => {
       style="width:100%; height:4rem; font-size:0.9rem; padding:0.5rem; box-sizing:border-box;"
     >${transactionData.qr_code}</textarea>
     <button
-      id="copy-payload-button"
-      style="
-        display: block;
-        margin: 0.5rem auto 10px;
-        background-color: orange;
-        color: #32cd32;
-        border: none;
-        border-radius: 0.25rem;
-        padding: 0.5rem 1rem;
-        font-weight: bold;
-        cursor: pointer;
-      "
-    >
-      COPIAR CHAVE PIX
-    </button>
+  id="copy-payload-button"
+  style="
+    display: block;
+    margin: 0.5rem auto 10px;
+    background-color: #32cd32;
+    color: #fff;
+    border: none;
+    border-radius: 0.25rem;
+    padding: 0.5rem 1rem;
+    font-weight: bold;
+    cursor: pointer;
+  "
+>
+  COPIAR CHAVE PIX
+</button>
     <p style="font-size: 0.9rem; color: #555;">
       Após escanear o QR Code, aguarde a confirmação do pagamento.
     </p>
