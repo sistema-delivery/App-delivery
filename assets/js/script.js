@@ -441,24 +441,36 @@ ${tx.qr_code}
   pixInfoDiv.appendChild(btn);
 
   btn.addEventListener('click', () => {
-    // Reúne dados
-    const total = (calcularTotalPedido() + (pedidoInfo.deliveryFee||0)).toFixed(2);
-    const agora = new Date();
-    const data  = agora.toLocaleDateString('pt-BR');
-    const hora  = agora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const bebidasText = pedidoInfo.bebida.length > 0
-      ? pedidoInfo.bebida.map(b => `${b.name} x${b.quantity} – R$ ${(b.price*b.quantity).toFixed(2)}`).join(', ')
-      : 'Nenhuma';
-    const taxa = pedidoInfo.deliveryFee
-      ? `*Taxa de Entrega:* R$ ${pedidoInfo.deliveryFee}`
-      : '*Taxa de Entrega:* R$ 0,00';
-    const rua    = document.getElementById('rua').value;
-    const bairro = document.getElementById('bairro').value;
-    const cidade = document.getElementById('cidade').value;
-    const numero = document.getElementById('numero').value;
+  // 1) Total
+  const total = (calcularTotalPedido() + (pedidoInfo.deliveryFee||0)).toFixed(2);
 
-    // Monta mensagem WhatsApp
-    const msg = `
+  // 2) Data e Hora
+  const now  = new Date();
+  const data = now.toLocaleDateString('pt-BR');
+  const hora = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  // 3) Bebidas em texto
+  const bebidasText = pedidoInfo.bebida.length > 0
+    ? pedidoInfo.bebida.map(b => `${b.name} x${b.quantity} – R$ ${(b.price * b.quantity).toFixed(2)}`)
+        .join(', ')
+    : 'Nenhuma';
+
+  // 4) Taxa de entrega
+  const taxa = pedidoInfo.deliveryFee
+    ? `*Taxa de Entrega:* R$ ${pedidoInfo.deliveryFee}`
+    : '*Taxa de Entrega:* R$ 0,00';
+
+  // 5) Endereço
+  const rua    = document.getElementById('rua').value;
+  const bairro = document.getElementById('bairro').value;
+  const cidade = document.getElementById('cidade').value;
+  const numero = document.getElementById('numero').value;
+
+  // 6) Chave Pix correta
+  const chavePix = tx.qr_code;
+
+  // 7) Monta mensagem
+  const msg = `
 *Pedido de Pizza - Pizza Express*
 ------------------------------------
 *Pizza:* ${pedidoInfo.nome}
@@ -470,7 +482,7 @@ ${tx.qr_code}
 *Total do Pedido:* R$ ${total}
 ------------------------------------
 *Status do Pagamento:* Pagamento confirmado! 🎉
-*Forma de Pagamento:* Pix (Chave: ${transactionData.qr_code})
+*Forma de Pagamento:* Pix (Chave: ${chavePix})
 ${taxa}
 ------------------------------------
 *Endereço de Entrega:*
@@ -484,12 +496,14 @@ ${taxa}
 
 Agradecemos o seu pedido!
 Pizza Express - Sabor que chega rápido!
-    `.trim();
+  `.trim();
 
-    const whatsappNumber = '5581997333714';
-    const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
-    window.open(url, '_blank');
-  });
+  // 8) Abre o WhatsApp
+  window.open(
+    `https://wa.me/5581997333714?text=${encodeURIComponent(msg)}`,
+    '_blank'
+  );
+});
 }
               });
           }, 5000);
