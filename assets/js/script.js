@@ -458,7 +458,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return response.json();
   })
   .then(data => {
-    const transactionId = data.transaction_id;
+    const paymentId = data.payment.id;
     const qrBase64     = data.pix.transaction_data.qr_code_base64;
     const payload      = data.pix.transaction_data.qr_code;
     const pixInfoDiv   = document.getElementById('pix-info');
