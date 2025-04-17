@@ -526,53 +526,54 @@ document.addEventListener('DOMContentLoaded', () => {
     // +++ A PARTIR DAQUI, ADICIONAMOS O POLLING +++
     const transactionId = data.transaction_id;
     const polling = setInterval(() => {
-      fetch(`https://meu-app-sooty.vercel.app/mp-pix/status/${transactionId}`)
-        .then(r2 => r2.json())
-        .then(({ pago }) => {
-          if (pago) {
-            clearInterval(polling);
-            // Monta mensagem resumida (ajuste campos se quiser)
-            const pixInfoDiv = document.getElementById('pix-info');
-  pixInfoDiv.innerHTML = `
-    <p style="font-weight:bold; font-size:1.2rem; margin-bottom:10px;">
-      Pagamento confirmado! 🎉
-    </p>
-  `;
+  fetch(`https://meu-app-sooty.vercel.app/mp-pix/status/${transactionId}`)
+    .then(r2 => r2.json())
+    .then(({ pago }) => {
+      if (pago) {
+        clearInterval(polling);
 
-  // 2) Cria o botão “Ir para WhatsApp”
-  const btn = document.createElement('button');
-  btn.id = 'whatsapp-button';
-  btn.textContent = 'Ir para WhatsApp';
-  btn.style = `
-    display:block;
-    margin:1rem auto;
-    padding:0.75rem 1.5rem;
-    background:#25D366;
-    color:#fff;
-    border:none;
-    border-radius:0.25rem;
-    font-size:1rem;
-    cursor:pointer;
-  `;
-  pixInfoDiv.appendChild(btn);
+        const pixInfoDiv = document.getElementById('pix-info');
+        pixInfoDiv.innerHTML = `
+          <p style="font-weight:bold; font-size:1.2rem; margin-bottom:10px;">
+            Pagamento confirmado! 🎉
+          </p>
+        `;
 
-  // 3) Quando clicarem, aí sim disparar o WhatsApp
-  btn.addEventListener('click', () => {
-    const msgLines = [
-      `*Pedido de Pizza - Pizza Express*`,
-      `*Pizza:* ${pedidoInfo.nome}`,
-      `*Tamanho:* ${pedidoInfo.tamanho}`,
-      `*Massa:* ${pedidoInfo.crust}`,
-      `*Total:* R$ ${recalculatedTotal.toFixed(2)}`,
-      `*Endereço:* ${pedidoInfo.rua}, ${pedidoInfo.numero} - ${pedidoInfo.bairro}, ${pedidoInfo.cidade}`,
-      `\nObrigado pelo seu pedido!`
-    ];
-            const texto = encodeURIComponent(msgLines.join('\n'));
-            window.open(`https://wa.me/5581997333714?text=${texto}`, '_blank');
-          }
-        })
-        .catch(console.error);
-    }, 5000);
+        // Cria o botão “Ir para WhatsApp”
+        const btn = document.createElement('button');
+        btn.id = 'whatsapp-button';
+        btn.textContent = 'Ir para WhatsApp';
+        btn.style.cssText = `
+          display: block;
+          margin: 1rem auto;
+          padding: 0.75rem 1.5rem;
+          background: #25D366;
+          color: #fff;
+          border: none;
+          border-radius: 0.25rem;
+          font-size: 1rem;
+          cursor: pointer;
+        `;
+        pixInfoDiv.appendChild(btn);
+
+        // Quando clicarem, dispara o WhatsApp
+        btn.addEventListener('click', () => {
+          const msgLines = [
+            `*Pedido de Pizza - Pizza Express*`,
+            `*Pizza:* ${pedidoInfo.nome}`,
+            `*Tamanho:* ${pedidoInfo.tamanho}`,
+            `*Massa:* ${pedidoInfo.crust}`,
+            `*Total:* R$ ${recalculatedTotal.toFixed(2)}`,
+            `*Endereço:* ${pedidoInfo.rua}, ${pedidoInfo.numero} - ${pedidoInfo.bairro}, ${pedidoInfo.cidade}`,
+            `\nObrigado pelo seu pedido!`
+          ];
+          const texto = encodeURIComponent(msgLines.join('\n'));
+          window.open(`https://wa.me/5581997333714?text=${texto}`, '_blank');
+        });
+      }
+    })
+    .catch(console.error);
+}, 5000);
     // +++ FIM DO POLLING +++
   })
   .catch(err => {
