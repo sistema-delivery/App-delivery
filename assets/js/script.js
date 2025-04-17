@@ -426,21 +426,22 @@ ${tx.qr_code}
   `;
 
   const btn = document.createElement('button');
-  btn.textContent = 'Ir para WhatsApp';
-  btn.style = `
-    display: block;
-    margin: 1rem auto;
-    padding: 0.75rem 1.5rem;
-    background: #25D366;
-    color: #fff;
-    border: none;
-    border-radius: 0.25rem;
-    font-size: 1rem;
-    cursor: pointer;
-  `;
-  pixInfoDiv.appendChild(btn);
+btn.type = 'button';               // <-- impede que seja submit
+btn.textContent = 'Ir para WhatsApp';
+btn.style = `
+  display: block;
+  margin: 1rem auto;
+  padding: 0.75rem 1.5rem;
+  background: #25D366;
+  color: #fff;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  cursor: pointer;
+`;
+pixInfoDiv.appendChild(btn);
 
-  btn.addEventListener('click', () => {
+btn.addEventListener('click', () => {
   // 1) Total
   const total = (calcularTotalPedido() + (pedidoInfo.deliveryFee||0)).toFixed(2);
 
@@ -499,10 +500,7 @@ Pizza Express - Sabor que chega rápido!
   `.trim();
 
   // 8) Abre o WhatsApp
-  window.open(
-    `https://wa.me/5581997333714?text=${encodeURIComponent(msg)}`,
-    '_blank'
-  );
+  window.open(`https://wa.me/5581997333714?text=${encodeURIComponent(msg)}`, '_blank');
 });
 }
               });
