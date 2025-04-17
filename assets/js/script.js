@@ -466,34 +466,47 @@ document.addEventListener('DOMContentLoaded', () => {
           if (transactionData && transactionData.qr_code_base64) {
   const pixInfoDiv = document.getElementById('pix-info');
   pixInfoDiv.innerHTML = `
-    <p style="font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
-      Pagamento via Pix Gerado com Sucesso!
-    </p>
-    <p style="margin-bottom: 10px;">
-      Utilize o QR Code abaixo para efetuar o pagamento no valor de R$ ${recalculatedTotal.toFixed(2)}
-    </p>
-    <img
-      src="data:image/png;base64,${transactionData.qr_code_base64}"
-      alt="QR Code Pix"
-      style="max-width: 200px; display: block; margin: 0 auto 10px;"
-    >
-    <!-- campo oculto para armazenar o Base64 que será copiado -->
-    <input
-      type="text"
-      id="pix-key-text"
-      value="${transactionData.qr_code_base64}"
-      readonly
-      style="opacity:0; position:absolute; left:-9999px;"
-    >
-    <!-- nosso botão de copiar -->
-    <button id="copy-button" style="display:block; margin: 0 auto 10px;">
-      Copiar Código Pix
-    </button>
-    <p style="font-size: 0.9rem; color: #555;">
-      Após escanear o QR Code, aguarde a confirmação do pagamento.
-    </p>
-  `;
-  pixInfoDiv.style.display = 'block';
+  <p style="font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
+    Pagamento via Pix Gerado com Sucesso!
+  </p>
+  <p style="margin-bottom: 10px;">
+    Utilize o QR Code abaixo para efetuar o pagamento no valor de R$ ${recalculatedTotal.toFixed(2)}
+  </p>
+  <img
+    src="data:image/png;base64,${transactionData.qr_code_base64}"
+    alt="QR Code Pix"
+    style="max-width: 200px; display: block; margin: 0 auto 10px;"
+  >
+  <!-- campo oculto para armazenar o Base64 que será copiado -->
+  <input
+    type="text"
+    id="pix-key-text"
+    value="${transactionData.qr_code_base64}"
+    readonly
+    style="opacity:0; position:absolute; left:-9999px;"
+  >
+  <!-- nosso botão de copiar imagem -->
+  <button id="copy-button" style="display:block; margin: 0 auto 10px;">
+    Copiar Código Pix (Base64)
+  </button>
+
+  <!-- novo campo visível com o payload do Pix -->
+  <p style="font-weight: bold; margin-top: 1rem;">Chave/Payload Pix:</p>
+  <textarea
+    id="pix-payload-text"
+    readonly
+    style="width:100%; height:4rem; font-size:0.9rem; padding:0.5rem; box-sizing:border-box;"
+  >${transactionData.qr_code}</textarea>
+  <!-- botão pra copiar o payload direto -->
+  <button id="copy-payload-button" style="display:block; margin: 0.5rem auto 10px;">
+    Copiar Payload Pix
+  </button>
+
+  <p style="font-size: 0.9rem; color: #555;">
+    Após escanear o QR Code, aguarde a confirmação do pagamento.
+  </p>
+`;
+pixInfoDiv.style.display = 'block';
   paymentForm.querySelector('button[type="submit"]').disabled = true;
 } else {
             alert("Não foi possível gerar o pagamento via Pix. Tente novamente.");
@@ -552,18 +565,25 @@ Pizza Express - Sabor que chega rápido!`.trim();
   }
 
   const copyButton = document.getElementById('copy-button');
-  if (copyButton) {
-    copyButton.addEventListener('click', () => {
-      const pixKey = document.getElementById('pix-key-text').textContent;
-      navigator.clipboard.writeText(pixKey)
-        .then(() => {
-          alert('Chave Pix copiada!');
-        })
-        .catch(err => {
-          console.error('Erro ao copiar a chave Pix:', err);
-        });
-    });
-  }
+if (copyButton) {
+  copyButton.addEventListener('click', () => {
+    const pixKey = document.getElementById('pix-key-text').value;
+    navigator.clipboard.writeText(pixKey)
+      .then(() => alert('Código Pix (Base64) copiado!'))
+      .catch(err => console.error('Erro ao copiar:', err));
+  });
+}
+
+// novo, para copiar o payload/texto do Pix
+const copyPayloadButton = document.getElementById('copy-payload-button');
+if (copyPayloadButton) {
+  copyPayloadButton.addEventListener('click', () => {
+    const payload = document.getElementById('pix-payload-text').value;
+    navigator.clipboard.writeText(payload)
+      .then(() => alert('Payload Pix copiado!'))
+      .catch(err => console.error('Erro ao copiar payload:', err));
+  });
+}
 
   // ========================================
   // Scroll horizontal infinito para a seção "As Mais Vendidas"
