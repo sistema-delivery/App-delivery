@@ -461,47 +461,70 @@ document.addEventListener('DOMContentLoaded', () => {
       : data.transaction_data;
 
     if (tx && tx.qr_code_base64 && tx.qr_code) {
-      const pixInfoDiv = document.getElementById('pix-info');
-      pixInfoDiv.innerHTML = `
-        <p style="font-weight:bold; font-size:1.1rem; margin-bottom:0.5rem;">
-          Pagamento via Pix (R$ ${recalculatedTotal.toFixed(2)}) gerado com sucesso!
-        </p>
-        <img 
-          src="data:image/png;base64,${tx.qr_code_base64}" 
-          alt="QR Code Pix" 
-          style="max-width:200px; display:block; margin:0 auto 1rem;"
-        />
-        <textarea 
-          id="raw-code" 
-          readonly 
-          style="width:100%; height:4rem; font-family:monospace; padding:0.5rem;"
-        >${tx.qr_code}</textarea>
-        <button 
-          type="button" 
-          id="copy-pix-code" 
-          style="margin-top:0.5rem; padding:0.6rem; width:100%;"
-        >Copiar código PIX</button>
-      `;
-      pixInfoDiv.style.display = 'block';
-      paymentForm.querySelector('button[type="submit"]').disabled = true;
+paymentForm.addEventListener('submit', function (e) {
+  e.preventDefault();
 
-      // Evento de cópia
-      document.getElementById('copy-pix-code').addEventListener('click', () => {
-        const raw = document.getElementById('raw-code');
-        raw.select();
-        document.execCommand('copy');
-        alert('Código PIX copiado para a área de transferência!');
-      });
-    } else {
-      alert("Não foi possível gerar o pagamento via Pix. Tente novamente.");
-    }
-  })
-  .catch(err => {
-    console.error("Erro ao processar pagamento via Pix:", err);
-    alert("Erro ao criar pagamento via Pix. Tente novamente.");
-  });
-}
+  const metodo = document.querySelector('input[name="payment-method"]:checked').value;
+
+  if (metodo === 'Pix') {
+    // Recalcula o total do pedido (itens + taxa de entrega)
+    let recalculatedTotal = calcularTotalPedido() + (pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0);
+
+    fetch('https://meu-app-sooty.vercel.app/mp-pix', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ valor: Number(recalculatedTotal.toFixed(2)) })
+    })
+    .then(response => {
+      if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+      return response.json();
+    })
+    .then(data => {
+      let tx = (data.pix && data.pix.transaction_data)
+        ? data.pix.transaction_data
+        : data.transaction_data;
+
+      if (tx && tx.qr_code_base64 && tx.qr_code) {
+        const pixInfoDiv = document.getElementById('pix-info');
+        pixInfoDiv.innerHTML = `
+          <p style="font-weight:bold; font-size:1.1rem; margin-bottom:0.5rem;">
+            Pagamento via Pix (R$ ${recalculatedTotal.toFixed(2)}) gerado com sucesso!
+          </p>
+          <img 
+            src="data:image/png;base64,${tx.qr_code_base64}" 
+            alt="QR Code Pix" 
+            style="max-width:200px; display:block; margin:0 auto 1rem;"
+          />
+          <textarea 
+            id="raw-code" 
+            readonly 
+            style="width:100%; height:4rem; font-family:monospace; padding:0.5rem;"
+          >${tx.qr_code}</textarea>
+          <button 
+            type="button" 
+            id="copy-pix-code" 
+            style="margin-top:0.5rem; padding:0.6rem; width:100%;"
+          >Copiar código PIX</button>
+        `;
+        pixInfoDiv.style.display = 'block';
+        paymentForm.querySelector('button[type="submit"]').disabled = true;
+
+        document.getElementById('copy-pix-code').addEventListener('click', () => {
+          const raw = document.getElementById('raw-code');
+          raw.select();
+          document.execCommand('copy');
+          alert('Código PIX copiado para a área de transferência!');
+        });
       } else {
+        alert("Não foi possível gerar o pagamento via Pix. Tente novamente.");
+      }
+    })
+    .catch(err => {
+      console.error("Erro ao processar pagamento via Pix:", err);
+      alert("Erro ao criar pagamento via Pix. Tente novamente.");
+    });
+
+  } else {
         const status = 'Pagamento na entrega';
         const chavePix = '708.276.084-11';
         const dataAtual = new Date();
