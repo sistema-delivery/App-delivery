@@ -141,7 +141,7 @@ const storeData = {
       "Centro": 4.00,
       "Nossa Senhora da Conceição": 5.50,
       "Engenho Maranguape": 6.50,
-      "Jardim Paulista": 0.50,
+      "Jardim Paulista": 0.09,
       "Jardim Paulista Alto": 6.50,
       "Pau Amarelo": 7.00,
       "Conceição": 5.00,
