@@ -418,60 +418,33 @@ ${tx.qr_code}
               .then(r=>r.json())
               .then(({pago})=>{
                 if (pago) {
-  clearInterval(polling);
-  pixInfoDiv.innerHTML = `
-    <p style="font-weight:bold; font-size:1.2rem; margin-bottom:10px;">
-      Pagamento confirmado! 🎉
-    </p>
-  `;
-
-  const btn = document.createElement('button');
-btn.type = 'button';               // <-- impede que seja submit
-btn.textContent = 'Ir para WhatsApp';
-btn.style = `
-  display: block;
-  margin: 1rem auto;
-  padding: 0.75rem 1.5rem;
-  background: #25D366;
-  color: #fff;
-  border: none;
-  border-radius: 0.25rem;
-  font-size: 1rem;
-  cursor: pointer;
-`;
-pixInfoDiv.appendChild(btn);
-
-btn.addEventListener('click', () => {
-  // 1) Total
-  const total = (calcularTotalPedido() + (pedidoInfo.deliveryFee||0)).toFixed(2);
-
-  // 2) Data e Hora
-  const now  = new Date();
-  const data = now.toLocaleDateString('pt-BR');
-  const hora = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-  // 3) Bebidas em texto
-  const bebidasText = pedidoInfo.bebida.length > 0
-    ? pedidoInfo.bebida.map(b => `${b.name} x${b.quantity} – R$ ${(b.price * b.quantity).toFixed(2)}`)
-        .join(', ')
-    : 'Nenhuma';
-
-  // 4) Taxa de entrega
-  const taxa = pedidoInfo.deliveryFee
-    ? `*Taxa de Entrega:* R$ ${pedidoInfo.deliveryFee}`
-    : '*Taxa de Entrega:* R$ 0,00';
-
-  // 5) Endereço
-  const rua    = document.getElementById('rua').value;
-  const bairro = document.getElementById('bairro').value;
-  const cidade = document.getElementById('cidade').value;
-  const numero = document.getElementById('numero').value;
-
-  // 6) Chave Pix correta
-  const chavePix = tx.qr_code;
-
-  // 7) Monta mensagem
-  const msg = `
+                  clearInterval(polling);
+                  pixInfoDiv.innerHTML = `<p style="font-weight:bold; font-size:1.2rem;">
+                    Pagamento confirmado! 🎉
+                  </p>`;
+                  const btn = document.createElement('button');
+                  btn.textContent = 'Ir para WhatsApp';
+                  btn.style = 'display:block;margin:1rem auto;padding:0.75rem 1.5rem;background:#25D366;color:#fff;border:none;border-radius:0.25rem;cursor:pointer;';
+                  pixInfoDiv.appendChild(btn);
+                  btn.addEventListener('click', () => {
+                    // Dados de endereço
+                    const rua    = document.getElementById('rua').value;
+                    const bairro = document.getElementById('bairro').value;
+                    const cidade = document.getElementById('cidade').value;
+                    const numero = document.getElementById('numero').value;
+                    // Data/Hora
+                    const now   = new Date();
+                    const data  = now.toLocaleDateString('pt-BR');
+                    const hora  = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+                    // Bebidas
+                    const bebidasText = pedidoInfo.bebida.length > 0
+                      ? pedidoInfo.bebida.map(b=>`${b.name} x${b.quantity} – R$ ${(b.price*b.quantity).toFixed(2)}`).join(', ')
+                      : 'Nenhuma';
+                    const taxa = pedidoInfo.deliveryFee
+                      ? `*Taxa de Entrega:* R$ ${pedidoInfo.deliveryFee}`
+                      : '*Taxa de Entrega:* R$ 0,00';
+                    // Mensagem
+                    const msg = `
 *Pedido de Pizza - Pizza Express*
 ------------------------------------
 *Pizza:* ${pedidoInfo.nome}
@@ -480,10 +453,10 @@ btn.addEventListener('click', () => {
 *Bordas:* Cheddar (${pedidoInfo.borderCheddar} un.) + Catupiry (${pedidoInfo.borderCatupiry} un.) + Cream cheese (${pedidoInfo.borderCreamCheese} un.)
 *Quantidade:* ${pedidoInfo.quantidade} unidade(s)
 *Bebida(s):* ${bebidasText}
-*Total do Pedido:* R$ ${total}
+*Total do Pedido:* R$ ${totalPix.toFixed(2)}
 ------------------------------------
 *Status do Pagamento:* Pagamento confirmado! 🎉
-*Forma de Pagamento:* Pix (Chave: ${chavePix})
+*Forma de Pagamento:* Pix (Chave: ${tx.qr_code})
 ${taxa}
 ------------------------------------
 *Endereço de Entrega:*
@@ -497,67 +470,10 @@ ${taxa}
 
 Agradecemos o seu pedido!
 Pizza Express - Sabor que chega rápido!
-  `.trim();
-
-  // 8) Abre o WhatsApp
-  window.open(`https://wa.me/5581997333714?text=${encodeURIComponent(msg)}`, '_blank');
-const polling = setInterval(() => {
-            fetch(`https://meu-app-sooty.vercel.app/mp-pix/status/${data.transaction_id}`)
-              .then(r => r.json())
-              .then(({ pago }) => {
-                if (!pago) return;
-                clearInterval(polling);
-
-                const div = document.getElementById('pix-info');
-                div.innerHTML = `<p style="font-weight:bold; font-size:1.2rem; margin-bottom:10px;">Pagamento confirmado! 🎉</p>`;
-
-                const mensagemWhats = `
-*Pedido de Pizza - Pizza Express*
-------------------------------------
-*Pizza:* ${pedidoInfo.nome}
-*Tamanho:* ${pedidoInfo.tamanho}
-*Tipos de Massa:* ${pedidoInfo.crust}
-*Bordas:* Cheddar (${pedidoInfo.borderCheddar} un.) + Catupiry (${pedidoInfo.borderCatupiry} un.) + Cream cheese (${pedidoInfo.borderCreamCheese} un.)
-*Quantidade:* ${pedidoInfo.quantidade} unidade(s)
-*Bebida(s):* ${pedidoInfo.bebida.length > 0
-                  ? pedidoInfo.bebida.map(b => \`\${b.name} x\${b.quantity} – R$ \${(b.price * b.quantity).toFixed(2)}\`).join(', ')
-                  : 'Nenhuma'}
-*Total do Pedido:* R$ ${(calcularTotalPedido() + (pedidoInfo.deliveryFee || 0)).toFixed(2)}
-------------------------------------
-*Status do Pagamento:* Pagamento confirmado! 🎉
-*Forma de Pagamento:* Pix (Chave: ${tx.qr_code})
-*Taxa de Entrega:* R$ ${pedidoInfo.deliveryFee.toFixed(2)}
-------------------------------------
-*Endereço de Entrega:*
-*Rua:* ${document.getElementById('rua').value}
-*Bairro:* ${document.getElementById('bairro').value}
-*Cidade:* ${document.getElementById('cidade').value}
-*Número:* ${document.getElementById('numero').value}
-
-*Data do Pedido:* ${new Date().toLocaleDateString('pt-BR')}
-*Hora:* ${new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' })}
-
-Agradecemos o seu pedido!
-Pizza Express - Sabor que chega rápido!
-                `.trim();
-
-                const href = `https://wa.me/5581997333714?text=${encodeURIComponent(mensagemWhats)}`;
-                const link = document.createElement('a');
-                link.href = href;
-                link.target = '_blank';
-                link.textContent = 'Ir para WhatsApp';
-                link.style.cssText = `
-                  display: block;
-                  text-align: center;
-                  margin: 1rem auto;
-                  padding: 0.75rem 1.5rem;
-                  background: #25D366;
-                  color: #fff;
-                  text-decoration: none;
-                  border-radius: 0.25rem;
-                  font-size: 1rem;
-                `;
-                div.appendChild(link);
+                    `.trim();
+                    window.open(`https://wa.me/5581997333714?text=${encodeURIComponent(msg)}`, '_blank');
+                  });
+                }
               });
           }, 5000);
 
