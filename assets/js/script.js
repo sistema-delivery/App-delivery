@@ -530,77 +530,30 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(r2 => r2.json())
         .then(({ pago }) => {
           if (pago) {
-  clearInterval(polling);
-
-  // Limpa e informa confirmação
+            clearInterval(polling);
+            // Monta mensagem resumida (ajuste campos se quiser)
+            const pixInfoDiv = document.getElementById('pix-info');
   pixInfoDiv.innerHTML = `
     <p style="font-weight:bold; font-size:1.2rem; margin-bottom:10px;">
       Pagamento confirmado! 🎉
     </p>
   `;
 
-  // Cria o botão
+  // 2) Cria o botão “Ir para WhatsApp”
   const btn = document.createElement('button');
   btn.id = 'whatsapp-button';
   btn.textContent = 'Ir para WhatsApp';
   btn.style = `
-    display: block;
-    margin: 1rem auto;
-    padding: 0.75rem 1.5rem;
-    background: #25D366;
-    color: #fff;
-    border: none;
-    border-radius: 0.25rem;
-    font-size: 1rem;
-    cursor: pointer;
+    display:block;
+    margin:1rem auto;
+    padding:0.75rem 1.5rem;
+    background:#25D366;
+    color:#fff;
+    border:none;
+    border-radius:0.25rem;
+    font-size:1rem;
+    cursor:pointer;
   `;
-
-  // Quando clicado, abre o WhatsApp com a mensagem já montada
-  btn.addEventListener('click', () => {
-    // Recria ou reutiliza a mensagem completa aqui
-    const agora = new Date();
-    const data  = agora.toLocaleDateString('pt-BR');
-    const hora  = agora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const bebidasText = pedidoInfo.bebida.length > 0
-      ? pedidoInfo.bebida.map(b => `${b.name} x${b.quantity} – R$ ${(b.price * b.quantity).toFixed(2)}`).join(', ')
-      : 'Nenhuma';
-    const taxa = pedidoInfo.deliveryFee
-      ? `*Taxa de Entrega:* R$ ${pedidoInfo.deliveryFee}`
-      : '*Taxa de Entrega:* R$ 0,00';
-    
-    const msg = `
-*Pedido de Pizza - Pizza Express*
-------------------------------------
-*Pizza:* ${pedidoInfo.nome}
-*Tamanho:* ${pedidoInfo.tamanho}
-*Tipos de Massa:* ${pedidoInfo.crust}
-*Bordas:* Cheddar (${pedidoInfo.borderCheddar} un.) + Catupiry (${pedidoInfo.borderCatupiry} un.) + Cream cheese (${pedidoInfo.borderCreamCheese} un.)
-*Quantidade:* ${pedidoInfo.quantidade} unidade(s)
-*Bebida(s):* ${bebidasText}
-*Total do Pedido:* R$ ${(calcularTotalPedido() + (pedidoInfo.deliveryFee||0)).toFixed(2)}
-------------------------------------
-*Status do Pagamento:* Pagamento confirmado! 🎉
-*Forma de Pagamento:* Pix (Chave: ${tx.qr_code})
-${taxa}
-------------------------------------
-*Endereço de Entrega:*
-*Rua:* ${document.getElementById('rua').value}
-*Bairro:* ${document.getElementById('bairro').value}
-*Cidade:* ${document.getElementById('cidade').value}
-*Número:* ${document.getElementById('numero').value}
-
-*Data do Pedido:* ${data}
-*Hora:* ${hora}
-
-Agradecemos o seu pedido!
-Pizza Express - Sabor que chega rápido!
-    `.trim();
-
-    const whatsappNumber = '5581997333714';
-    const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
-    window.open(whatsappURL, '_blank');
-  });
-
   pixInfoDiv.appendChild(btn);
 
   // 3) Quando clicarem, aí sim disparar o WhatsApp
