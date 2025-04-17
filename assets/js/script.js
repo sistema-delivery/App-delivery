@@ -442,89 +442,117 @@ document.addEventListener('DOMContentLoaded', () => {
       const metodo = document.querySelector('input[name="payment-method"]:checked').value;
       
       if (metodo === 'Pix') {
-        // Recalcula o total do pedido (itens + taxa de entrega)
-        let recalculatedTotal = calcularTotalPedido() + (pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0);
-        console.log('Recalculated total:', recalculatedTotal);
-        
-        // Envia o valor formatado com duas casas decimais convertido para número
-        fetch('https://meu-app-sooty.vercel.app/mp-pix', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ valor: Number(recalculatedTotal.toFixed(2)) })
-        })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`Erro HTTP: ${response.status}`);
-          }
-          return response.json();
-        })
-        .then(data => {
-          console.log("Resposta da API PIX:", data);
-          let transactionData = (data.pix && data.pix.transaction_data)
-            ? data.pix.transaction_data
-            : data.transaction_data;
-          if (transactionData && transactionData.qr_code_base64) {
-  const pixInfoDiv = document.getElementById('pix-info');
-  pixInfoDiv.innerHTML = `
-    <p style="font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
-      Pagamento via Pix Gerado com Sucesso!
-    </p>
-    <p style="margin-bottom: 10px;">
-      Utilize o QR Code abaixo para efetuar o pagamento no valor de R$ ${recalculatedTotal.toFixed(2)}
-    </p>
-    <img
-      src="data:image/png;base64,${transactionData.qr_code_base64}"
-      alt="QR Code Pix"
-      style="max-width: 200px; display: block; margin: 0 auto 10px;"
-    >
-    <p style="font-weight: bold; margin-top: 1rem;">
-      OU COPIE E COLE NO SEU BANCO
-    </p>
-    <textarea
-      id="pix-payload-text"
-      readonly
-      style="width:100%; height:4rem; font-size:0.9rem; padding:0.5rem; box-sizing:border-box;"
-    >${transactionData.qr_code}</textarea>
-    <button
-  id="copy-payload-button"
-  style="
-    display: block;
-    margin: 0.5rem auto 10px;
-    background-color: #32cd32;
-    color: #fff;
-    border: none;
-    border-radius: 0.25rem;
-    padding: 0.5rem 1rem;
-    font-weight: bold;
-    cursor: pointer;
-  "
->
-  COPIAR CHAVE PIX
-</button>
-    <p style="font-size: 0.9rem; color: #555;">
-      Após escanear o QR Code, aguarde a confirmação do pagamento.
-    </p>
-  `;
-  pixInfoDiv.style.display = 'block';
-  paymentForm.querySelector('button[type="submit"]').disabled = true;
+  // Recalcula o total do pedido (itens + taxa de entrega)
+  let recalculatedTotal = calcularTotalPedido() + (pedidoInfo.deliveryFee ? parseFloat(pedidoInfo.deliveryFee) : 0);
+  console.log('Recalculated total:', recalculatedTotal);
+  
+  // Envia o valor formatado com duas casas decimais convertido para número
+  fetch('https://meu-app-sooty.vercel.app/mp-pix', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ valor: Number(recalculatedTotal.toFixed(2)) })
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`Erro HTTP: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log("Resposta da API PIX:", data);
 
-  // agora que o botão existe no DOM, vinculamos o copy
-  const copyPayloadButton = document.getElementById('copy-payload-button');
-  copyPayloadButton.addEventListener('click', () => {
-    const payload = document.getElementById('pix-payload-text').value;
-    navigator.clipboard.writeText(payload)
-      .then(() => alert('Chave Pix copiada!'))
-      .catch(err => console.error('Erro ao copiar payload:', err));
-  });
-} else {
-            alert("Não foi possível gerar o pagamento via Pix. Tente novamente.");
+    // --- SEU CÓDIGO DE COPIA & COLA EXISTENTE ---
+    let transactionData = (data.pix && data.pix.transaction_data)
+      ? data.pix.transaction_data
+      : data.transaction_data;
+    if (transactionData && transactionData.qr_code_base64) {
+      const pixInfoDiv = document.getElementById('pix-info');
+      pixInfoDiv.innerHTML = `
+        <p style="font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">
+          Pagamento via Pix Gerado com Sucesso!
+        </p>
+        <p style="margin-bottom: 10px;">
+          Utilize o QR Code abaixo para efetuar o pagamento no valor de R$ ${recalculatedTotal.toFixed(2)}
+        </p>
+        <img
+          src="data:image/png;base64,${transactionData.qr_code_base64}"
+          alt="QR Code Pix"
+          style="max-width: 200px; display: block; margin: 0 auto 10px;"
+        >
+        <p style="font-weight: bold; margin-top: 1rem;">
+          OU COPIE E COLE NO SEU BANCO
+        </p>
+        <textarea
+          id="pix-payload-text"
+          readonly
+          style="width:100%; height:4rem; font-size:0.9rem; padding:0.5rem; box-sizing:border-box;"
+        >${transactionData.qr_code}</textarea>
+        <button
+          id="copy-payload-button"
+          style="
+            display: block;
+            margin: 0.5rem auto 10px;
+            background-color: #32cd32;
+            color: #fff;
+            border: none;
+            border-radius: 0.25rem;
+            padding: 0.5rem 1rem;
+            font-weight: bold;
+            cursor: pointer;
+          "
+        >
+          COPIAR CHAVE PIX
+        </button>
+        <p style="font-size: 0.9rem; color: #555;">
+          Após escanear o QR Code, aguarde a confirmação do pagamento.
+        </p>
+      `;
+      pixInfoDiv.style.display = 'block';
+      paymentForm.querySelector('button[type="submit"]').disabled = true;
+
+      const copyPayloadButton = document.getElementById('copy-payload-button');
+      copyPayloadButton.addEventListener('click', () => {
+        const payload = document.getElementById('pix-payload-text').value;
+        navigator.clipboard.writeText(payload)
+          .then(() => alert('Chave Pix copiada!'))
+          .catch(err => console.error('Erro ao copiar payload:', err));
+      });
+    } else {
+      alert("Não foi possível gerar o pagamento via Pix. Tente novamente.");
+      return;
+    }
+    // --- FIM DO CÓDIGO DE COPIA & COLA ---
+
+    // +++ A PARTIR DAQUI, ADICIONAMOS O POLLING +++
+    const transactionId = data.transaction_id;
+    const polling = setInterval(() => {
+      fetch(`https://meu-app-sooty.vercel.app/mp-pix/status/${transactionId}`)
+        .then(r2 => r2.json())
+        .then(({ pago }) => {
+          if (pago) {
+            clearInterval(polling);
+            // Monta mensagem resumida (ajuste campos se quiser)
+            const msgLines = [
+              `*Pedido de Pizza - Pizza Express*`,
+              `*Pizza:* ${pedidoInfo.nome}`,
+              `*Tamanho:* ${pedidoInfo.tamanho}`,
+              `*Massa:* ${pedidoInfo.crust}`,
+              `*Total:* R$ ${recalculatedTotal.toFixed(2)}`,
+              `*Endereço:* ${pedidoInfo.rua}, ${pedidoInfo.numero} - ${pedidoInfo.bairro}, ${pedidoInfo.cidade}`,
+              `\nObrigado pelo seu pedido!`
+            ];
+            const texto = encodeURIComponent(msgLines.join('\n'));
+            window.open(`https://wa.me/5581997333714?text=${texto}`, '_blank');
           }
         })
-        .catch(err => {
-          console.error("Erro ao processar pagamento via Pix:", err);
-          alert("Erro ao criar pagamento via Pix. Tente novamente.");
-        });
-      } else {
+        .catch(console.error);
+    }, 5000);
+    // +++ FIM DO POLLING +++
+  })
+  .catch(err => {
+    console.error("Erro ao processar pagamento via Pix:", err);
+    alert("Erro ao criar pagamento via Pix. Tente novamente.");
+  });
         const status = 'Pagamento na entrega';
         const chavePix = '708.276.084-11';
         const dataAtual = new Date();
