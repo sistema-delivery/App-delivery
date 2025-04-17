@@ -529,7 +529,7 @@ document.addEventListener('DOMContentLoaded', () => {
       fetch(`https://meu-app-sooty.vercel.app/mp-pix/status/${transactionId}`)
         .then(r2 => r2.json())
         .then(({ pago }) => {
-          if (pago) {
+if (pago) {
   clearInterval(polling);
 
   // 1) Limpa o pix-info e avisa que o pagamento foi confirmado
@@ -571,7 +571,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const texto = encodeURIComponent(msgLines.join('\n'));
     window.open(`https://wa.me/5581997333714?text=${texto}`, '_blank');
   });
-  }
+}
 
   // ========================================
   // Scroll horizontal infinito para a seção "As Mais Vendidas"
