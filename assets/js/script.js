@@ -469,6 +469,9 @@ pedidoInfo.bebida = bebidas.length > 0 ? bebidas : "Nenhuma bebida selecionada";
                 document.getElementById('pix-msg').innerHTML = `
                   <p style="font-weight:bold; font-size:1.2rem;">Pagamento confirmado! 🎉</p>
                 `;
+
+                console.log(pedidoInfo);
+
                 pedidoInfo.total = totalPix;
                 const waMsg = buildWhatsAppMessage(pedidoInfo, 'Pix', 'Pagamento confirmado! 🎉');
                 const btnWa = document.getElementById('btn-whatsapp');
