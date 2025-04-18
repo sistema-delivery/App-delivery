@@ -310,7 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (orderForm) {
     orderForm.addEventListener('submit', function (e) {
       e.preventDefault();
-      pedidoInfo.nome = document.getElementById('modal-pizza-name').textContent.trim() || "Nome da pizza não selecionado";
+      pedidoInfo.nome = document.getElementById('modal-pizza-name').textContent.trim() || "Pizza não selecionada";
       pedidoInfo.tamanho = document.querySelector('input[name="pizza-size"]:checked')?.value || "Tamanho não selecionado";
       pedidoInfo.crust = document.querySelector('select[name="pizza-crust"]').value || "Massa não selecionada";
       pedidoInfo.quantidade = parseInt(document.getElementById('modal-pizza-quantity').value) || 1;  // Default para 1
@@ -318,17 +318,18 @@ document.addEventListener('DOMContentLoaded', () => {
       pedidoInfo.borderCatupiry = parseInt(document.getElementById('border-catupiry').value) || 0;
       pedidoInfo.borderCreamCheese = parseInt(document.getElementById('border-cream-cheese').value) || 0;
 
-      const bebidas = [];
-      document.querySelectorAll('.bebida-item').forEach(item => {
-        const name  = item.querySelector('p').textContent;
-        let price   = parsePrice(item.querySelector('.price').textContent.replace('R$', '').trim());
-        if (window.storeData && window.storeData.beverages && window.storeData.beverages[name] !== undefined) {
-          price = window.storeData.beverages[name];
-        }
-        const qty = parseInt(item.querySelector('.bebida-quantity').value) || 0;
-        if (qty > 0) bebidas.push({ name, price, quantity: qty });
-      });
-      pedidoInfo.bebida = bebidas;
+// Coleta as bebidas
+const bebidas = [];
+document.querySelectorAll('.bebida-item').forEach(item => {
+  const name = item.querySelector('p').textContent.trim();
+  let price = parsePrice(item.querySelector('.price').textContent.replace('R$', '').trim());
+  const qty = parseInt(item.querySelector('.bebida-quantity').value) || 0;
+  
+  if (qty > 0) {
+    bebidas.push({ name, price, quantity: qty });
+  }
+});
+pedidoInfo.bebida = bebidas.length > 0 ? bebidas : "Nenhuma bebida selecionada";
 
       updateOrderSummary();
       closeOrderModal();
