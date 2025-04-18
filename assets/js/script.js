@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Funções de Modais
   // ============================
   function openOrderModal(pizzaName) {
-    const modalPizzaName = document.getElementById('modal-pizza-name');
+    const modalPizzaName = document.getElementById('modal-pizza-name').textContent = pizzaName;
     if (modalPizzaName) {
       modalPizzaName.textContent = pizzaName;
     }
@@ -324,7 +324,7 @@ document.querySelectorAll('.bebida-item').forEach(item => {
   const name = item.querySelector('p').textContent.trim();
   let price = parsePrice(item.querySelector('.price').textContent.replace('R$', '').trim());
   const qty = parseInt(item.querySelector('.bebida-quantity').value) || 0;
-  
+
   if (qty > 0) {
     bebidas.push({ name, price, quantity: qty });
   }
@@ -611,11 +611,11 @@ pedidoInfo.bebida = bebidas.length > 0 ? bebidas : "Nenhuma bebida selecionada";
   window.adicionarAoCarrinho = function() {
     const tamanho = document.querySelector('input[name="pizza-size"]:checked')?.value;
     const massa = document.querySelector('select[name="pizza-crust"]').value;
-    const quantidade = parseInt(document.getElementById("modal-pizza-quantity").value);
+    const quantidade = parseInt(document.getElementById('modal-pizza-quantity').value) || 1;
 
-    const cheddar = parseInt(document.getElementById("border-cheddar").value);
-    const catupiry = parseInt(document.getElementById("border-catupiry").value);
-    const cream = parseInt(document.getElementById("border-cream-cheese").value);
+    const cheddar = parseInt(document.getElementById('border-cheddar').value) || 0;
+    const catupiry = parseInt(document.getElementById('border-catupiry').value) || 0;
+    const cream = parseInt(document.getElementById('border-cream-cheese').value) || 0;
 
     if (!tamanho || !massa || quantidade < 1) {
       alert("Por favor, preencha todos os campos obrigatórios.");
