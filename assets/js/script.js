@@ -380,115 +380,72 @@ document.addEventListener('DOMContentLoaded', () => {
           body: JSON.stringify({ valor: Number(totalPix.toFixed(2)) })
         })
         .then(res => res.ok ? res.json() : Promise.reject(res))
-        .then(data => {
-          let tx = data.pix?.transaction_data || data.transaction_data;
-          if (!tx?.qr_code_base64) {
-            alert("Não foi possível gerar Pix. Tente de novo.");
-            return;
-          }
-          const pixInfoDiv = document.getElementById('pix-info');
-          pixInfoDiv.innerHTML = `
-            <p style="font-weight:bold; font-size:1.2rem; margin-bottom:10px;">
-              Pagamento via Pix gerado! 
-            </p>
-            <p>Valor: R$ ${totalPix.toFixed(2)}</p>
-            <img src="data:image/png;base64,${tx.qr_code_base64}" alt="QR Code Pix" style="max-width:200px; margin:10px auto; display:block;">
-            <p style="font-weight:bold;">OU copie abaixo:</p>
-            <textarea id="pix-payload-text" readonly style="width:100%;height:4rem;">
-${tx.qr_code}
-            </textarea>
-            <button id="copy-payload-button" style="margin:10px auto; display:block;">
-              Copiar Chave Pix
-            </button>
-            <p style="font-size:0.9rem;color:#555;">
-              Após o pagamento, aguarde confirmação...
-            </p>
-          `;
-          pixInfoDiv.style.display = 'block';
-          paymentForm.querySelector('button[type="submit"]').disabled = true;
-          document.getElementById('copy-payload-button')
-            .addEventListener('click', () => {
-              navigator.clipboard.writeText(tx.qr_code)
-                .then(()=>alert('Chave Pix copiada!'));
-            });
+.then(data => {
+  const tx = data.pix?.transaction_data || data.transaction_data;
+  if (!tx?.qr_code_base64) {
+    alert("Não foi possível gerar Pix. Tente de novo.");
+    return;
+  }
 
-          // Polling
-          const polling = setInterval(() => {
-            fetch(`https://meu-app-sooty.vercel.app/mp-pix/status/${data.transaction_id}`)
-              .then(r=>r.json())
-              .then(({pago})=>{
-                if (pago) {
-                  clearInterval(polling);
- // 1) Limpa conteúdo antigo
-  pixInfoDiv.textContent = '';
+  const pixInfoDiv = document.getElementById('pix-info');
+  const pixMsgDiv  = document.getElementById('pix-msg');
 
- // 2) Cria elemento de confirmação
- const confirmMsg = document.createElement('p');
- confirmMsg.style.cssText = 'font-weight:bold; font-size:1.2rem; margin-bottom:10px;';
- confirmMsg.textContent = 'Pagamento confirmado! 🎉';
- pixInfoDiv.appendChild(confirmMsg);
+  // 1) Exibe QR e copia
+  pixMsgDiv.innerHTML = `
+    <p><strong>Pagamento via Pix gerado!</strong></p>
+    <p>Valor: R$ ${totalPix.toFixed(2)}</p>
+    <img src="data:image/png;base64,${tx.qr_code_base64}" style="max-width:200px; margin:10px auto; display:block;">
+    <button id="copy-payload-button">Copiar Chave Pix</button>
+    <p>Aguarde confirmação…</p>
+  `;
+  pixInfoDiv.style.display = 'block';
+  paymentForm.querySelector('button[type="submit"]').disabled = true;
+  document.getElementById('copy-payload-button')
+    .addEventListener('click', () => navigator.clipboard.writeText(tx.qr_code));
 
- // 3) Cria botão via DOM
- const btnWa = document.createElement('button');
- btnWa.type = 'button';
- btnWa.id = 'btn-whatsapp';
- btnWa.style.cssText = 'display:block; margin:1rem auto; padding:0.75rem 1.5rem; background:#25D366; color:#fff; border:none; border-radius:0.25rem; cursor:pointer;';
- btnWa.textContent = 'Ir para WhatsApp';
- pixInfoDiv.appendChild(btnWa);
+  // 2) Polling até pago === true
+  const polling = setInterval(() => {
+    fetch(`https://meu-app-sooty.vercel.app/mp-pix/status/${data.transaction_id}`)
+      .then(r => r.json())
+      .then(({ pago }) => {
+        if (!pago) return;
+        clearInterval(polling);
 
- // 4) Atrela o listener imediatamente
- btnWa.addEventListener('click', () => {
-    // Dados de endereço
-   const rua    = document.getElementById('rua').value;
-   const bairro = document.getElementById('bairro').value;
-   const cidade = document.getElementById('cidade').value;
-   const numero = document.getElementById('numero').value;
-   // Data/Hora
-   const now  = new Date();
-   const dataPt = now.toLocaleDateString('pt-BR');
-   const hora   = now.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
-   // Bebidas
-   const bebidasText = pedidoInfo.bebida.length > 0
-      ? pedidoInfo.bebida.map(b=>`${b.name} x${b.quantity} – R$ ${(b.price*b.quantity).toFixed(2)}`).join(', ')
-     : 'Nenhuma';
-   const taxa = pedidoInfo.deliveryFee
-     ? `*Taxa de Entrega:* R$ ${pedidoInfo.deliveryFee}`
-     : '*Taxa de Entrega:* R$ 0,00';
-   // Mensagem
-   const msg = `
- *Pedido de Pizza - Pizza Express*
- ------------------------------------
- *Pizza:* ${pedidoInfo.nome}
- *Tamanho:* ${pedidoInfo.tamanho}
- *Tipos de Massa:* ${pedidoInfo.crust}
- *Bordas:* Cheddar (${pedidoInfo.borderCheddar} un.) + Catupiry (${pedidoInfo.borderCatupiry} un.) + Cream cheese (${pedidoInfo.borderCreamCheese} un.)
- *Quantidade:* ${pedidoInfo.quantidade} unidade(s)
- *Bebida(s):* ${bebidasText}
- *Total do Pedido:* R$ ${(calcularTotalPedido() + pedidoInfo.deliveryFee).toFixed(2)}
- ------------------------------------
- *Status do Pagamento:* Pagamento confirmado! 🎉
- *Forma de Pagamento:* Pix (Chave: ${tx.qr_code})
- ${taxa}
- ------------------------------------
- *Endereço de Entrega:*
- *Rua:* ${rua}
- *Bairro:* ${bairro}
- *Cidade:* ${cidade}
- *Número:* ${numero}
+        // 3) Mensagem de confirmação
+        pixMsgDiv.innerHTML = `
+          <p style="font-weight:bold; font-size:1.2rem;">Pagamento confirmado! 🎉</p>
+        `;
 
- *Data do Pedido:* ${dataPt}
- *Hora:* ${hora}
+        // 4) Libera o botão WhatsApp
+        const btnWa = document.getElementById('btn-whatsapp');
+        const rua    = document.getElementById('rua').value;
+        const bairro = document.getElementById('bairro').value;
+        const cidade = document.getElementById('cidade').value;
+        const numero = document.getElementById('numero').value;
 
- Agradecemos o seu pedido!
- Pizza Express - Sabor que chega rápido!
-   `.trim();
-   window.open(`https://wa.me/5581997333714?text=${encodeURIComponent(msg)}`, '_blank');
- });
-                }
-              });
-          }, 5000);
+        const msg = `
+*Pedido de Pizza - Pizza Express*
+------------------------------------
+*Pizza:* ${pedidoInfo.nome}
+*Tamanho:* ${pedidoInfo.tamanho}
+*Tipos de Massa:* ${pedidoInfo.crust}
+*Bordas:* Cheddar (${pedidoInfo.borderCheddar}), Catupiry (${pedidoInfo.borderCatupiry}), Cream cheese (${pedidoInfo.borderCreamCheese})
+*Quantidade:* ${pedidoInfo.quantidade} unidade(s)
+*Total:* R$ ${(calcularTotalPedido() + pedidoInfo.deliveryFee).toFixed(2)}
+------------------------------------
+*Endereço:*
+Rua: ${rua}
+Bairro: ${bairro}
+Cidade: ${cidade}
+Número: ${numero}
+`.trim();
 
-        })
+        btnWa.href = `https://wa.me/5581997333714?text=${encodeURIComponent(msg)}`;
+        btnWa.style.display = 'block';
+      });
+  }, 5000);
+
+})
         .catch(err => {
           console.error(err);
           alert("Erro ao criar pagamento Pix. Tente novamente.");
