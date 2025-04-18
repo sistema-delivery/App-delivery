@@ -9,19 +9,21 @@ let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
  * @returns {string} mensagem pronta para encodeURIComponent
  */
 function buildWhatsAppMessage(info, metodo, status) {
-  const now = new Date();
+  const now  = new Date();
   const data = now.toLocaleDateString('pt-BR');
   const hora = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-  // Monta bordas
+  // Monta bordas apenas para pedido único
   const bordas = [];
-  if (info.borderCheddar > 0)    bordas.push(`Cheddar x${info.borderCheddar}`);
-  if (info.borderCatupiry > 0)   bordas.push(`Catupiry x${info.borderCatupiry}`);
-  if (info.borderCreamCheese > 0) bordas.push(`Cream cheese x${info.borderCreamCheese}`);
+  if (!info.multi) {
+    if (info.borderCheddar > 0)    bordas.push(`Cheddar x${info.borderCheddar}`);
+    if (info.borderCatupiry > 0)   bordas.push(`Catupiry x${info.borderCatupiry}`);
+    if (info.borderCreamCheese > 0) bordas.push(`Cream cheese x${info.borderCreamCheese}`);
+  }
   const bordaText = bordas.length ? bordas.join(', ') : 'Nenhuma';
 
-  // Monta bebidas
-  const bebidas = (info.bebida || []).map(b => 
+  // Bebidas apenas para pedido único
+  const bebidas = (!info.multi ? (info.bebida || []) : []).map(b =>
     `${b.name} x${b.quantity} – R$ ${(b.price * b.quantity).toFixed(2)}`
   );
   const bebidaText = bebidas.length ? bebidas.join(', ') : 'Nenhuma';
@@ -29,15 +31,27 @@ function buildWhatsAppMessage(info, metodo, status) {
   const taxaText  = `R$ ${(info.deliveryFee || 0).toFixed(2)}`;
   const totalText = `R$ ${info.total.toFixed(2)}`;
 
-  return [
+  // Header
+  const lines = [
     `*Pedido de Pizza - Pizza Express*`,
-    `------------------------------------`,
-    `*Pizza:* ${info.nome}`,
-    `*Tamanho:* ${info.tamanho}`,
-    `*Tipos de Massa:* ${info.crust}`,
-    `*Borda:* ${bordaText}`,
-    `*Quantidade:* ${info.quantidade} unidade(s)`,
-    `*Bebida:* ${bebidaText}`,
+    `------------------------------------`
+  ];
+
+  if (info.multi) {
+    lines.push(`*Itens do Pedido:*`);
+    lines.push(...info.multi.split('\n'));
+  } else {
+    lines.push(
+      `*Pizza:* ${info.nome}`,
+      `*Tamanho:* ${info.tamanho}`,
+      `*Tipos de Massa:* ${info.crust}`,
+      `*Borda:* ${bordaText}`,
+      `*Quantidade:* ${info.quantidade} unidade(s)`,
+      `*Bebida:* ${bebidaText}`
+    );
+  }
+
+  lines.push(
     `*Taxa de Entrega:* ${taxaText}`,
     `------------------------------------`,
     `*Total do Pedido:* ${totalText}`,
@@ -55,7 +69,9 @@ function buildWhatsAppMessage(info, metodo, status) {
     ``,
     `Agradecemos o seu pedido!`,
     `Pizza Express - Sabor que chega rápido!`
-  ].join('\n');
+  );
+
+  return lines.join('\n');
 }
 
 // Função centralizada para calcular o total dos itens do pedido (sem a taxa de entrega)
@@ -759,13 +775,32 @@ pedidoInfo.bebida = bebidas.length > 0 ? bebidas : "Nenhuma bebida selecionada";
 
   // Ao clicar em "Finalizar Pedido" no carrinho, abre o modal de pagamento
   window.finalizarPedido = function() {
-    if (carrinho.length === 0) {
-      alert("Seu carrinho está vazio!");
-      return;
-    }
-    updatePaymentSummaryCart();
-    openPaymentModal();
-  };
+  if (carrinho.length === 0) {
+    alert("Seu carrinho está vazio!");
+    return;
+  }
+
+  // Se tiver apenas 1 pizza, preenche os campos unitários
+  if (carrinho.length === 1) {
+    const p = carrinho[0];
+    pedidoInfo.nome              = p.nome;
+    pedidoInfo.tamanho           = p.tamanho;
+    pedidoInfo.crust             = p.massa;
+    pedidoInfo.quantidade        = p.quantidade;
+    pedidoInfo.borderCheddar     = p.bordas.cheddar;
+    pedidoInfo.borderCatupiry    = p.bordas.catupiry;
+    pedidoInfo.borderCreamCheese = p.bordas.cream;
+    pedidoInfo.bebida            = p.bebidas || [];
+  } else {
+    // Para múltiplos itens, gera texto resumido
+    pedidoInfo.multi = carrinho
+      .map((p, i) => `Pizza ${i+1}: ${p.nome} (${p.tamanho} - ${p.massa}) x${p.quantidade}`)
+      .join('\n');
+  }
+
+  updatePaymentSummaryCart();
+  openPaymentModal();
+};
 
   atualizarCarrinhoUI();
 });
