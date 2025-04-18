@@ -454,8 +454,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 pedidoInfo.total = totalPix;
                 const waMsgPix = encodeURIComponent(buildWhatsAppMessageFromCart(carrinho, 'Pix', 'Pagamento confirmado! 🎉'));
                 const btnWa = document.getElementById('btn-whatsapp');
+                document.getElementById('pix-info').style.display = 'block';
                 btnWa.href = `https://wa.me/5581997333714?text=${waMsgPix}`;
-                btnWa.style.display = 'block';
+                btnWa.style.display = 'inline-block';
               });
           }, 5000);
 
