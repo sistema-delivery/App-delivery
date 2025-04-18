@@ -517,7 +517,6 @@ pedidoInfo.bebida = bebidas.length > 0 ? bebidas : "Nenhuma bebida selecionada";
           const btnWa = document.getElementById('btn-whatsapp');
           btnWa.href = `https://wa.me/5581997333714?text=${encodeURIComponent(waMsg)}`;
           btnWa.style.display = 'block';
-          markPedidoEnviado(btnWa.href);
         });
     }, 5000);
 
@@ -531,11 +530,11 @@ pedidoInfo.bebida = bebidas.length > 0 ? bebidas : "Nenhuma bebida selecionada";
         // fluxo não‑Pix
         pedidoInfo.total = calcularTotalPedido() + (pedidoInfo.deliveryFee || 0);
         const waMsg = buildWhatsAppMessage(pedidoInfo, metodo, 'Pagamento na entrega');
-        const url   = `https://wa.me/5581997333714?text=${encodeURIComponent(waMsg)}`;
         closePaymentModal();
-        window.open(url, '_blank');
-        markPedidoEnviado(url);
-   }
+        window.open(`https://wa.me/5581997333714?text=${encodeURIComponent(waMsg)}`, '_blank');
+      }
+    });
+  }
 
   // ========================================
   // Scroll horizontal infinito para a seção "As Mais Vendidas"
@@ -831,36 +830,4 @@ pedidoInfo.bebida = bebidas.length > 0 ? bebidas : "Nenhuma bebida selecionada";
   atualizarCarrinhoUI();
 });
 
-// ——————————————————————————————————————
-// Controle do botão “Ver meu pedido”
-// ——————————————————————————————————————
-
-/**
- * Atualiza visibilidade do botão dependendo de localStorage.pedidoEnviado
- */
-function updateVerPedidoBtn() {
-  const sent = localStorage.getItem('pedidoEnviado') === 'true';
-  document.getElementById('ver-pedido-btn').style.display = sent ? 'block' : 'none';
-}
-
-// Deve rodar sempre que o DOM estiver pronto
-updateVerPedidoBtn();
-
-/**
- * Guarda a URL de WhatsApp e marca pedido Enviado
- */
-function markPedidoEnviado(url) {
-  localStorage.setItem('pedidoEnviado', 'true');
-  localStorage.setItem('lastWaUrl', url);
-  updateVerPedidoBtn();
-}
-
-/**
- * Reabre o último link de WhatsApp salvo
- */
-window.verMeuPedido = function() {
-  const url = localStorage.getItem('lastWaUrl');
-  if (url) window.open(url, '_blank');
-};
-
-
+// Fim das funções do script
