@@ -474,55 +474,59 @@ pedidoInfo.bebida = bebidas.length > 0 ? bebidas : "Nenhuma bebida selecionada";
       pedidoInfo.numero = document.getElementById('numero').value;
 
       if (metodo === 'Pix') {
-        const totalPix = calcularTotalPedido() + (pedidoInfo.deliveryFee || 0);
+  const totalPix = calcularTotalPedido() + (pedidoInfo.deliveryFee || 0);
 
-        fetch('https://meu-app-sooty.vercel.app/mp-pix', {
-          method: 'POST',
-          headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({ valor: Number(totalPix.toFixed(2)) })
-        })
-        .then(res => res.ok ? res.json() : Promise.reject(res))
-        .then(data => {
-          const tx = data.pix?.transaction_data || data.transaction_data;
-          if (!tx?.qr_code_base64) throw new Error('Sem QR code');
+  fetch('https://meu-app-sooty.vercel.app/mp-pix', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ valor: Number(totalPix.toFixed(2)) })
+  })
+  .then(res => res.ok ? res.json() : Promise.reject(res))
+  .then(data => {
+    // pego o qr e o payload
+    const tx = data.pix?.transaction_data || data.transaction_data;
+    if (!tx?.qr_code_base64) throw new Error('Sem QR code');
 
-          document.getElementById('pix-info').style.display = 'block';
-          document.getElementById('pix-msg').innerHTML = `
-            <p><strong>Pagamento via Pix gerado!</strong></p>
-            <p>Valor: R$ ${totalPix.toFixed(2)}</p>
-            <img src="data:image/png;base64,${tx.qr_code_base64}" style="max-width:200px;margin:10px auto;display:block;">
-            <button id="copy-payload-button">Copiar Chave Pix</button>
-            <p>Aguarde confirmação…</p>
-          `;
-          document.getElementById('copy-payload-button')
+    document.getElementById('pix-info').style.display = 'block';
+    document.getElementById('pix-msg').innerHTML = `
+      <p><strong>Pagamento via Pix gerado!</strong></p>
+      <p>Valor: R$ ${totalPix.toFixed(2)}</p>
+      <img src="data:image/png;base64,${tx.qr_code_base64}" 
+           style="max-width:200px;margin:10px auto;display:block;">
+      <button id="copy-payload-button">Copiar Chave Pix</button>
+      <p>Aguarde confirmação…</p>
+    `;
+    document.getElementById('copy-payload-button')
             .addEventListener('click', () => navigator.clipboard.writeText(tx.qr_code));
-          paymentForm.querySelector('button[type="submit"]').disabled = true;
+    paymentForm.querySelector('button[type="submit"]').disabled = true;
 
-          const polling = setInterval(() => {
-            fetch(`https://meu-app-sooty.vercel.app/mp-pix/status/${data.transaction_id}`)
-              .then(r => r.json())
-              .then(({ pago }) => {
-                if (!pago) return;
-                clearInterval(polling);
+    const polling = setInterval(() => {
+      fetch(`https://meu-app-sooty.vercel.app/mp-pix/status/${data.transaction_id}`)
+        .then(r => r.json())
+        .then(({ pago }) => {
+          if (!pago) return;
+          clearInterval(polling);
 
-                document.getElementById('pix-msg').innerHTML = `
-                  <p style="font-weight:bold; font-size:1.2rem;">Pagamento confirmado! 🎉</p>
-                `;
-                pedidoInfo.total = totalPix;
-                const waMsg = buildWhatsAppMessage(pedidoInfo, 'Pix', 'Pagamento confirmado! 🎉');
-                const btnWa = document.getElementById('btn-whatsapp');
-                btnWa.href = `https://wa.me/5581997333714?text=${encodeURIComponent(waMsg)}`;
-                btnWa.style.display = 'block';
-              });
-          }, 5000);
-
-        })
-        .catch(err => {
-          console.error(err);
-          alert("Erro ao criar pagamento Pix. Tente novamente.");
+          document.getElementById('pix-msg').innerHTML = `
+            <p style="font-weight:bold; font-size:1.2rem;">
+              Pagamento confirmado! 🎉
+            </p>
+          `;
+          pedidoInfo.total = totalPix;
+          const waMsg = buildWhatsAppMessage(pedidoInfo, 'Pix', 'Pagamento confirmado! 🎉');
+          const btnWa = document.getElementById('btn-whatsapp');
+          btnWa.href = `https://wa.me/5581997333714?text=${encodeURIComponent(waMsg)}`;
+          btnWa.style.display = 'block';
         });
+    }, 5000);
 
-      } else {
+  })
+  .catch(err => {
+    console.error(err);
+    alert("Erro ao criar pagamento Pix. Tente novamente.");
+  });
+
+} else {
         // fluxo não‑Pix
         pedidoInfo.total = calcularTotalPedido() + (pedidoInfo.deliveryFee || 0);
         const waMsg = buildWhatsAppMessage(pedidoInfo, metodo, 'Pagamento na entrega');
