@@ -310,13 +310,13 @@ document.addEventListener('DOMContentLoaded', () => {
   if (orderForm) {
     orderForm.addEventListener('submit', function (e) {
       e.preventDefault();
-      pedidoInfo.nome            = document.getElementById('modal-pizza-name').textContent;
-      pedidoInfo.tamanho         = document.querySelector('input[name="pizza-size"]:checked').value;
-      pedidoInfo.crust           = document.querySelector('select[name="pizza-crust"]').value;
-      pedidoInfo.borderCheddar   = document.getElementById('border-cheddar').value;
-      pedidoInfo.borderCatupiry  = document.getElementById('border-catupiry').value;
-      pedidoInfo.borderCreamCheese = document.getElementById('border-cream-cheese').value;
-      pedidoInfo.quantidade      = document.getElementById('modal-pizza-quantity').value;
+      pedidoInfo.nome = document.getElementById('modal-pizza-name').textContent.trim() || "Nome da pizza não selecionado";
+      pedidoInfo.tamanho = document.querySelector('input[name="pizza-size"]:checked')?.value || "Tamanho não selecionado";
+      pedidoInfo.crust = document.querySelector('select[name="pizza-crust"]').value || "Massa não selecionada";
+      pedidoInfo.quantidade = parseInt(document.getElementById('modal-pizza-quantity').value) || 1;  // Default para 1
+      pedidoInfo.borderCheddar = parseInt(document.getElementById('border-cheddar').value) || 0;
+      pedidoInfo.borderCatupiry = parseInt(document.getElementById('border-catupiry').value) || 0;
+      pedidoInfo.borderCreamCheese = parseInt(document.getElementById('border-cream-cheese').value) || 0;
 
       const bebidas = [];
       document.querySelectorAll('.bebida-item').forEach(item => {
