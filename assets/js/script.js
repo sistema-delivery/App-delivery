@@ -37,10 +37,33 @@ function buildWhatsAppMessage(info, metodo, status) {
     `------------------------------------`
   ];
 
-  if (info.multi) {
-    lines.push(`*Itens do Pedido:*`);
-    lines.push(...info.multi.split('\n'));
-  } else {
+  if (info.itens) {
+  lines.push(`*Itens do Pedido:*`);
+  info.itens.forEach((p, idx) => {
+    // bordas
+    const bordas = [];
+    if (p.bordas.cheddar  > 0) bordas.push(`Cheddar x${p.bordas.cheddar}`);
+    if (p.bordas.catupiry > 0) bordas.push(`Catupiry x${p.bordas.catupiry}`);
+    if (p.bordas.cream    > 0) bordas.push(`Cream cheese x${p.bordas.cream}`);
+    const bordaText = bordas.length ? bordas.join(', ') : 'Nenhuma';
+
+    // bebidas
+    const bebidas = (p.bebidas || []).map(b =>
+      `${b.name} x${b.quantity} – R$ ${(b.price * b.quantity).toFixed(2)}`
+    );
+    const bebidaText = bebidas.length ? bebidas.join(', ') : 'Nenhuma';
+
+    lines.push(
+      `*Pizza ${idx+1}:* ${p.nome}`,
+      `*Tamanho:* ${p.tamanho}`,
+      `*Tipos de Massa:* ${p.crust}`,
+      `*Borda:* ${bordaText}`,
+      `*Quantidade:* ${p.quantidade} unidade(s)`,
+      `*Bebida:* ${bebidaText}`,
+      `------------------------------------`
+    );
+  });
+} else {
     lines.push(
       `*Pizza:* ${info.nome}`,
       `*Tamanho:* ${info.tamanho}`,
@@ -792,10 +815,8 @@ pedidoInfo.bebida = bebidas.length > 0 ? bebidas : "Nenhuma bebida selecionada";
     pedidoInfo.borderCreamCheese = p.bordas.cream;
     pedidoInfo.bebida            = p.bebidas || [];
   } else {
-    // Para múltiplos itens, gera texto resumido
-    pedidoInfo.multi = carrinho
-      .map((p, i) => `Pizza ${i+1}: ${p.nome} (${p.tamanho} - ${p.massa}) x${p.quantidade}`)
-      .join('\n');
+    // agora guarda o array completo para montar detalhe por item
+   pedidoInfo.itens = carrinho.slice();  
   }
 
   updatePaymentSummaryCart();
