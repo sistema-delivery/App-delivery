@@ -1,5 +1,62 @@
-// Declaração global do carrinho para que todas as funções possam acessí‑lo
+// Declaração global do carrinho para que todas as funções possam acessá‑lo
 let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+
+/**
+ * Gera a string da mensagem para WhatsApp no formato personalizado.
+ * @param {Object} info  — objeto pedidoInfo contendo os dados do pedido.
+ * @param {string} metodo — “Pix”, “Dinheiro” ou “Cartão”.
+ * @param {string} status — “Pagamento confirmado!” ou “Pagamento na entrega”.
+ * @returns {string} mensagem pronta para encodeURIComponent
+ */
+function buildWhatsAppMessage(info, metodo, status) {
+  const now = new Date();
+  const data = now.toLocaleDateString('pt-BR');
+  const hora = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  // Monta bordas
+  const bordas = [];
+  if (info.borderCheddar > 0)    bordas.push(`Cheddar x${info.borderCheddar}`);
+  if (info.borderCatupiry > 0)   bordas.push(`Catupiry x${info.borderCatupiry}`);
+  if (info.borderCreamCheese > 0) bordas.push(`Cream cheese x${info.borderCreamCheese}`);
+  const bordaText = bordas.length ? bordas.join(', ') : 'Nenhuma';
+
+  // Monta bebidas
+  const bebidas = (info.bebida || []).map(b => 
+    `${b.name} x${b.quantity} – R$ ${(b.price * b.quantity).toFixed(2)}`
+  );
+  const bebidaText = bebidas.length ? bebidas.join(', ') : 'Nenhuma';
+
+  const taxaText  = `R$ ${(info.deliveryFee || 0).toFixed(2)}`;
+  const totalText = `R$ ${info.total.toFixed(2)}`;
+
+  return [
+    `*Pedido de Pizza - Pizza Express*`,
+    `------------------------------------`,
+    `*Pizza:* ${info.nome}`,
+    `*Tamanho:* ${info.tamanho}`,
+    `*Tipos de Massa:* ${info.crust}`,
+    `*Borda:* ${bordaText}`,
+    `*Quantidade:* ${info.quantidade} unidade(s)`,
+    `*Bebida:* ${bebidaText}`,
+    `*Taxa de Entrega:* ${taxaText}`,
+    `------------------------------------`,
+    `*Total do Pedido:* ${totalText}`,
+    `*Forma de Pagamento:* ${metodo}`,
+    `*Status do Pagamento:* ${status}`,
+    `------------------------------------`,
+    `*Endereço de Entrega:*`,
+    `*Rua:* ${info.rua}`,
+    `*Bairro:* ${info.bairro}`,
+    `*Cidade:* ${info.cidade}`,
+    `*Número:* ${info.numero}`,
+    ``,
+    `*Data do Pedido:* ${data}`,
+    `*Hora:* ${hora}`,
+    ``,
+    `Agradecemos o seu pedido!`,
+    `Pizza Express - Sabor que chega rápido!`
+  ].join('\n');
+}
 
 // Função centralizada para calcular o total dos itens do pedido (sem a taxa de entrega)
 function calcularTotalPedido() {
@@ -370,9 +427,14 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       const metodo = document.querySelector('input[name="payment-method"]:checked').value;
 
+      // coleta e atribui endereço ao pedidoInfo antes de gerar mensagem
+      pedidoInfo.rua    = document.getElementById('rua').value;
+      pedidoInfo.bairro = document.getElementById('bairro').value;
+      pedidoInfo.cidade = document.getElementById('cidade').value;
+      pedidoInfo.numero = document.getElementById('numero').value;
+
       if (metodo === 'Pix') {
-        // Recalcula o total
-        let totalPix = calcularTotalPedido() + (pedidoInfo.deliveryFee||0);
+        const totalPix = calcularTotalPedido() + (pedidoInfo.deliveryFee || 0);
 
         fetch('https://meu-app-sooty.vercel.app/mp-pix', {
           method: 'POST',
@@ -380,122 +442,52 @@ document.addEventListener('DOMContentLoaded', () => {
           body: JSON.stringify({ valor: Number(totalPix.toFixed(2)) })
         })
         .then(res => res.ok ? res.json() : Promise.reject(res))
-.then(data => {
-  const tx = data.pix?.transaction_data || data.transaction_data;
-  if (!tx?.qr_code_base64) {
-    alert("Não foi possível gerar Pix. Tente de novo.");
-    return;
-  }
+        .then(data => {
+          const tx = data.pix?.transaction_data || data.transaction_data;
+          if (!tx?.qr_code_base64) throw new Error('Sem QR code');
 
-  const pixInfoDiv = document.getElementById('pix-info');
-  const pixMsgDiv  = document.getElementById('pix-msg');
+          document.getElementById('pix-info').style.display = 'block';
+          document.getElementById('pix-msg').innerHTML = `
+            <p><strong>Pagamento via Pix gerado!</strong></p>
+            <p>Valor: R$ ${totalPix.toFixed(2)}</p>
+            <img src="data:image/png;base64,${tx.qr_code_base64}" style="max-width:200px;margin:10px auto;display:block;">
+            <button id="copy-payload-button">Copiar Chave Pix</button>
+            <p>Aguarde confirmação…</p>
+          `;
+          document.getElementById('copy-payload-button')
+            .addEventListener('click', () => navigator.clipboard.writeText(tx.qr_code));
+          paymentForm.querySelector('button[type="submit"]').disabled = true;
 
-  // 1) Exibe QR e copia
-  pixMsgDiv.innerHTML = `
-    <p><strong>Pagamento via Pix gerado!</strong></p>
-    <p>Valor: R$ ${totalPix.toFixed(2)}</p>
-    <img src="data:image/png;base64,${tx.qr_code_base64}" style="max-width:200px; margin:10px auto; display:block;">
-    <button id="copy-payload-button">Copiar Chave Pix</button>
-    <p>Aguarde confirmação…</p>
-  `;
-  pixInfoDiv.style.display = 'block';
-  paymentForm.querySelector('button[type="submit"]').disabled = true;
-  document.getElementById('copy-payload-button')
-    .addEventListener('click', () => navigator.clipboard.writeText(tx.qr_code));
+          const polling = setInterval(() => {
+            fetch(`https://meu-app-sooty.vercel.app/mp-pix/status/${data.transaction_id}`)
+              .then(r => r.json())
+              .then(({ pago }) => {
+                if (!pago) return;
+                clearInterval(polling);
 
-  // 2) Polling até pago === true
-  const polling = setInterval(() => {
-    fetch(`https://meu-app-sooty.vercel.app/mp-pix/status/${data.transaction_id}`)
-      .then(r => r.json())
-      .then(({ pago }) => {
-        if (!pago) return;
-        clearInterval(polling);
+                document.getElementById('pix-msg').innerHTML = `
+                  <p style="font-weight:bold; font-size:1.2rem;">Pagamento confirmado! 🎉</p>
+                `;
+                pedidoInfo.total = totalPix;
+                const waMsg = buildWhatsAppMessage(pedidoInfo, 'Pix', 'Pagamento confirmado! 🎉');
+                const btnWa = document.getElementById('btn-whatsapp');
+                btnWa.href = `https://wa.me/5581997333714?text=${encodeURIComponent(waMsg)}`;
+                btnWa.style.display = 'block';
+              });
+          }, 5000);
 
-        // 3) Mensagem de confirmação
-        pixMsgDiv.innerHTML = `
-          <p style="font-weight:bold; font-size:1.2rem;">Pagamento confirmado! 🎉</p>
-        `;
-
-        // 4) Libera o botão WhatsApp
-        const btnWa = document.getElementById('btn-whatsapp');
-        const rua    = document.getElementById('rua').value;
-        const bairro = document.getElementById('bairro').value;
-        const cidade = document.getElementById('cidade').value;
-        const numero = document.getElementById('numero').value;
-
-        const msg = `
-*Pedido de Pizza - Pizza Express*
-------------------------------------
-*Pizza:* ${pedidoInfo.nome}
-*Tamanho:* ${pedidoInfo.tamanho}
-*Tipos de Massa:* ${pedidoInfo.crust}
-*Bordas:* Cheddar (${pedidoInfo.borderCheddar}), Catupiry (${pedidoInfo.borderCatupiry}), Cream cheese (${pedidoInfo.borderCreamCheese})
-*Quantidade:* ${pedidoInfo.quantidade} unidade(s)
-*Total:* R$ ${(calcularTotalPedido() + pedidoInfo.deliveryFee).toFixed(2)}
-------------------------------------
-*Endereço:*
-Rua: ${rua}
-Bairro: ${bairro}
-Cidade: ${cidade}
-Número: ${numero}
-`.trim();
-
-        btnWa.href = `https://wa.me/5581997333714?text=${encodeURIComponent(msg)}`;
-        btnWa.style.display = 'block';
-      });
-  }, 5000);
-
-})
+        })
         .catch(err => {
           console.error(err);
           alert("Erro ao criar pagamento Pix. Tente novamente.");
         });
 
       } else {
-        // Fluxo não‑Pix (Dinheiro/Cartão na entrega)
-        const status = 'Pagamento na entrega';
-        const chavePix = '708.276.084-11';
-        const now = new Date();
-        const data = now.toLocaleDateString('pt-BR');
-        const hora = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-        const taxa = pedidoInfo.deliveryFee
-          ? `*Taxa de Entrega:* R$ ${pedidoInfo.deliveryFee}`
-          : '*Taxa de Entrega:* R$ 0,00';
-        const rua    = document.getElementById('rua').value;
-        const bairro = document.getElementById('bairro').value;
-        const cidade = document.getElementById('cidade').value;
-        const numero = document.getElementById('numero').value;
-
-        const mensagem = `
-*Pedido de Pizza - Pizza Express*
-------------------------------------
-*Pizza:* ${pedidoInfo.nome}
-*Tamanho:* ${pedidoInfo.tamanho}
-*Tipos de Massa:* ${pedidoInfo.crust}
-*Bordas:* Cheddar (${pedidoInfo.borderCheddar} un.) + Catupiry (${pedidoInfo.borderCatupiry} un.) + Cream cheese (${pedidoInfo.borderCreamCheese} un.)
-*Quantidade:* ${pedidoInfo.quantidade} unidade(s)
-*Bebida(s):* ${pedidoInfo.bebida.length>0 ? pedidoInfo.bebida.map(b=>`${b.name} x${b.quantity} – R$ ${(b.price*b.quantity).toFixed(2)}`).join(', ') : 'Nenhuma'}
-*Total do Pedido:* R$ ${pedidoInfo.total.toFixed(2)}
-------------------------------------
-*Status do Pagamento:* ${status}
-*Forma de Pagamento:* Não Pix (Chave: ${chavePix})
-${taxa}
-------------------------------------
-*Endereço de Entrega:*
-*Rua:* ${rua}
-*Bairro:* ${bairro}
-*Cidade:* ${cidade}
-*Número:* ${numero}
-
-*Data do Pedido:* ${data}
-*Hora:* ${hora}
-
-Agradecemos o seu pedido!
-Pizza Express - Sabor que chega rápido!
-        `.trim();
-
+        // fluxo não‑Pix
+        pedidoInfo.total = calcularTotalPedido() + (pedidoInfo.deliveryFee || 0);
+        const waMsg = buildWhatsAppMessage(pedidoInfo, metodo, 'Pagamento na entrega');
         closePaymentModal();
-        window.open(`https://wa.me/5581997333714?text=${encodeURIComponent(mensagem)}`, '_blank');
+        window.open(`https://wa.me/5581997333714?text=${encodeURIComponent(waMsg)}`, '_blank');
       }
     });
   }
