@@ -56,7 +56,7 @@ function buildWhatsAppMessage(info, metodo, status) {
     lines.push(
       `*Pizza ${idx+1}:* ${p.nome}`,
       `*Tamanho:* ${p.tamanho}`,
-      `*Tipos de Massa:* ${p.crust}`,
+      `*Tipos de Massa:* ${p.massa}`,
       `*Borda:* ${bordaText}`,
       `*Quantidade:* ${p.quantidade} unidade(s)`,
       `*Bebida:* ${bebidaText}`,
