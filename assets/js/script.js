@@ -419,15 +419,24 @@ ${tx.qr_code}
               .then(({pago})=>{
                 if (pago) {
                   clearInterval(polling);
-                  pixInfoDiv.innerHTML = `<p style="font-weight:bold; font-size:1.2rem;">
-                    Pagamento confirmado! 🎉
-                  </p>`;
-                  const btn = document.createElement('button');
-                  btn.type = 'button';  // <-- impede o comportamento de submit
-                  btn.textContent = 'Ir para WhatsApp';
-                  btn.style = 'display:block; margin:1rem auto; padding:0.75rem 1.5rem; background:#25D366; color:#fff; border:none; border-radius:0.25rem; cursor:pointer;';
-                  pixInfoDiv.appendChild(btn);
-                  btn.addEventListener('click', () => {
+pixInfoDiv.innerHTML = `
+  <p style="font-weight:bold; font-size:1.2rem; margin-bottom:10px;">
+    Pagamento confirmado! 🎉
+  </p>
+  <button
+    id="btn-whatsapp"
+    type="button"
+    style="display:block; margin:1rem auto; padding:0.75rem 1.5rem;
+           background:#25D366; color:#fff; border:none;
+           border-radius:0.25rem; cursor:pointer;"
+  >
+    Ir para WhatsApp
+  </button>
+`;
+
+// Agora pegamos o botão já existente no DOM e adicionamos o listener
+const btnWa = document.getElementById('btn-whatsapp');
+btnWa.addEventListener('click', () => {
                     // Dados de endereço
                     const rua    = document.getElementById('rua').value;
                     const bairro = document.getElementById('bairro').value;
@@ -473,7 +482,7 @@ Agradecemos o seu pedido!
 Pizza Express - Sabor que chega rápido!
                     `.trim();
                     window.open(`https://wa.me/5581997333714?text=${encodeURIComponent(msg)}`, '_blank');
-                  });
+                 });
                 }
               });
           }, 5000);
