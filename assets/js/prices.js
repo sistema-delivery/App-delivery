@@ -16,13 +16,13 @@ const storeData = {
       description:
         "A clássica Marguerita com molho de tomate fresco, mussarela, manjericão e um toque de azeite extra virgem.",
       sizes: {
-        "Pequena": 1.00,
+        "Pequena": 0.10,
         "Média": 34.90,
         "Grande": 49.90
       },
       borders: {
         "Nenhuma": 0.00,
-        "Catupiry": 6.90,
+        "Catupiry": 0.10,
         "Cheddar": 5.90,
         "Cream cheese": 3.90
       }
@@ -120,7 +120,7 @@ const storeData = {
   },
 
   beverages: {
-    "Coca-Cola 1,5L": 11.50,
+    "Coca-Cola 1,5L": 0.10,
     "Guaraná 1L": 1.00,
     "Guaraná 2L": 13.00
   },
