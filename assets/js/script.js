@@ -1,5 +1,62 @@
-// Declaração global do carrinho para que todas as funções possam acessí‑lo
+// Declaração global do carrinho para que todas as funções possam acessá‑lo
 let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+
+/**
+ * Gera a string da mensagem para WhatsApp no formato personalizado.
+ * @param {Object} info  — objeto pedidoInfo contendo os dados do pedido.
+ * @param {string} metodo — “Pix”, “Dinheiro” ou “Cartão”.
+ * @param {string} status — “Pagamento confirmado!” ou “Pagamento na entrega”.
+ * @returns {string} mensagem pronta para encodeURIComponent
+ */
+function buildWhatsAppMessage(info, metodo, status) {
+  const now = new Date();
+  const data = now.toLocaleDateString('pt-BR');
+  const hora = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  // Seleciona primeira borda que não seja zero
+  let bordaText = 'Nenhuma';
+  if (info.borderCheddar > 0)   bordaText = `Cheddar R$ ${(window.storeData?.pizzas?.[info.nome]?.borders["Cheddar"] ?? 5).toFixed(2)}`;
+  if (info.borderCatupiry > 0)  bordaText = `Catupiry R$ ${(window.storeData?.pizzas?.[info.nome]?.borders["Catupiry"] ?? 6).toFixed(2)}`;
+  if (info.borderCreamCheese > 0) bordaText = `Cream cheese R$ ${(window.storeData?.pizzas?.[info.nome]?.borders["Cream cheese"] ?? 3.5).toFixed(2)}`;
+
+  // Seleciona primeira bebida ou 'Nenhuma'
+  let bebidaText = 'Nenhuma';
+  if (info.bebida && info.bebida.length > 0) {
+    const b = info.bebida[0];
+    bebidaText = `${b.name} - R$ ${(b.price * b.quantity).toFixed(2)}`;
+  }
+
+  const taxaText  = `R$ ${(info.deliveryFee || 0).toFixed(2)}`;
+  const totalText = `R$ ${info.total.toFixed(2)}`;
+
+  return [
+    `*Pedido de Pizza - Pizza Express*`,
+    `------------------------------------`,
+    `*Pizza:* ${info.nome}`,
+    `*Tamanho:* ${info.tamanho}`,
+    `*Tipos de Massa:* ${info.crust}`,
+    `*Borda:* ${bordaText}`,
+    `*Quantidade:* ${info.quantidade} unidade(s)`,
+    `*Bebida:* ${bebidaText}`,
+    `*Taxa de Entrega:* ${taxaText}`,
+    `------------------------------------`,
+    `*Total do Pedido:* ${totalText}`,
+    `*Forma de Pagamento:* ${metodo}`,
+    `*Status do Pagamento:* ${status}`,
+    `------------------------------------`,
+    `*Endereço de Entrega:*`,
+    `*Rua:* ${info.rua}`,
+    `*Bairro:* ${info.bairro}`,
+    `*Cidade:* ${info.cidade}`,
+    `*Número:* ${info.numero}`,
+    ``,
+    `*Data do Pedido:* ${data}`,
+    `*Hora:* ${hora}`,
+    ``,
+    `Agradecemos o seu pedido!`,
+    `Pizza Express - Sabor que chega rápido!`
+  ].join('\n');
+}
 
 // Função centralizada para calcular o total dos itens do pedido (sem a taxa de entrega)
 function calcularTotalPedido() {
@@ -53,12 +110,10 @@ function calcularTotalPedido() {
 
 // Eventos após o carregamento do DOM
 document.addEventListener('DOMContentLoaded', () => {
-  // Função auxiliar para converter strings de preço ("6,00") para número (6.00)
   function parsePrice(str) {
     return parseFloat(str.replace(",", "."));
   }
 
-  // Incrementa o valor de um input (bordas)
   window.incrementField = function (fieldId) {
     const input = document.getElementById(fieldId);
     if (input) {
@@ -68,7 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // Incrementa o valor do input imediatamente anterior (bebidas)
   window.incrementSibling = function (button) {
     const input = button.previousElementSibling;
     if (input && input.tagName === 'INPUT') {
@@ -78,7 +132,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // Mobile Menu Toggle
   const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
   const navMenu = document.querySelector('.nav-menu');
   mobileMenuToggle.addEventListener('click', () => {
@@ -86,16 +139,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   const defaultCity = "Paulista (PE)";
-  let pedidoInfo = {}; // Armazena o pedido atual
+  let pedidoInfo = {};
 
-  // ============================
-  // Funções de Modais
-  // ============================
   function openOrderModal(pizzaName) {
     const modalPizzaName = document.getElementById('modal-pizza-name');
-    if (modalPizzaName) {
-      modalPizzaName.textContent = pizzaName;
-    }
+    if (modalPizzaName) modalPizzaName.textContent = pizzaName;
     if (
       window.storeData &&
       window.storeData.pizzas &&
@@ -103,18 +151,12 @@ document.addEventListener('DOMContentLoaded', () => {
     ) {
       const pizzaData = window.storeData.pizzas[pizzaName];
       const modalDescription = document.getElementById('modal-pizza-description');
-      if (modalDescription) {
-        modalDescription.textContent = pizzaData.description;
-      }
-      // Atualiza os preços por tamanho conforme os dados da pizza
-      const sizeLabels = document.querySelectorAll('.pizza-size-section label');
-      sizeLabels.forEach(label => {
+      if (modalDescription) modalDescription.textContent = pizzaData.description;
+      document.querySelectorAll('.pizza-size-section label').forEach(label => {
         const radio = label.querySelector('input[type="radio"]');
         if (radio && pizzaData.sizes[radio.value]) {
           const priceDiv = label.querySelector('.price-size');
-          if (priceDiv) {
-            priceDiv.textContent = pizzaData.sizes[radio.value].toFixed(2);
-          }
+          if (priceDiv) priceDiv.textContent = pizzaData.sizes[radio.value].toFixed(2);
         }
       });
     }
@@ -124,9 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function closeOrderModal() {
     document.getElementById('order-modal').style.display = 'none';
     const orderForm = document.getElementById('modal-order-form');
-    if (orderForm) {
-      orderForm.reset();
-    }
+    if (orderForm) orderForm.reset();
     document.getElementById('border-cheddar').value = 0;
     document.getElementById('border-catupiry').value = 0;
     document.getElementById('border-cream-cheese').value = 0;
@@ -174,9 +214,6 @@ document.addEventListener('DOMContentLoaded', () => {
     })
   );
 
-  // ====================================
-  // Atualiza o Resumo do Pedido (Modal)
-  // ====================================
   function updateOrderSummary() {
     const pizzaName        = document.getElementById('modal-pizza-name')?.textContent.trim() || '';
     const size             = document.querySelector('input[name="pizza-size"]:checked')?.value || 'Não selecionado';
@@ -222,22 +259,19 @@ document.addEventListener('DOMContentLoaded', () => {
     pedidoInfo.deliveryFee = pedidoInfo.deliveryFee || 0;
     pedidoInfo.total = baseTotal + parseFloat(pedidoInfo.deliveryFee);
 
-    // Atualiza UI
     document.getElementById('summary-size').textContent   = `Tamanho: ${size} - R$ ${sizePrice.toFixed(2)}`;
     document.getElementById('summary-crust').textContent  = `Tipo de Massa: ${crust}`;
     document.getElementById('summary-border').textContent = 
       `Bordas: Cheddar (${cheddarQuantity}×R$${cheddarPrice.toFixed(2)}) + ` +
       `Catupiry (${catupiryQuantity}×R$${catupiryPrice.toFixed(2)}) + ` +
       `Cream cheese (${creamQuantity}×R$${creamCheesePrice.toFixed(2)})`;
-    document.getElementById('summary-quantity').textContent = 
-      `Quantidade: ${totalPizzas}`;
+    document.getElementById('summary-quantity').textContent = `Quantidade: ${totalPizzas}`;
     document.getElementById('summary-beverage').textContent = 
       `Bebidas: ${beveragesSummary.length>0? beveragesSummary.join(', ') : 'Nenhuma'}`;
     document.getElementById('summary-total').innerHTML = 
       `<strong>Total: R$ ${pedidoInfo.total.toFixed(2)}</strong>`;
   }
 
-  // Listeners para atualizar resumo
   document.querySelectorAll('input[name="pizza-size"]').forEach(el => el.addEventListener('change', updateOrderSummary));
   document.querySelector('select[name="pizza-crust"]')?.addEventListener('change', updateOrderSummary);
   document.getElementById('modal-pizza-quantity')?.addEventListener('input', updateOrderSummary);
@@ -246,20 +280,17 @@ document.addEventListener('DOMContentLoaded', () => {
   );
   document.querySelectorAll('.bebida-quantity').forEach(input => input.addEventListener('input', updateOrderSummary));
 
-  // ========================================
-  // Processamento do formulário de pedido
-  // ========================================
   const orderForm = document.getElementById('modal-order-form');
   if (orderForm) {
     orderForm.addEventListener('submit', function (e) {
       e.preventDefault();
-      pedidoInfo.nome            = document.getElementById('modal-pizza-name').textContent;
-      pedidoInfo.tamanho         = document.querySelector('input[name="pizza-size"]:checked').value;
-      pedidoInfo.crust           = document.querySelector('select[name="pizza-crust"]').value;
-      pedidoInfo.borderCheddar   = document.getElementById('border-cheddar').value;
-      pedidoInfo.borderCatupiry  = document.getElementById('border-catupiry').value;
-      pedidoInfo.borderCreamCheese = document.getElementById('border-cream-cheese').value;
-      pedidoInfo.quantidade      = document.getElementById('modal-pizza-quantity').value;
+      pedidoInfo.nome             = document.getElementById('modal-pizza-name').textContent;
+      pedidoInfo.tamanho          = document.querySelector('input[name="pizza-size"]:checked').value;
+      pedidoInfo.crust            = document.querySelector('select[name="pizza-crust"]').value;
+      pedidoInfo.borderCheddar    = parseInt(document.getElementById('border-cheddar').value);
+      pedidoInfo.borderCatupiry   = parseInt(document.getElementById('border-catupiry').value);
+      pedidoInfo.borderCreamCheese= parseInt(document.getElementById('border-cream-cheese').value);
+      pedidoInfo.quantidade       = parseInt(document.getElementById('modal-pizza-quantity').value);
 
       const bebidas = [];
       document.querySelectorAll('.bebida-item').forEach(item => {
@@ -280,9 +311,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ========================================
-  // Atualiza o resumo de pagamento do modal
-  // ========================================
   function updatePaymentSummaryCart() {
     let container = document.getElementById('payment-summary');
     if (!container) {
@@ -313,9 +341,6 @@ document.addEventListener('DOMContentLoaded', () => {
     container.innerHTML = html;
   }
 
-  // ========================================
-  // Eventos para método de pagamento e CEP
-  // ========================================
   document.querySelectorAll('input[name="payment-method"]').forEach(radio =>
     radio.addEventListener('change', function () {
       document.getElementById('pix-info').style.display =
@@ -361,9 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   });
 
-  // ========================================
   // Processamento do formulário de pagamento (com Pix atualizado)
-  // ========================================
   const paymentForm = document.getElementById('modal-payment-form');
   if (paymentForm) {
     paymentForm.addEventListener('submit', function (e) {
@@ -371,8 +394,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const metodo = document.querySelector('input[name="payment-method"]:checked').value;
 
       if (metodo === 'Pix') {
-        // Recalcula o total
-        let totalPix = calcularTotalPedido() + (pedidoInfo.deliveryFee||0);
+        // Recalcula totais
+        const totalPix = calcularTotalPedido() + (pedidoInfo.deliveryFee || 0);
 
         fetch('https://meu-app-sooty.vercel.app/mp-pix', {
           method: 'POST',
@@ -380,122 +403,58 @@ document.addEventListener('DOMContentLoaded', () => {
           body: JSON.stringify({ valor: Number(totalPix.toFixed(2)) })
         })
         .then(res => res.ok ? res.json() : Promise.reject(res))
-.then(data => {
-  const tx = data.pix?.transaction_data || data.transaction_data;
-  if (!tx?.qr_code_base64) {
-    alert("Não foi possível gerar Pix. Tente de novo.");
-    return;
-  }
+        .then(data => {
+          const tx = data.pix?.transaction_data || data.transaction_data;
+          if (!tx?.qr_code_base64) {
+            alert("Não foi possível gerar Pix. Tente de novo.");
+            return;
+          }
 
-  const pixInfoDiv = document.getElementById('pix-info');
-  const pixMsgDiv  = document.getElementById('pix-msg');
+          const pixInfoDiv = document.getElementById('pix-info');
+          pixInfoDiv.style.display = 'block';
+          document.getElementById('pix-msg').innerHTML = `
+            <p><strong>Pagamento via Pix gerado!</strong></p>
+            <p>Valor: R$ ${totalPix.toFixed(2)}</p>
+            <img src="data:image/png;base64,${tx.qr_code_base64}" style="max-width:200px; margin:10px auto; display:block;">
+            <button id="copy-payload-button">Copiar Chave Pix</button>
+            <p>Aguarde confirmação…</p>
+          `;
+          document.getElementById('copy-payload-button')
+            .addEventListener('click', () => navigator.clipboard.writeText(tx.qr_code));
 
-  // 1) Exibe QR e copia
-  pixMsgDiv.innerHTML = `
-    <p><strong>Pagamento via Pix gerado!</strong></p>
-    <p>Valor: R$ ${totalPix.toFixed(2)}</p>
-    <img src="data:image/png;base64,${tx.qr_code_base64}" style="max-width:200px; margin:10px auto; display:block;">
-    <button id="copy-payload-button">Copiar Chave Pix</button>
-    <p>Aguarde confirmação…</p>
-  `;
-  pixInfoDiv.style.display = 'block';
-  paymentForm.querySelector('button[type="submit"]').disabled = true;
-  document.getElementById('copy-payload-button')
-    .addEventListener('click', () => navigator.clipboard.writeText(tx.qr_code));
+          paymentForm.querySelector('button[type="submit"]').disabled = true;
 
-  // 2) Polling até pago === true
-  const polling = setInterval(() => {
-    fetch(`https://meu-app-sooty.vercel.app/mp-pix/status/${data.transaction_id}`)
-      .then(r => r.json())
-      .then(({ pago }) => {
-        if (!pago) return;
-        clearInterval(polling);
+          // Polling até pago
+          const polling = setInterval(() => {
+            fetch(`https://meu-app-sooty.vercel.app/mp-pix/status/${data.transaction_id}`)
+              .then(r => r.json())
+              .then(({ pago }) => {
+                if (!pago) return;
+                clearInterval(polling);
 
-        // 3) Mensagem de confirmação
-        pixMsgDiv.innerHTML = `
-          <p style="font-weight:bold; font-size:1.2rem;">Pagamento confirmado! 🎉</p>
-        `;
+                document.getElementById('pix-msg').innerHTML = `
+                  <p style="font-weight:bold; font-size:1.2rem;">Pagamento confirmado! 🎉</p>
+                `;
+                pedidoInfo.total = totalPix;
+                const waMsg = buildWhatsAppMessage(pedidoInfo, 'Pix', 'Pagamento confirmado! 🎉');
+                const btnWa = document.getElementById('btn-whatsapp');
+                btnWa.href = `https://wa.me/5581997333714?text=${encodeURIComponent(waMsg)}`;
+                btnWa.style.display = 'block';
+              });
+          }, 5000);
 
-        // 4) Libera o botão WhatsApp
-        const btnWa = document.getElementById('btn-whatsapp');
-        const rua    = document.getElementById('rua').value;
-        const bairro = document.getElementById('bairro').value;
-        const cidade = document.getElementById('cidade').value;
-        const numero = document.getElementById('numero').value;
-
-        const msg = `
-*Pedido de Pizza - Pizza Express*
-------------------------------------
-*Pizza:* ${pedidoInfo.nome}
-*Tamanho:* ${pedidoInfo.tamanho}
-*Tipos de Massa:* ${pedidoInfo.crust}
-*Bordas:* Cheddar (${pedidoInfo.borderCheddar}), Catupiry (${pedidoInfo.borderCatupiry}), Cream cheese (${pedidoInfo.borderCreamCheese})
-*Quantidade:* ${pedidoInfo.quantidade} unidade(s)
-*Total:* R$ ${(calcularTotalPedido() + pedidoInfo.deliveryFee).toFixed(2)}
-------------------------------------
-*Endereço:*
-Rua: ${rua}
-Bairro: ${bairro}
-Cidade: ${cidade}
-Número: ${numero}
-`.trim();
-
-        btnWa.href = `https://wa.me/5581997333714?text=${encodeURIComponent(msg)}`;
-        btnWa.style.display = 'block';
-      });
-  }, 5000);
-
-})
+        })
         .catch(err => {
           console.error(err);
           alert("Erro ao criar pagamento Pix. Tente novamente.");
         });
 
       } else {
-        // Fluxo não‑Pix (Dinheiro/Cartão na entrega)
-        const status = 'Pagamento na entrega';
-        const chavePix = '708.276.084-11';
-        const now = new Date();
-        const data = now.toLocaleDateString('pt-BR');
-        const hora = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-        const taxa = pedidoInfo.deliveryFee
-          ? `*Taxa de Entrega:* R$ ${pedidoInfo.deliveryFee}`
-          : '*Taxa de Entrega:* R$ 0,00';
-        const rua    = document.getElementById('rua').value;
-        const bairro = document.getElementById('bairro').value;
-        const cidade = document.getElementById('cidade').value;
-        const numero = document.getElementById('numero').value;
-
-        const mensagem = `
-*Pedido de Pizza - Pizza Express*
-------------------------------------
-*Pizza:* ${pedidoInfo.nome}
-*Tamanho:* ${pedidoInfo.tamanho}
-*Tipos de Massa:* ${pedidoInfo.crust}
-*Bordas:* Cheddar (${pedidoInfo.borderCheddar} un.) + Catupiry (${pedidoInfo.borderCatupiry} un.) + Cream cheese (${pedidoInfo.borderCreamCheese} un.)
-*Quantidade:* ${pedidoInfo.quantidade} unidade(s)
-*Bebida(s):* ${pedidoInfo.bebida.length>0 ? pedidoInfo.bebida.map(b=>`${b.name} x${b.quantity} – R$ ${(b.price*b.quantity).toFixed(2)}`).join(', ') : 'Nenhuma'}
-*Total do Pedido:* R$ ${pedidoInfo.total.toFixed(2)}
-------------------------------------
-*Status do Pagamento:* ${status}
-*Forma de Pagamento:* Não Pix (Chave: ${chavePix})
-${taxa}
-------------------------------------
-*Endereço de Entrega:*
-*Rua:* ${rua}
-*Bairro:* ${bairro}
-*Cidade:* ${cidade}
-*Número:* ${numero}
-
-*Data do Pedido:* ${data}
-*Hora:* ${hora}
-
-Agradecemos o seu pedido!
-Pizza Express - Sabor que chega rápido!
-        `.trim();
-
+        // Fluxo não‑Pix
+        pedidoInfo.total = calcularTotalPedido() + (pedidoInfo.deliveryFee || 0);
+        const waMsg = buildWhatsAppMessage(pedidoInfo, metodo, 'Pagamento na entrega');
         closePaymentModal();
-        window.open(`https://wa.me/5581997333714?text=${encodeURIComponent(mensagem)}`, '_blank');
+        window.open(`https://wa.me/5581997333714?text=${encodeURIComponent(waMsg)}`, '_blank');
       }
     });
   }
