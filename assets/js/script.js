@@ -423,8 +423,9 @@ ${tx.qr_code}
                     Pagamento confirmado! 🎉
                   </p>`;
                   const btn = document.createElement('button');
+                  btn.type = 'button';  // <-- impede o comportamento de submit
                   btn.textContent = 'Ir para WhatsApp';
-                  btn.style = 'display:block;margin:1rem auto;padding:0.75rem 1.5rem;background:#25D366;color:#fff;border:none;border-radius:0.25rem;cursor:pointer;';
+                  btn.style = 'display:block; margin:1rem auto; padding:0.75rem 1.5rem; background:#25D366; color:#fff; border:none; border-radius:0.25rem; cursor:pointer;';
                   pixInfoDiv.appendChild(btn);
                   btn.addEventListener('click', () => {
                     // Dados de endereço
