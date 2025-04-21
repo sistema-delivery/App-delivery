@@ -1040,37 +1040,44 @@ footer {
   transform: scale(1.05);
 }
 
-/* ======== dropdown suave para Contato ======== */
+/* ======== dropdown suave e centralizado para Contato ======== */
 .menu-item.contato {
   position: relative;
 }
 
 /* estado “fechado” */
 .menu-item.contato .submenu {
-  max-height: 0;                /* esconde o conteúdo */
-  overflow: hidden;             /* impede scroll */
-  opacity: 0;                   /* invisível */
-  transform: translateY(-10px); /* posiciona ligeiramente para cima */
-  transform-origin: top;
+  max-height: 0;                    /* esconde o conteúdo */
+  overflow: hidden;                 /* impede scroll */
+  opacity: 0;                       /* invisível */
+  transform: translate(-50%, -10px);/* centra horizontal e “levanta” um pouco */
+  transform-origin: top center;     
   transition: 
     max-height 0.3s ease, 
     opacity 0.3s ease, 
-    transform 0.3s ease;        /* transições suaves */
+    transform 0.3s ease;            /* transições suaves */
   position: absolute;
   top: 100%;
-  left: 0;
+  left: 50%;                        /* posiciona no meio do li pai */
   background: #fff;
   list-style: none;
   padding: 0.5rem 0;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   z-index: 1000;
-  pointer-events: none;         /* não deixa clicar quando fechado */
+  pointer-events: none;             /* não deixa clicar quando fechado */
+}
+
+/* estilo dos links internos */
+.menu-item.contato .submenu li a {
+  display: block;
+  padding: 0.5rem 1.5rem;
+  white-space: nowrap;
 }
 
 /* estado “aberto” */
 .menu-item.contato.open .submenu {
-  max-height: 200px;            /* ou um valor >= altura total do menu */
+  max-height: 200px;                /* ou altura suficiente para mostrar todos os itens */
   opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
+  transform: translate(-50%, 0);    /* desce para a posição natural */
+  pointer-events: auto;             /* habilita clique */
 }
