@@ -1040,7 +1040,7 @@ footer {
   transform: scale(1.05);
 }
 
-/* ======== dropdown suave e centralizado para Contato (fundo preto) ======== */
+/* ======== dropdown suave e centralizado para Contato (fundo transparente) ======== */
 .menu-item.contato {
   position: relative;
 }
@@ -1059,20 +1059,33 @@ footer {
   position: absolute;
   top: 100%;
   left: 50%;                        
-  background: #000;                 /* fundo preto */
+  background: transparent;          /* fundo transparente */
+  box-shadow: none;                 /* sem sombra */
   list-style: none;
   padding: 0.5rem 0;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   z-index: 1000;
   pointer-events: none;             
 }
 
-/* estilo dos links internos */
+/* cada <li> flex para alinhar ícone + link */
+.menu-item.contato .submenu li {
+  display: flex;
+  align-items: center;
+}
+
+/* estilo para as logos pequenas */
+.submenu-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+/* links internos */
 .menu-item.contato .submenu li a {
-  display: block;
-  padding: 0.5rem 1.5rem;
-  color: #fff;                      /* texto em branco */
-  white-space: nowrap;
+  padding: 0.5rem 0;
+  color: inherit;    /* herda a cor do menu */
+  text-decoration: none;
 }
 
 /* estado “aberto” */
