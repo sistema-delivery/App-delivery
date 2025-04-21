@@ -154,6 +154,12 @@ document.addEventListener('DOMContentLoaded', () => {
     return parseFloat(str.replace(",", "."));
   }
 
+const menuContatoLink = document.getElementById('menu-contato');
+  menuContatoLink.addEventListener('click', e => {
+    e.preventDefault();
+    menuContatoLink.parentElement.classList.toggle('open');
+  });
+
   // Incrementa o valor de um input (bordas)
   window.incrementField = function (fieldId) {
     const input = document.getElementById(fieldId);
