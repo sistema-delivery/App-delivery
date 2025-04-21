@@ -1039,3 +1039,25 @@ footer {
   background-color: #e23300;
   transform: scale(1.05);
 }
+
+.menu-item.contato {
+  position: relative;
+}
+.menu-item.contato .submenu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #fff;
+  list-style: none;
+  padding: 0.5rem 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.menu-item.contato .submenu li a {
+  display: block;
+  padding: 0.5rem 1rem;
+  white-space: nowrap;
+}
+.menu-item.contato.open .submenu {
+  display: block;
+}
