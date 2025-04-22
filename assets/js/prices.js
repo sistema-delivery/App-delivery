@@ -120,9 +120,9 @@ const storeData = {
   },
 
   beverages: {
-    "Coca-Cola 1,5L": 0.10,
-    "Guaraná 1L": 1.00,
-    "Guaraná 2L": 13.00
+    "Coca-Cola 1,5L": 15.50,
+    "Guaraná 1L": 7.00,
+    "Guaraná 2L": 17.00
   },
 
   /**
