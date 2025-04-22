@@ -16,7 +16,7 @@ const storeData = {
       description:
         "A clássica Marguerita com molho de tomate fresco, mussarela, manjericão e um toque de azeite extra virgem.",
       sizes: {
-        "Pequena": 0.10,
+        "Pequena": 18.90,
         "Média": 34.90,
         "Grande": 49.90
       },
